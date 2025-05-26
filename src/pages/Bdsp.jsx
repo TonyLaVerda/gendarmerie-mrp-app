@@ -57,4 +57,20 @@ export default function Bdsp() {
         <div className="section-title">📂 Historique des interventions</div>
         <div className="pt-4 space-y-4">
           {interventions.length === 0 ? (
-            <p c
+            <p className="text-gray-600">Aucune intervention enregistrée.</p>
+          ) : (
+            interventions.map((iv, index) => (
+              <div key={index} className="bg-gray-50 border-l-4 border-blue-800 p-4 rounded">
+                <p><strong>📍 Type :</strong> {iv.type}</p>
+                <p><strong>📌 Lieu :</strong> {iv.lieu}</p>
+                <p><strong>🕒 Date :</strong> <span className="text-sm bg-blue-100 px-2 py-1 rounded">{iv.date}</span></p>
+                <p><strong>👮 Agents :</strong> {iv.agents}</p>
+                <p><strong>📝 Compte-rendu :</strong> {iv.compteRendu}</p>
+              </div>
+            ))
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
