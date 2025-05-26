@@ -43,7 +43,7 @@ function Login() {
   );
 }
 
-// Composant de protection
+// Protection
 function RequireAuth({ children }) {
   const isAuth = localStorage.getItem("auth") === "true";
   return isAuth ? children : <Navigate to="/login" />;
@@ -59,12 +59,17 @@ function App() {
           path="/*"
           element={
             <RequireAuth>
-              <Navbar />
-              <Routes>
-                <Route path="/" element={<Dashboard />} />
-                <Route path="/effectifs" element={<Effectifs />} />
-                <Route path="/bdsp" element={<Bdsp />} />
-              </Routes>
+              <div className="flex h-screen">
+                <Navbar />
+                <div className="flex-1 p-4 overflow-y-auto">
+                  <Routes>
+                    <Route path="/" element={<Dashboard />} />
+                    <Route path="/effectifs" element={<Effectifs />} />
+                    <Route path="/bdsp" element={<Bdsp />} />
+                    {/* future pulsar ici */}
+                  </Routes>
+                </div>
+              </div>
             </RequireAuth>
           }
         />
