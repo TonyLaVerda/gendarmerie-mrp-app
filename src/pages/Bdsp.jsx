@@ -1,4 +1,7 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
+import {
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
+} from "recharts";
 
 const typesInterventions = [
   "Rixe",
@@ -33,6 +36,15 @@ export default function Bdsp() {
       setForm({ type: "", lieu: "", date: "", agents: "", compteRendu: "" });
     }
   };
+
+  const dataStatistiques = useMemo(() => {
+    const counts = {};
+    interventions.forEach((iv) => {
+      const day = iv.date.split("T")[0];
+      counts[day] = (counts[day] || 0) + 1;
+    });
+    return Object.entries(counts).map(([date, count]) => ({ date, count }));
+  }, [interventions]);
 
   return (
     <div className="p-6 max-w-5xl mx-auto">
@@ -110,6 +122,21 @@ export default function Bdsp() {
                 </div>
               ))
           )}
+        </div>
+      </div>
+
+      <div className="card mt-6">
+        <div className="section-title">📊 Statistiques - Interventions par jour</div>
+        <div className="h-64 pt-4">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={dataStatistiques}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="date" />
+              <YAxis />
+              <Tooltip />
+              <Bar dataKey="count" fill="#1E3A8A" />
+            </BarChart>
+          </ResponsiveContainer>
         </div>
       </div>
     </div>
