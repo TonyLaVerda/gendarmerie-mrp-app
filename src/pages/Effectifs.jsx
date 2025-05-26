@@ -54,15 +54,37 @@ export default function Effectifs() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
         {agents.map((agent, index) => (
-          <Card key={index}>
-            <CardContent>
-              <h3 className="text-xl font-semibold mb-2">{agent.nom}</h3>
-              <p><strong>Grade :</strong> {agent.grade}</p>
-              <p><strong>Unité :</strong> {agent.unite}</p>
-              <p><strong>Spécialité :</strong> {agent.specialite || "Aucune"}</p>
-              <p><strong>Statut :</strong> {agent.statut}</p>
-            </CardContent>
-          </Card>
+          <div key={index} className="card">
+  <div className="flex justify-between items-center mb-2">
+    <h3 className="text-xl font-bold">{agent.nom}</h3>
+    <span className="text-sm bg-blue-100 text-blue-900 px-3 py-1 rounded-full">
+      {agent.grade}
+    </span>
+  </div>
+  <p className="mb-1">
+    <strong>Unité :</strong>
+    <span className="ml-2 px-2 py-1 text-sm rounded bg-gray-100">
+      {agent.unite}
+    </span>
+  </p>
+  <p className="mb-1">
+    <strong>Spécialité :</strong> {agent.specialite || "Aucune"}
+  </p>
+  <p className="mb-1">
+    <strong>Statut :</strong>
+    <span
+      className={`ml-2 px-2 py-1 text-sm rounded-full text-white ${
+        agent.statut === "Indispo"
+          ? "bg-gray-500"
+          : agent.statut === "Pause"
+          ? "bg-yellow-500"
+          : "bg-green-600"
+      }`}
+    >
+      {agent.statut}
+    </span>
+  </p>
+</div>
         ))}
       </div>
     </div>
