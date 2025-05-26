@@ -27,65 +27,15 @@ export default function Effectifs() {
   };
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4 text-blue-900">Gestion des Effectifs</h1>
+    <div className="p-6 max-w-7xl mx-auto">
+      <h1 className="text-3xl font-bold mb-6 text-blue-900">👮 Gestion des Effectifs</h1>
 
       <Dialog>
         <DialogTrigger asChild>
-          <Button className="mb-4">Ajouter un agent</Button>
+          <Button className="mb-4">➕ Ajouter un agent</Button>
         </DialogTrigger>
         <DialogContent>
-          <h2 className="text-xl font-semibold mb-2">Nouvel agent</h2>
-          <Input
-            placeholder="Nom"
-            value={newAgent.nom}
-            onChange={(e) => setNewAgent({ ...newAgent, nom: e.target.value })}
-            className="mb-2"
-          />
-          <Select
-            value={newAgent.grade}
-            onValueChange={(value) => setNewAgent({ ...newAgent, grade: value })}
-            className="mb-2"
-          >
-            {grades.map((g) => (
-              <SelectItem key={g} value={g}>{g}</SelectItem>
-            ))}
-          </Select>
-          <Select
-            value={newAgent.unite}
-            onValueChange={(value) => setNewAgent({ ...newAgent, unite: value })}
-            className="mb-2"
-          >
-            {unites.map((u) => (
-              <SelectItem key={u} value={u}>{u}</SelectItem>
-            ))}
-          </Select>
-          <Select
-            value={newAgent.specialite}
-            onValueChange={(value) => setNewAgent({ ...newAgent, specialite: value })}
-            className="mb-2"
-          >
-            {specialites.map((s) => (
-              <SelectItem key={s} value={s}>{s}</SelectItem>
-            ))}
-          </Select>
-          <Button onClick={handleAddAgent}>Enregistrer</Button>
-        </DialogContent>
-      </Dialog>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {agents.map((agent, index) => (
-          <Card key={index}>
-            <CardContent>
-              <h3 className="text-lg font-semibold">{agent.nom}</h3>
-              <p>Grade : {agent.grade}</p>
-              <p>Unité : {agent.unite}</p>
-              <p>Spécialité : {agent.specialite || "N/A"}</p>
-              <p>Statut : {agent.statut}</p>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-    </div>
-  );
-}
+          <h2 className="text-xl font-semibold mb-4">Nouvel agent</h2>
+          <div className="space-y-3">
+            <Input placeholder="Nom" value={newAgent.nom} onChange={(e) => setNewAgent({ ...newAgent, nom: e.target.value })} />
+            <Select value={newAgent.grade} onValueChange={(value) => setNewAgent({ ...newAg
