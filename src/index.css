@@ -2,35 +2,80 @@
 
 :root {
   --blue-gn: #002654;
+  --blue-light: #eaf0fa;
+  --red-gn: #d32f2f;
   --white: #ffffff;
-  --red-gn: #e60000;
-  --gray-light: #f7f9fc;
-  --text-color: #1a1a1a;
+  --gray-text: #444;
+  --gray-light: #f9fafb;
   --font-main: 'Rubik', sans-serif;
 }
 
 * {
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
 }
 
 body {
   font-family: var(--font-main);
-  background-color: var(--gray-light);
-  color: var(--text-color);
-  line-height: 1.6;
+  background-color: var(--blue-light);
+  color: var(--gray-text);
+  min-height: 100vh;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1, h2, h3 {
   color: var(--blue-gn);
-}
-
-button {
-  cursor: pointer;
-  transition: background 0.3s ease;
+  margin-bottom: 0.5em;
 }
 
 input, select, textarea {
   font-family: var(--font-main);
+  border: 1px solid #ccc;
+  padding: 0.6em 1em;
+  border-radius: 8px;
+  width: 100%;
+  transition: border 0.3s;
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: var(--blue-gn);
+  outline: none;
+}
+
+button {
+  font-family: var(--font-main);
+  padding: 0.6em 1.2em;
+  background-color: var(--blue-gn);
+  color: var(--white);
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+button:hover {
+  background-color: #001e3c;
+}
+
+.card {
+  background: var(--white);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  padding: 1.5em;
+  margin-bottom: 1.5em;
+}
+
+.card h3 {
+  font-size: 1.2em;
+  margin-bottom: 0.5em;
+}
+
+.section-title {
+  background: var(--blue-gn);
+  color: white;
+  padding: 0.75em 1em;
+  border-radius: 8px 8px 0 0;
+  font-size: 1.1em;
+  font-weight: 500;
 }
