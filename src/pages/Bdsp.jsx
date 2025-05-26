@@ -1,4 +1,19 @@
 import { useState } from "react";
+const typesInterventions = [
+  "Rixe",
+  "ACR Matériel",
+  "ACR",
+  "Incendie",
+  "Vol de VL",
+  "Vol",
+  "Cambriolage",
+  "Effraction",
+  "Incivilité",
+  "Braquage",
+  "Prise d'otage",
+  "Tentative de suicide",
+  "Découverte de cadavre"
+];
 
 export default function Bdsp() {
   const [interventions, setInterventions] = useState([]);
@@ -24,11 +39,17 @@ export default function Bdsp() {
       <div className="card mb-8">
         <div className="section-title">➕ Nouvelle intervention</div>
         <div className="grid gap-4 pt-4">
-          <input
-            placeholder="Type d’intervention"
-            value={form.type}
-            onChange={(e) => setForm({ ...form, type: e.target.value })}
-          />
+          <select
+  value={form.type}
+  onChange={(e) => setForm({ ...form, type: e.target.value })}
+  className="p-2 border rounded"
+>
+  <option value="">-- Sélectionner un type d’intervention --</option>
+  {typesInterventions.map((type, idx) => (
+    <option key={idx} value={type}>{type}</option>
+  ))}
+</select>
+
           <input
             placeholder="Lieu"
             value={form.lieu}
