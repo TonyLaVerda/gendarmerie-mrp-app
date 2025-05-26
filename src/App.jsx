@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Dashboard from './Dashboard';
 import Effectifs from './pages/Effectifs';
 import Navbar from "./components/Navbar";
+import Bdsp from './pages/Bdsp';
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Dashboard />} />         {/* Page d'accueil */}
         <Route path="/effectifs" element={<Effectifs />} /> {/* Page Effectifs */}
+        <Route path="/bdsp" element={<Bdsp />} />
       </Routes>
     </BrowserRouter>
   );
