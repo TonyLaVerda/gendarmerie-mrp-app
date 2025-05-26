@@ -1,5 +1,36 @@
-body {
+@import url('https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&display=swap');
+
+:root {
+  --blue-gn: #002654;
+  --white: #ffffff;
+  --red-gn: #e60000;
+  --gray-light: #f7f9fc;
+  --text-color: #1a1a1a;
+  --font-main: 'Rubik', sans-serif;
+}
+
+* {
   margin: 0;
-  font-family: Arial, sans-serif;
-  background-color: #f3f4f6;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-main);
+  background-color: var(--gray-light);
+  color: var(--text-color);
+  line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--blue-gn);
+}
+
+button {
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+input, select, textarea {
+  font-family: var(--font-main);
 }
