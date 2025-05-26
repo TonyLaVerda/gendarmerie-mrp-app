@@ -1,4 +1,5 @@
 import { useState } from "react";
+
 const typesInterventions = [
   "Rixe",
   "ACR Matériel",
@@ -17,6 +18,7 @@ const typesInterventions = [
 
 export default function Bdsp() {
   const [interventions, setInterventions] = useState([]);
+  const [filtreType, setFiltreType] = useState("");
   const [form, setForm] = useState({
     type: "",
     lieu: "",
@@ -40,15 +42,15 @@ export default function Bdsp() {
         <div className="section-title">➕ Nouvelle intervention</div>
         <div className="grid gap-4 pt-4">
           <select
-  value={form.type}
-  onChange={(e) => setForm({ ...form, type: e.target.value })}
-  className="p-2 border rounded"
->
-  <option value="">-- Sélectionner un type d’intervention --</option>
-  {typesInterventions.map((type, idx) => (
-    <option key={idx} value={type}>{type}</option>
-  ))}
-</select>
+            value={form.type}
+            onChange={(e) => setForm({ ...form, type: e.target.value })}
+            className="p-2 border rounded"
+          >
+            <option value="">-- Sélectionner un type d’intervention --</option>
+            {typesInterventions.map((type, idx) => (
+              <option key={idx} value={type}>{type}</option>
+            ))}
+          </select>
 
           <input
             placeholder="Lieu"
@@ -74,21 +76,39 @@ export default function Bdsp() {
         </div>
       </div>
 
+      <div className="card mb-6">
+        <div className="section-title">🔎 Filtrer les interventions</div>
+        <div className="pt-4">
+          <select
+            value={filtreType}
+            onChange={(e) => setFiltreType(e.target.value)}
+            className="p-2 border rounded w-full"
+          >
+            <option value="">-- Toutes les interventions --</option>
+            {typesInterventions.map((type, idx) => (
+              <option key={idx} value={type}>{type}</option>
+            ))}
+          </select>
+        </div>
+      </div>
+
       <div className="card">
         <div className="section-title">📂 Historique des interventions</div>
         <div className="pt-4 space-y-4">
-          {interventions.length === 0 ? (
+          {interventions.filter(iv => !filtreType || iv.type === filtreType).length === 0 ? (
             <p className="text-gray-600">Aucune intervention enregistrée.</p>
           ) : (
-            interventions.map((iv, index) => (
-              <div key={index} className="bg-gray-50 border-l-4 border-blue-800 p-4 rounded">
-                <p><strong>📍 Type :</strong> {iv.type}</p>
-                <p><strong>📌 Lieu :</strong> {iv.lieu}</p>
-                <p><strong>🕒 Date :</strong> <span className="text-sm bg-blue-100 px-2 py-1 rounded">{iv.date}</span></p>
-                <p><strong>👮 Agents :</strong> {iv.agents}</p>
-                <p><strong>📝 Compte-rendu :</strong> {iv.compteRendu}</p>
-              </div>
-            ))
+            interventions
+              .filter(iv => !filtreType || iv.type === filtreType)
+              .map((iv, index) => (
+                <div key={index} className="bg-gray-50 border-l-4 border-blue-800 p-4 rounded">
+                  <p><strong>📍 Type :</strong> {iv.type}</p>
+                  <p><strong>📌 Lieu :</strong> {iv.lieu}</p>
+                  <p><strong>🕒 Date :</strong> <span className="text-sm bg-blue-100 px-2 py-1 rounded">{iv.date}</span></p>
+                  <p><strong>👮 Agents :</strong> {iv.agents}</p>
+                  <p><strong>📝 Compte-rendu :</strong> {iv.compteRendu}</p>
+                </div>
+              ))
           )}
         </div>
       </div>
