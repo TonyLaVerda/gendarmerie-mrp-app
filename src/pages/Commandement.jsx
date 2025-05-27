@@ -7,16 +7,14 @@ const patrolStatusOptions = ["Disponible", "Engagée", "ASL", "Fin d'interventio
 export default function Commandement({ agents, setAgents, patrols, setPatrols, interventions = [] }) {
   const [assignments, setAssignments] = useState({});
   const [patrolStatuses, setPatrolStatuses] = useState({});
-
-  // Ajout : associer intervention ID par patrouille ID
-  const [patrolInterventions, setPatrolInterventions] = useState({});
+  const [patrolInterventions, setPatrolInterventions] = useState({}); // patrouilleId => interventionId
 
   // Trier agents par grade (du plus gradé au moins gradé)
   const sortedAgents = [...agents].sort(
     (a, b) => gradesOrder.indexOf(a.grade) - gradesOrder.indexOf(b.grade)
   );
 
-  // Charger assignments et statuses depuis l'API au chargement du composant
+  // Charger assignments, statuses et patrouille-intervention au chargement
   useEffect(() => {
     async function fetchData() {
       try {
@@ -30,7 +28,6 @@ export default function Commandement({ agents, setAgents, patrols, setPatrols, i
           const data = await resStatuses.json();
           setPatrolStatuses(data);
         }
-        // Hypothèse : fetch liaison patrouille->intervention
         const resPatrolInterv = await fetch('/api/patrol-interventions');
         if (resPatrolInterv.ok) {
           const data = await resPatrolInterv.json();
@@ -71,7 +68,7 @@ export default function Commandement({ agents, setAgents, patrols, setPatrols, i
     }
   };
 
-  // Sauvegarder liaison patrouille -> intervention
+  // Sauvegarder liaison patrouille -> intervention via API
   const savePatrolInterventions = async (newMap) => {
     try {
       const res = await fetch('/api/patrol-interventions', {
