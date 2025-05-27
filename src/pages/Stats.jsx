@@ -1,8 +1,10 @@
+import './Stats.css';
+
 export default function Stats() {
   return (
-    <div>
-      <h2 className="text-xl font-bold mb-4">Statistiques</h2>
-      <p>Page en cours de construction.</p>
+    <div className="stats-container">
+      <h2 className="stats-title">Statistiques</h2>
+      <p className="stats-message">Page en cours de construction.</p>
     </div>
   );
 }
