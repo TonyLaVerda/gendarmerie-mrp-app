@@ -1,5 +1,17 @@
+import { Routes, Route } from 'react-router-dom';
+import { useState } from 'react';
+
+import Navbar from './components/Navbar';
+import Dashboard from './Dashboard';
+import Effectifs from './pages/Effectifs';
+import Bdsp from './pages/Bdsp';
+import Pulsar from './pages/Pulsar';
+import Commandement from './pages/Commandement';
+import Stats from './pages/Stats';
+
 export default function MainLayout() {
-  // ... tes états et imports
+  const [agents, setAgents] = useState([]);
+  const [patrols, setPatrols] = useState([]);
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -9,7 +21,7 @@ export default function MainLayout() {
       </header>
 
       {/* Contenu principal */}
-      <main className="flex-1 bg-gray-50 px-4 py-6 max-w-5xl w-full mx-auto"> {/* max-w-5xl et centré */}
+      <main className="flex-1 bg-gray-50 px-4 py-6 max-w-5xl w-full mx-auto">
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/effectifs" element={<Effectifs agents={agents} setAgents={setAgents} />} />
