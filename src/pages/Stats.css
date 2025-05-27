@@ -1,1 +1,25 @@
+.stats-container {
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 24px;
+  background-color: #f0f4f9;
+  min-height: 60vh;
+  font-family: 'Rubik', sans-serif;
+  color: #002654;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+.stats-title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.stats-message {
+  font-size: 1.1rem;
+  color: #555;
+  font-style: italic;
+}
 
