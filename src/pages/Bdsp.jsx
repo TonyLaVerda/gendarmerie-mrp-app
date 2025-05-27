@@ -2,6 +2,7 @@ import { useState, useMemo } from "react";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from "recharts";
+import './Bdsp.css';
 
 const typesInterventions = [
   "Rixe",
@@ -34,6 +35,8 @@ export default function Bdsp() {
     if (form.type && form.lieu && form.date) {
       setInterventions([...interventions, { ...form }]);
       setForm({ type: "", lieu: "", date: "", agents: "", compteRendu: "" });
+    } else {
+      alert("Veuillez remplir au minimum le type, le lieu et la date.");
     }
   };
 
@@ -47,16 +50,16 @@ export default function Bdsp() {
   }, [interventions]);
 
   return (
-    <div className="p-6 max-w-5xl mx-auto">
-      <h1 className="text-3xl font-bold text-blue-900 mb-6">🚨 BDSP - Interventions</h1>
+    <div className="bdsp-container">
+      <h1 className="bdsp-title">🚨 BDSP - Interventions</h1>
 
-      <div className="card mb-8">
+      <section className="bdsp-card">
         <div className="section-title">➕ Nouvelle intervention</div>
-        <div className="grid gap-4 pt-4">
+        <div className="bdsp-form">
           <select
             value={form.type}
             onChange={(e) => setForm({ ...form, type: e.target.value })}
-            className="p-2 border rounded"
+            className="bdsp-select"
           >
             <option value="">-- Sélectionner un type d’intervention --</option>
             {typesInterventions.map((type, idx) => (
@@ -65,70 +68,76 @@ export default function Bdsp() {
           </select>
 
           <input
+            type="text"
             placeholder="Lieu"
             value={form.lieu}
             onChange={(e) => setForm({ ...form, lieu: e.target.value })}
+            className="bdsp-input"
           />
           <input
             type="datetime-local"
             value={form.date}
             onChange={(e) => setForm({ ...form, date: e.target.value })}
+            className="bdsp-input"
           />
           <input
+            type="text"
             placeholder="Agents présents"
             value={form.agents}
             onChange={(e) => setForm({ ...form, agents: e.target.value })}
+            className="bdsp-input"
           />
           <textarea
             placeholder="Compte-rendu"
             value={form.compteRendu}
             onChange={(e) => setForm({ ...form, compteRendu: e.target.value })}
+            className="bdsp-textarea"
           />
-          <button onClick={handleAdd}>➕ Ajouter l’intervention</button>
+          <button onClick={handleAdd} className="bdsp-button">
+            ➕ Ajouter l’intervention
+          </button>
         </div>
-      </div>
+      </section>
 
-      <div className="card mb-6">
+      <section className="bdsp-card">
         <div className="section-title">🔎 Filtrer les interventions</div>
-        <div className="pt-4">
-          <select
-            value={filtreType}
-            onChange={(e) => setFiltreType(e.target.value)}
-            className="p-2 border rounded w-full"
-          >
-            <option value="">-- Toutes les interventions --</option>
-            {typesInterventions.map((type, idx) => (
-              <option key={idx} value={type}>{type}</option>
-            ))}
-          </select>
-        </div>
-      </div>
+        <select
+          value={filtreType}
+          onChange={(e) => setFiltreType(e.target.value)}
+          className="bdsp-select full-width"
+        >
+          <option value="">-- Toutes les interventions --</option>
+          {typesInterventions.map((type, idx) => (
+            <option key={idx} value={type}>{type}</option>
+          ))}
+        </select>
+      </section>
 
-      <div className="card">
+      <section className="bdsp-card">
         <div className="section-title">📂 Historique des interventions</div>
-        <div className="pt-4 space-y-4">
+        <div className="bdsp-history">
           {interventions.filter(iv => !filtreType || iv.type === filtreType).length === 0 ? (
-            <p className="text-gray-600">Aucune intervention enregistrée.</p>
+            <p className="bdsp-empty">Aucune intervention enregistrée.</p>
           ) : (
             interventions
               .filter(iv => !filtreType || iv.type === filtreType)
               .map((iv, index) => (
-                <div key={index} className="bg-gray-50 border-l-4 border-blue-800 p-4 rounded">
+                <div key={index} className="bdsp-intervention">
                   <p><strong>📍 Type :</strong> {iv.type}</p>
                   <p><strong>📌 Lieu :</strong> {iv.lieu}</p>
-                  <p><strong>🕒 Date :</strong> <span className="text-sm bg-blue-100 px-2 py-1 rounded">{iv.date}</span></p>
+                  <p><strong>🕒 Date :</strong> <span className="bdsp-date">{new Date(iv.date).toLocaleString()}</span></p>
                   <p><strong>👮 Agents :</strong> {iv.agents}</p>
                   <p><strong>📝 Compte-rendu :</strong> {iv.compteRendu}</p>
                 </div>
               ))
           )}
         </div>
-      </div>
+      </section>
 
-      <div className="card mt-6">
+      <section className="bdsp-card">
         <div className="section-title">📊 Statistiques - Interventions par jour</div>
-        <div className="h-64 pt-4">
-          <ResponsiveContainer width="100%" height="100%">
+        <div className="bdsp-chart">
+          <ResponsiveContainer width="100%" height={250}>
             <BarChart data={dataStatistiques}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="date" />
@@ -138,7 +147,7 @@ export default function Bdsp() {
             </BarChart>
           </ResponsiveContainer>
         </div>
-      </div>
+      </section>
     </div>
   );
 }
