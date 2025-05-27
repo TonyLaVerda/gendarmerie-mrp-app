@@ -1,5 +1,5 @@
 import './index.css';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import Dashboard from './Dashboard';
 import Effectifs from './pages/Effectifs';
 import Bdsp from './pages/Bdsp';
@@ -10,11 +10,12 @@ import { useState } from 'react';
 function Login() {
   const [input, setInput] = useState("");
   const [error, setError] = useState("");
+  const navigate = useNavigate(); // ← pour rediriger proprement
 
   const handleLogin = () => {
     if (input === "gendarmerie2025") {
       localStorage.setItem("auth", "true");
-      window.location.href = "/";
+      navigate("/"); // ← redirection sans recharger
     } else {
       setError("Mot de passe incorrect.");
     }
@@ -66,8 +67,8 @@ function MainLayout() {
   );
 }
 
-// 🌐 Application principale
-function App() {
+// 🌐 Application principale avec redirection
+function AppWrapper() {
   return (
     <BrowserRouter>
       <Routes>
@@ -85,4 +86,4 @@ function App() {
   );
 }
 
-export default App;
+export default AppWrapper;
