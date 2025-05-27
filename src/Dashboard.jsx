@@ -21,42 +21,49 @@ export default function Dashboard() {
 
   if (!authenticated) {
     return (
-      <div style={{ textAlign: "center", padding: "2rem", backgroundColor: "#1e3a8a", height: "100vh", color: "white" }}>
-        <h1>Accès sécurisé - Gendarmerie MRP</h1>
+      <div className="flex flex-col items-center justify-center h-screen bg-blue-900 text-white">
+        <h1 className="text-2xl font-bold mb-4">Accès sécurisé - Gendarmerie MRP</h1>
         <input
           type="password"
           placeholder="Mot de passe"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          style={{ padding: "0.5rem", margin: "1rem" }}
+          className="px-4 py-2 rounded text-black"
         />
-        <button onClick={handleLogin}>Se connecter</button>
+        <button
+          onClick={handleLogin}
+          className="mt-4 px-4 py-2 bg-white text-blue-900 font-semibold rounded hover:bg-gray-200"
+        >
+          Se connecter
+        </button>
       </div>
     );
   }
 
   return (
-    <div style={{ padding: "2rem" }}>
-      <header style={{ textAlign: "center", marginBottom: "2rem" }}>
-        <h1 style={{ color: "#1e3a8a" }}>Gendarmerie Nationale - Martinique RP</h1>
-        <p>Notre Engagement, votre sécurité</p>
+    <div className="p-6 bg-gray-50 min-h-screen">
+      {/* En-tête */}
+      <header className="text-center mb-8">
+        <h1 className="text-2xl md:text-3xl font-bold text-blue-900">Gendarmerie Nationale - Martinique RP</h1>
+        <p className="text-gray-600">Notre Engagement, votre sécurité</p>
       </header>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
-        <div style={{ border: "1px solid #ccc", padding: "1rem", backgroundColor: "#fff" }}>
-          <h2>Effectifs</h2>
+      {/* Contenu */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="bg-white p-4 shadow rounded">
+          <h2 className="text-lg font-bold mb-2">Effectifs</h2>
           <p>Gestion des membres par unité, grade et spécialité</p>
         </div>
-        <div style={{ border: "1px solid #ccc", padding: "1rem", backgroundColor: "#fff" }}>
-          <h2>BDSP</h2>
+        <div className="bg-white p-4 shadow rounded">
+          <h2 className="text-lg font-bold mb-2">BDSP</h2>
           <p>Gestion des interventions</p>
         </div>
-        <div style={{ border: "1px solid #ccc", padding: "1rem", backgroundColor: "#fff" }}>
-          <h2>Planning</h2>
+        <div className="bg-white p-4 shadow rounded">
+          <h2 className="text-lg font-bold mb-2">Pulsar</h2>
           <p>Organisation des patrouilles</p>
         </div>
-        <div style={{ border: "1px solid #ccc", padding: "1rem", backgroundColor: "#fff" }}>
-          <h2>Statistiques par unité</h2>
+        <div className="bg-white p-4 shadow rounded">
+          <h2 className="text-lg font-bold mb-4">Statistiques par unité</h2>
           <ResponsiveContainer width="100%" height={200}>
             <BarChart data={interventions}>
               <XAxis dataKey="unit" />
