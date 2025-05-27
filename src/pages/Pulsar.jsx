@@ -67,7 +67,8 @@ export default function Pulsar({ patrols, setPatrols }) {
     if (id !== null) {
       setPatrols(prev => prev.map(p => p.id === id ? formData : p));
     } else {
-      setPatrols(prev => [...prev, { ...formData, id: prev.length ? Math.max(...prev.map(p => p.id)) + 1 : 1 }]);
+      const newId = patrols.length ? Math.max(...patrols.map(p => p.id)) + 1 : 1;
+      setPatrols(prev => [...prev, { ...formData, id: newId }]);
     }
     setFormData({ id: null, start: "", end: "", service: "", type: "" });
   };
@@ -77,8 +78,12 @@ export default function Pulsar({ patrols, setPatrols }) {
   };
 
   const handleDelete = (id) => {
-    if(window.confirm("Supprimer cette patrouille ?")) {
+    if(window.confirm("Voulez-vous vraiment supprimer cette patrouille ?")) {
       setPatrols(prev => prev.filter(p => p.id !== id));
+      // Si on était en train de modifier cette patrouille, reset form
+      if(formData.id === id) {
+        setFormData({ id: null, start: "", end: "", service: "", type: "" });
+      }
     }
   };
 
