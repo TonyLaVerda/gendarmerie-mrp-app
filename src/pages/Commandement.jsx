@@ -24,15 +24,6 @@ export default function Commandement({ agents, setAgents, patrols, setPatrols })
     });
   };
 
-  // Enlever un agent d'une patrouille
-  const handleRemoveAgent = (patrolId, agentNom) => {
-    setAssignments(prev => {
-      const current = prev[patrolId] || [];
-      const newList = current.filter(nom => nom !== agentNom);
-      return { ...prev, [patrolId]: newList };
-    });
-  };
-
   // Exemple simple de calcul du statut d’une patrouille (à adapter)
   const getPatrolStatus = (patrolId) => {
     if (assignments[patrolId] && assignments[patrolId].length > 0) return "Engagée";
@@ -40,14 +31,14 @@ export default function Commandement({ agents, setAgents, patrols, setPatrols })
   };
 
   return (
-    <div className="commandement-container">
+    <div className="commandement-container" style={{ maxWidth: "1000px", margin: "0 auto" }}>
       <h1>🛡 Commandement</h1>
 
       <div className="commandement-content">
 
         {/* Colonne agents */}
         <aside className="commandement-agents">
-          <h2>Effectifs (du plus gradé au moins gradé)</h2>
+          <h2>Effectifs</h2>
           {sortedAgents.length === 0 && <p>Aucun agent enregistré.</p>}
           <ul>
             {sortedAgents.map((agent, idx) => (
@@ -72,26 +63,11 @@ export default function Commandement({ agents, setAgents, patrols, setPatrols })
 
               <label>Effectifs assignés :</label>
               <ul>
-                {(assignments[patrol.id] || []).length === 0 && <li>Aucun agent assigné</li>}
-                {(assignments[patrol.id] || []).map((nom, i) => (
-                  <li key={i}>
-                    {nom}{" "}
-                    <button 
-                      onClick={() => handleRemoveAgent(patrol.id, nom)} 
-                      style={{
-                        marginLeft: "8px", 
-                        color: "red", 
-                        cursor: "pointer",
-                        border: "none",
-                        background: "transparent",
-                        fontWeight: "bold"
-                      }}
-                      title="Retirer cet agent"
-                    >
-                      ✖
-                    </button>
-                  </li>
-                ))}
+                {(assignments[patrol.id] || []).length === 0 ? (
+                  <li>Aucun agent assigné</li>
+                ) : (
+                  assignments[patrol.id].map((nom, i) => <li key={i}>{nom}</li>)
+                )}
               </ul>
 
               <label>Ajouter un agent :</label>
@@ -106,11 +82,10 @@ export default function Commandement({ agents, setAgents, patrols, setPatrols })
               >
                 <option value="" disabled>Choisir un agent</option>
                 {sortedAgents
-                  // Filtrer les agents déjà assignés à cette patrouille
                   .filter(agent => !(assignments[patrol.id]?.includes(agent.nom)))
                   .map((agent, i) => (
                     <option key={i} value={agent.nom}>
-                      {agent.nom} ({agent.grade})
+                      {agent.nom} { /* Retrait des parenthèses et grades */ }
                     </option>
                   ))
                 }
