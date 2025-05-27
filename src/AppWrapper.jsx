@@ -1,11 +1,7 @@
 import './index.css';
 import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
-import Dashboard from './Dashboard';
-import Effectifs from './pages/Effectifs';
-import Bdsp from './pages/Bdsp';
-import Pulsar from './pages/Pulsar'; // ✅ ajout du module
-import Navbar from "./components/Navbar";
 import { useState } from 'react';
+import MainLayout from './MainLayout'; // ✅ Nouveau layout importé
 
 // 🔐 Page de connexion
 function Login() {
@@ -45,30 +41,13 @@ function Login() {
   );
 }
 
-// 🔒 Protection
+// 🔒 Composant de protection
 function RequireAuth({ children }) {
   const isAuth = localStorage.getItem("auth") === "true";
   return isAuth ? children : <Navigate to="/login" />;
 }
 
-// 🧭 Layout global
-function MainLayout() {
-  return (
-    <div className="flex h-screen">
-      <Navbar />
-      <div className="flex-1 p-4 overflow-y-auto">
-        <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/effectifs" element={<Effectifs />} />
-          <Route path="/bdsp" element={<Bdsp />} />
-          <Route path="/pulsar" element={<Pulsar />} /> {/* ✅ Route ajoutée */}
-        </Routes>
-      </div>
-    </div>
-  );
-}
-
-// 🌐 App principale
+// 🌐 Application principale avec redirection sécurisée
 function AppWrapper() {
   return (
     <BrowserRouter>
