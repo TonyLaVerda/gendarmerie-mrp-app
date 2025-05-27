@@ -29,6 +29,8 @@
 .navbar-title {
   font-weight: 700;
   font-size: 1.5rem;
+  color: white; /* Texte en blanc pour bien ressortir */
+  margin: 0;
 }
 
 .navbar-tagline {
