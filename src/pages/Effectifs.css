@@ -34,6 +34,13 @@
   font-size: 1rem;
   width: 100%;
   box-sizing: border-box;
+  transition: border-color 0.3s ease;
+}
+
+.effectifs-input:focus,
+.effectifs-select:focus {
+  border-color: #002654;
+  outline: none;
 }
 
 .effectifs-button {
@@ -70,6 +77,11 @@
   padding: 16px 20px;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  transition: box-shadow 0.3s ease;
+}
+
+.effectifs-card:hover {
+  box-shadow: 0 6px 15px rgba(0,0,0,0.12);
 }
 
 .effectifs-card-header {
@@ -111,6 +123,7 @@
   display: inline-block;
   min-width: 80px;
   text-align: center;
+  user-select: none;
 }
 
 .effectifs-status-indispo {
@@ -125,4 +138,3 @@
 .effectifs-status-disponible {
   background-color: #16a34a; /* vert */
 }
-
