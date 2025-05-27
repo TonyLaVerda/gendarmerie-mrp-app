@@ -85,7 +85,7 @@ export default function Pulsar() {
 
       <section className="mb-6">
         <h2 className="font-semibold mb-2">Ajouter une patrouille</h2>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 max-w-4xl">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
           <input
             type="datetime-local"
             name="start"
@@ -131,16 +131,16 @@ export default function Pulsar() {
         </div>
         <button
           onClick={handleAddPatrol}
-          className="mt-4 px-4 py-2 bg-blue-900 text-white rounded hover:bg-blue-800"
+          className="mt-4 px-4 py-2 bg-blue-900 text-white rounded hover:bg-blue-800 block mx-auto"
         >
           Ajouter
         </button>
       </section>
 
       <section>
-        <h2 className="font-semibold mb-4 text-lg">Liste des patrouilles</h2>
-        <div className="max-w-4xl overflow-x-auto rounded-lg shadow-lg border border-gray-300 bg-white">
-          <table className="w-full table-auto border-collapse">
+        <h2 className="font-semibold mb-4 text-lg text-center">Liste des patrouilles</h2>
+        <div className="max-w-[90vw] mx-auto overflow-x-auto rounded-lg shadow-lg border border-gray-300 bg-white">
+          <table className="min-w-[700px] w-full table-auto border-collapse">
             <thead>
               <tr className="bg-blue-900 text-white">
                 <th className="border-b border-blue-700 px-8 py-4 text-left">Début</th>
