@@ -1,118 +1,177 @@
 import { useState } from "react";
 
-const unites = ["GD", "PMO", "PSIG"];
-const types = ["Surveillance générale", "Contrôle routier", "Intervention ciblée", "Patrouille mixte", "Appui PSIG"];
+const initialPatrols = [
+  {
+    id: 1,
+    start: "2025-06-01T08:00",
+    end: "2025-06-01T12:00",
+    service: "PAM Fort de France",
+    type: "Police route véhicule sérigraphié",
+  },
+  {
+    id: 2,
+    start: "2025-06-01T14:00",
+    end: "2025-06-01T18:00",
+    service: "PSIG 2",
+    type: "Patrouille pédestre",
+  },
+];
+
+const serviceOptions = [
+  "PAM Fort de France",
+  "PAM Trinité",
+  "PAM Le Marin",
+  "PAM 2 Fort de France",
+  "PAM 2 Trinité",
+  "PAM 2 Le Marin",
+  "PSIG 1",
+  "PSIG 2",
+  "PSIG 3",
+  "PMO 1",
+  "PMO 2",
+  "ERI",
+  "HELICO",
+  "BRIGADE NAUTIQUE",
+  "BRIGADE NAUTIQUE 2",
+  "GIC",
+  "GIC 2",
+  "DISR",
+  "DIR 1",
+  "DIR 2",
+  "DIR 3",
+];
+
+const typeOptions = [
+  "Prevention de proximité",
+  "Police route véhicule sérigraphié",
+  "Police route véhicule banalisé",
+  "Patrouille pédestre",
+  "Enquête judiciaire",
+  "Évènement culturel ou sportif",
+  "ORC",
+  "OAD",
+  "Surveillance aérienne",
+];
 
 export default function Pulsar() {
-  const [patrouilles, setPatrouilles] = useState([]);
-  const [form, setForm] = useState({
-    date: "",
-    heureDebut: "",
-    heureFin: "",
-    unite: "",
+  const [patrols, setPatrols] = useState(initialPatrols);
+  const [formData, setFormData] = useState({
+    start: "",
+    end: "",
+    service: "",
     type: "",
-    lieu: "",
-    statut: "Prévu"
   });
 
-  const handleAdd = () => {
-    if (form.date && form.heureDebut && form.heureFin && form.unite && form.type) {
-      setPatrouilles([...patrouilles, { ...form }]);
-      setForm({
-        date: "",
-        heureDebut: "",
-        heureFin: "",
-        unite: "",
-        type: "",
-        lieu: "",
-        statut: "Prévu"
-      });
+  const handleChange = (e) => {
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  const handleAddPatrol = () => {
+    const { start, end, service, type } = formData;
+    if (!start || !end || !service || !type) {
+      alert("Veuillez remplir tous les champs");
+      return;
     }
+    setPatrols((prev) => [
+      ...prev,
+      { id: prev.length + 1, ...formData },
+    ]);
+    setFormData({ start: "", end: "", service: "", type: "" });
   };
 
   return (
-    <div className="p-6 max-w-5xl mx-auto">
-      <h1 className="text-3xl font-bold text-blue-900 mb-6">📅 Pulsar Service</h1>
+    <div className="p-6 bg-gray-50 min-h-screen">
+      <header className="mb-6">
+        <h1 className="text-2xl font-bold text-blue-900">Pulsar Service</h1>
+        <p className="text-gray-600">Organisation des patrouilles</p>
+      </header>
 
-      <div className="card mb-8">
-        <div className="section-title">➕ Nouveau créneau</div>
-        <div className="grid gap-4 pt-4">
+      <section className="mb-6">
+        <h2 className="font-semibold mb-2">Ajouter une patrouille</h2>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 max-w-4xl">
           <input
-            type="date"
-            value={form.date}
-            onChange={(e) => setForm({ ...form, date: e.target.value })}
-            className="p-2 border rounded"
+            type="datetime-local"
+            name="start"
+            value={formData.start}
+            onChange={handleChange}
+            className="border rounded px-3 py-2"
+            placeholder="Début"
           />
-          <div className="flex gap-2">
-            <input
-              type="time"
-              value={form.heureDebut}
-              onChange={(e) => setForm({ ...form, heureDebut: e.target.value })}
-              className="p-2 border rounded w-full"
-              placeholder="Début"
-            />
-            <input
-              type="time"
-              value={form.heureFin}
-              onChange={(e) => setForm({ ...form, heureFin: e.target.value })}
-              className="p-2 border rounded w-full"
-              placeholder="Fin"
-            />
-          </div>
+          <input
+            type="datetime-local"
+            name="end"
+            value={formData.end}
+            onChange={handleChange}
+            className="border rounded px-3 py-2"
+            placeholder="Fin"
+          />
           <select
-            value={form.unite}
-            onChange={(e) => setForm({ ...form, unite: e.target.value })}
-            className="p-2 border rounded"
+            name="service"
+            value={formData.service}
+            onChange={handleChange}
+            className="border rounded px-3 py-2"
           >
-            <option value="">-- Sélectionner l’unité --</option>
-            {unites.map((u, i) => (
-              <option key={i} value={u}>{u}</option>
+            <option value="">Service</option>
+            {serviceOptions.map((service) => (
+              <option key={service} value={service}>
+                {service}
+              </option>
             ))}
           </select>
           <select
-            value={form.type}
-            onChange={(e) => setForm({ ...form, type: e.target.value })}
-            className="p-2 border rounded"
+            name="type"
+            value={formData.type}
+            onChange={handleChange}
+            className="border rounded px-3 py-2"
           >
-            <option value="">-- Type de patrouille --</option>
-            {types.map((t, i) => (
-              <option key={i} value={t}>{t}</option>
+            <option value="">Type de patrouille</option>
+            {typeOptions.map((type) => (
+              <option key={type} value={type}>
+                {type}
+              </option>
             ))}
           </select>
-          <input
-            placeholder="Lieu ou secteur"
-            value={form.lieu}
-            onChange={(e) => setForm({ ...form, lieu: e.target.value })}
-            className="p-2 border rounded"
-          />
-          <button
-            onClick={handleAdd}
-            className="bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
-          >
-            💾 Ajouter la patrouille
-          </button>
         </div>
-      </div>
+        <button
+          onClick={handleAddPatrol}
+          className="mt-4 px-4 py-2 bg-blue-900 text-white rounded hover:bg-blue-800"
+        >
+          Ajouter
+        </button>
+      </section>
 
-      <div className="card">
-        <div className="section-title">📋 Patrouilles planifiées</div>
-        <div className="pt-4 space-y-4">
-          {patrouilles.length === 0 ? (
-            <p className="text-gray-600">Aucun créneau enregistré.</p>
-          ) : (
-            patrouilles.map((p, index) => (
-              <div key={index} className="bg-gray-50 border-l-4 border-blue-800 p-4 rounded">
-                <p><strong>📅 Date :</strong> {p.date}</p>
-                <p><strong>🕒 Heure :</strong> {p.heureDebut} - {p.heureFin}</p>
-                <p><strong>👮 Unité :</strong> {p.unite}</p>
-                <p><strong>🚓 Type :</strong> {p.type}</p>
-                <p><strong>📍 Lieu :</strong> {p.lieu}</p>
-                <p><strong>📌 Statut :</strong> {p.statut}</p>
-              </div>
-            ))
-          )}
+      <section>
+        <h2 className="font-semibold mb-2">Liste des patrouilles</h2>
+        <div className="max-w-4xl overflow-x-auto">
+          <table className="w-full table-auto border-collapse border border-gray-300">
+            <thead>
+              <tr className="bg-blue-900 text-white">
+                <th className="border border-gray-300 px-3 py-1">Début</th>
+                <th className="border border-gray-300 px-3 py-1">Fin</th>
+                <th className="border border-gray-300 px-3 py-1">Service</th>
+                <th className="border border-gray-300 px-3 py-1">Type</th>
+              </tr>
+            </thead>
+            <tbody>
+              {patrols.map(({ id, start, end, service, type }) => (
+                <tr key={id} className="text-center">
+                  <td className="border border-gray-300 px-3 py-1">{new Date(start).toLocaleString()}</td>
+                  <td className="border border-gray-300 px-3 py-1">{new Date(end).toLocaleString()}</td>
+                  <td className="border border-gray-300 px-3 py-1">{service}</td>
+                  <td className="border border-gray-300 px-3 py-1">{type}</td>
+                </tr>
+              ))}
+              {patrols.length === 0 && (
+                <tr>
+                  <td colSpan="4" className="text-center py-4 text-gray-500">
+                    Aucune patrouille enregistrée.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
         </div>
-      </div>
+      </section>
     </div>
   );
 }
