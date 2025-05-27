@@ -143,10 +143,10 @@ export default function Pulsar() {
           <table className="w-full table-auto border-collapse">
             <thead>
               <tr className="bg-blue-900 text-white">
-                <th className="border-b border-blue-700 px-6 py-3 text-left">Début</th>
-                <th className="border-b border-blue-700 px-6 py-3 text-left">Fin</th>
-                <th className="border-b border-blue-700 px-6 py-3 text-left">Service</th>
-                <th className="border-b border-blue-700 px-6 py-3 text-left">Type</th>
+                <th className="border-b border-blue-700 px-8 py-4 text-left">Début</th>
+                <th className="border-b border-blue-700 px-8 py-4 text-left">Fin</th>
+                <th className="border-b border-blue-700 px-8 py-4 text-left">Service</th>
+                <th className="border-b border-blue-700 px-8 py-4 text-left">Type</th>
               </tr>
             </thead>
             <tbody>
@@ -154,8 +154,9 @@ export default function Pulsar() {
                 <tr
                   key={id}
                   className="border-b border-gray-200 hover:bg-blue-50 transition-colors"
+                  style={{ lineHeight: "2rem", fontSize: "1.05rem" }}
                 >
-                  <td className="px-6 py-3 align-middle">
+                  <td className="px-8 py-4 align-middle whitespace-nowrap">
                     {new Date(start).toLocaleString(undefined, {
                       year: "numeric",
                       month: "2-digit",
@@ -164,7 +165,7 @@ export default function Pulsar() {
                       minute: "2-digit",
                     })}
                   </td>
-                  <td className="px-6 py-3 align-middle">
+                  <td className="px-8 py-4 align-middle whitespace-nowrap">
                     {new Date(end).toLocaleString(undefined, {
                       year: "numeric",
                       month: "2-digit",
@@ -173,13 +174,13 @@ export default function Pulsar() {
                       minute: "2-digit",
                     })}
                   </td>
-                  <td className="px-6 py-3 align-middle">{service}</td>
-                  <td className="px-6 py-3 align-middle">{type}</td>
+                  <td className="px-8 py-4 align-middle">{service}</td>
+                  <td className="px-8 py-4 align-middle">{type}</td>
                 </tr>
               ))}
               {patrols.length === 0 && (
                 <tr>
-                  <td colSpan="4" className="text-center py-6 text-gray-500">
+                  <td colSpan="4" className="text-center py-8 text-gray-500">
                     Aucune patrouille enregistrée.
                   </td>
                 </tr>
