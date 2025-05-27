@@ -1,12 +1,19 @@
 import { Routes, Route } from 'react-router-dom';
+import { useState } from 'react';
+
 import Dashboard from './Dashboard';
 import Effectifs from './pages/Effectifs';
 import Bdsp from './pages/Bdsp';
 import Pulsar from './pages/Pulsar';
+import Commandement from './pages/Commandement';  // à créer
 import Navbar from './components/Navbar';
-import Stats from './pages/Stats'; // Assure-toi d’avoir ce fichier ou crée un placeholder
+import Stats from './pages/Stats';
 
 export default function MainLayout() {
+  // États partagés entre modules
+  const [agents, setAgents] = useState([]);
+  const [patrols, setPatrols] = useState([]);
+
   return (
     <div className="flex flex-col min-h-screen">
       {/* Barre de navigation */}
@@ -18,9 +25,17 @@ export default function MainLayout() {
       <main className="flex-1 bg-gray-50 px-4 py-6 max-w-full w-full">
         <Routes>
           <Route path="/" element={<Dashboard />} />
-          <Route path="/effectifs" element={<Effectifs />} />
+          <Route path="/effectifs" element={<Effectifs agents={agents} setAgents={setAgents} />} />
           <Route path="/bdsp" element={<Bdsp />} />
-          <Route path="/pulsar" element={<Pulsar />} />
+          <Route path="/pulsar" element={<Pulsar patrols={patrols} setPatrols={setPatrols} />} />
+          <Route path="/commandement" element={
+            <Commandement
+              agents={agents}
+              setAgents={setAgents}
+              patrols={patrols}
+              setPatrols={setPatrols}
+            />
+          } />
           <Route path="/stats" element={<Stats />} />
         </Routes>
       </main>
