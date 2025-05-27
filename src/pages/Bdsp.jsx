@@ -31,9 +31,8 @@ export default function Bdsp({ patrols = [] }) {
 
   // Filtrer les interventions non archivées, et selon filtreType
   const filteredInterventions = useMemo(() => {
-    return interventions.filter(iv => 
-      !iv.archived && 
-      (filtreType ? iv.type === filtreType : true)
+    return interventions.filter(
+      (iv) => !iv.archived && (filtreType ? iv.type === filtreType : true)
     );
   }, [interventions, filtreType]);
 
@@ -48,14 +47,17 @@ export default function Bdsp({ patrols = [] }) {
       setInterventions((prev) =>
         prev.map((iv) =>
           iv.id === editingId
-            ? { ...iv, ...form }
+            ? {
+                ...iv,
+                ...form,
+              }
             : iv
         )
       );
       setEditingId(null);
     } else {
       const newIntervention = {
-        id: interventions.length ? Math.max(...interventions.map(iv => iv.id)) + 1 : 1,
+        id: interventions.length ? Math.max(...interventions.map((iv) => iv.id)) + 1 : 1,
         ...form,
         patrouilles: [], // tableau { idPatrol, statut, timestamp }
         archived: false,
@@ -71,14 +73,14 @@ export default function Bdsp({ patrols = [] }) {
       prev.map((iv) => {
         if (iv.id !== interventionId) return iv;
         // Ne pas ré-ajouter la patrouille si déjà assignée
-        if (iv.patrouilles.some(p => p.idPatrol === patrolId)) return iv;
+        if (iv.patrouilles.some((p) => p.idPatrol === patrolId)) return iv;
 
         return {
           ...iv,
           patrouilles: [
             ...iv.patrouilles,
-            { idPatrol: patrolId, statut: "Engagée", timestamp: new Date().toISOString() }
-          ]
+            { idPatrol: patrolId, statut: "Engagée", timestamp: new Date().toISOString() },
+          ],
         };
       })
     );
@@ -92,38 +94,36 @@ export default function Bdsp({ patrols = [] }) {
         return {
           ...iv,
           patrouilles: iv.patrouilles.map((p) =>
-            p.idPatrol === patrolId
-              ? { ...p, statut: newStatus, timestamp: new Date().toISOString() }
-              : p
-          )
+            p.idPatrol === patrolId ? { ...p, statut: newStatus } : p
+          ),
         };
       })
     );
   };
 
-  // Supprimer une patrouille d'une intervention
+  // Retirer une patrouille d'une intervention
   const removePatrouille = (interventionId, patrolId) => {
     setInterventions((prev) =>
       prev.map((iv) => {
         if (iv.id !== interventionId) return iv;
         return {
           ...iv,
-          patrouilles: iv.patrouilles.filter(p => p.idPatrol !== patrolId)
+          patrouilles: iv.patrouilles.filter((p) => p.idPatrol !== patrolId),
         };
       })
     );
   };
 
-  // Modifier le CRO
-  const updateCompteRendu = (interventionId, newText) => {
+  // Mettre à jour le compte rendu opérational (CRO)
+  const updateCompteRendu = (interventionId, newCRO) => {
     setInterventions((prev) =>
       prev.map((iv) =>
-        iv.id === interventionId ? { ...iv, compteRendu: newText } : iv
+        iv.id === interventionId ? { ...iv, compteRendu: newCRO } : iv
       )
     );
   };
 
-  // Clôturer une intervention (archiver)
+  // Clôturer (archiver) une intervention
   const closeIntervention = (interventionId) => {
     setInterventions((prev) =>
       prev.map((iv) =>
@@ -133,45 +133,52 @@ export default function Bdsp({ patrols = [] }) {
   };
 
   return (
-    <div style={{ maxWidth: 900, margin: "auto", padding: 24, fontFamily: "Rubik, sans-serif", color: "#002654" }}>
-      <h1>🚨 BDSP - Bloc de Sûreté Publique</h1>
+    <div style={{ maxWidth: 900, margin: "0 auto", padding: 24, fontFamily: "Rubik, sans-serif", color: "#002654" }}>
+      <h1 style={{ fontSize: "2.25rem", fontWeight: 700, marginBottom: 24, textAlign: "center" }}>BDSP - Gestion des Interventions</h1>
 
-      {/* Formulaire intervention */}
-      <div style={{ marginBottom: 32, padding: 16, backgroundColor: "#f0f4f9", borderRadius: 8 }}>
-        <h2>{editingId !== null ? "Modifier intervention" : "Nouvelle intervention"}</h2>
-        <select
-          value={form.type}
-          onChange={e => setForm({ ...form, type: e.target.value })}
-          style={{ width: "100%", marginBottom: 12, padding: 8, borderRadius: 6, border: "1px solid #ccc" }}
-        >
-          <option value="">Type d'intervention</option>
-          {typesInterventions.map((t, i) => (
-            <option key={i} value={t}>{t}</option>
-          ))}
-        </select>
+      {/* Formulaire ajout/modif intervention */}
+      <div style={{ backgroundColor: "white", padding: 24, borderRadius: 12, boxShadow: "0 2px 8px rgba(0,0,0,0.06)", marginBottom: 32 }}>
+        <div style={{ marginBottom: 12 }}>
+          <select
+            value={form.type}
+            onChange={(e) => setForm({ ...form, type: e.target.value })}
+            style={{ width: "100%", padding: 8, borderRadius: 6, border: "1px solid #ccc" }}
+          >
+            <option value="">Type d'intervention</option>
+            {typesInterventions.map((t, i) => (
+              <option key={i} value={t}>{t}</option>
+            ))}
+          </select>
+        </div>
 
-        <input
-          type="text"
-          placeholder="Lieu"
-          value={form.lieu}
-          onChange={e => setForm({ ...form, lieu: e.target.value })}
-          style={{ width: "100%", marginBottom: 12, padding: 8, borderRadius: 6, border: "1px solid #ccc" }}
-        />
+        <div style={{ marginBottom: 12 }}>
+          <input
+            type="text"
+            placeholder="Lieu"
+            value={form.lieu}
+            onChange={(e) => setForm({ ...form, lieu: e.target.value })}
+            style={{ width: "100%", padding: 8, borderRadius: 6, border: "1px solid #ccc" }}
+          />
+        </div>
 
-        <input
-          type="datetime-local"
-          value={form.date}
-          onChange={e => setForm({ ...form, date: e.target.value })}
-          style={{ width: "100%", marginBottom: 12, padding: 8, borderRadius: 6, border: "1px solid #ccc" }}
-        />
+        <div style={{ marginBottom: 12 }}>
+          <input
+            type="datetime-local"
+            value={form.date}
+            onChange={(e) => setForm({ ...form, date: e.target.value })}
+            style={{ width: "100%", padding: 8, borderRadius: 6, border: "1px solid #ccc" }}
+          />
+        </div>
 
-        <textarea
-          placeholder="Compte Rendu Opérationnel (CRO)"
-          value={form.compteRendu}
-          onChange={e => setForm({ ...form, compteRendu: e.target.value })}
-          rows={4}
-          style={{ width: "100%", marginBottom: 12, padding: 8, borderRadius: 6, border: "1px solid #ccc", resize: "vertical" }}
-        />
+        <div style={{ marginBottom: 12 }}>
+          <textarea
+            placeholder="Compte Rendu Opérationnel (CRO)"
+            value={form.compteRendu}
+            onChange={(e) => setForm({ ...form, compteRendu: e.target.value })}
+            rows={4}
+            style={{ width: "100%", padding: 8, borderRadius: 6, border: "1px solid #ccc", resize: "vertical" }}
+          />
+        </div>
 
         <button
           onClick={handleAddOrUpdate}
@@ -186,7 +193,7 @@ export default function Bdsp({ patrols = [] }) {
         <label>Filtrer par type :</label>
         <select
           value={filtreType}
-          onChange={e => setFiltreType(e.target.value)}
+          onChange={(e) => setFiltreType(e.target.value)}
           style={{ width: "100%", padding: 8, borderRadius: 6, border: "1px solid #ccc" }}
         >
           <option value="">-- Toutes les interventions --</option>
@@ -214,7 +221,7 @@ export default function Bdsp({ patrols = [] }) {
                 {iv.patrouilles.length === 0 && <p>Aucune patrouille assignée.</p>}
                 <ul>
                   {iv.patrouilles.map(({ idPatrol, statut, timestamp }) => {
-                    const patrol = patrols.find(p => p.id === idPatrol);
+                    const patrol = patrols.find((p) => p.id === idPatrol);
                     if (!patrol) return null;
                     return (
                       <li key={idPatrol} style={{ marginBottom: 8 }}>
@@ -258,8 +265,8 @@ export default function Bdsp({ patrols = [] }) {
                 >
                   <option value="">Ajouter une patrouille engagée</option>
                   {patrols
-                    .filter(p => !iv.patrouilles.some(pa => pa.idPatrol === p.id))
-                    .map(p => (
+                    .filter((p) => !iv.patrouilles.some((pa) => pa.idPatrol === p.id))
+                    .map((p) => (
                       <option key={p.id} value={p.id}>
                         {p.service} - {p.type}
                       </option>
@@ -282,4 +289,11 @@ export default function Bdsp({ patrols = [] }) {
       </div>
     </div>
   );
+
+  // Fonction pour archiver une intervention
+  function closeIntervention(interventionId) {
+    setInterventions((prev) =>
+      prev.map((iv) => (iv.id === interventionId ? { ...iv, archived: true } : iv))
+    );
+  }
 }
