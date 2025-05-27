@@ -72,10 +72,7 @@ export default function Pulsar() {
       alert("Veuillez remplir tous les champs");
       return;
     }
-    setPatrols((prev) => [
-      ...prev,
-      { id: prev.length + 1, ...formData },
-    ]);
+    setPatrols((prev) => [...prev, { id: prev.length + 1, ...formData }]);
     setFormData({ start: "", end: "", service: "", type: "" });
   };
 
@@ -141,29 +138,48 @@ export default function Pulsar() {
       </section>
 
       <section>
-        <h2 className="font-semibold mb-2">Liste des patrouilles</h2>
-        <div className="max-w-4xl overflow-x-auto">
-          <table className="w-full table-auto border-collapse border border-gray-300">
+        <h2 className="font-semibold mb-4 text-lg">Liste des patrouilles</h2>
+        <div className="max-w-4xl overflow-x-auto rounded-lg shadow-lg border border-gray-300 bg-white">
+          <table className="w-full table-auto border-collapse">
             <thead>
               <tr className="bg-blue-900 text-white">
-                <th className="border border-gray-300 px-3 py-1">Début</th>
-                <th className="border border-gray-300 px-3 py-1">Fin</th>
-                <th className="border border-gray-300 px-3 py-1">Service</th>
-                <th className="border border-gray-300 px-3 py-1">Type</th>
+                <th className="border-b border-blue-700 px-6 py-3 text-left">Début</th>
+                <th className="border-b border-blue-700 px-6 py-3 text-left">Fin</th>
+                <th className="border-b border-blue-700 px-6 py-3 text-left">Service</th>
+                <th className="border-b border-blue-700 px-6 py-3 text-left">Type</th>
               </tr>
             </thead>
             <tbody>
               {patrols.map(({ id, start, end, service, type }) => (
-                <tr key={id} className="text-center">
-                  <td className="border border-gray-300 px-3 py-1">{new Date(start).toLocaleString()}</td>
-                  <td className="border border-gray-300 px-3 py-1">{new Date(end).toLocaleString()}</td>
-                  <td className="border border-gray-300 px-3 py-1">{service}</td>
-                  <td className="border border-gray-300 px-3 py-1">{type}</td>
+                <tr
+                  key={id}
+                  className="border-b border-gray-200 hover:bg-blue-50 transition-colors"
+                >
+                  <td className="px-6 py-3 align-middle">
+                    {new Date(start).toLocaleString(undefined, {
+                      year: "numeric",
+                      month: "2-digit",
+                      day: "2-digit",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </td>
+                  <td className="px-6 py-3 align-middle">
+                    {new Date(end).toLocaleString(undefined, {
+                      year: "numeric",
+                      month: "2-digit",
+                      day: "2-digit",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </td>
+                  <td className="px-6 py-3 align-middle">{service}</td>
+                  <td className="px-6 py-3 align-middle">{type}</td>
                 </tr>
               ))}
               {patrols.length === 0 && (
                 <tr>
-                  <td colSpan="4" className="text-center py-4 text-gray-500">
+                  <td colSpan="4" className="text-center py-6 text-gray-500">
                     Aucune patrouille enregistrée.
                   </td>
                 </tr>
