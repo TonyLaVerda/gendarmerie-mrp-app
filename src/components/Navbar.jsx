@@ -4,7 +4,7 @@ export default function Navbar() {
   return (
     <div className="bg-blue-900 text-white shadow-md w-full fixed top-0 z-50">
       <div className="flex items-center justify-between px-6 py-4">
-        {/* Logo et titre */}
+        {/* Logo GN + titre */}
         <div className="flex items-center space-x-4">
           <img src="/logo-gn.png" alt="Logo GN" className="h-10 w-auto" />
           <h1 className="text-2xl font-bold">Gendarmerie MRP</h1>
@@ -14,14 +14,9 @@ export default function Navbar() {
         <div className="text-sm italic text-gray-200">
           “Notre Engagement, votre sécurité”
         </div>
-
-        {/* Logo MRP */}
-        <div>
-          <img src="/logo-mrp.png" alt="Logo MRP" className="h-8 w-auto" />
-        </div>
       </div>
 
-      {/* Menu de navigation */}
+      {/* Navigation */}
       <div className="bg-blue-800 flex justify-center space-x-8 py-2 text-sm font-medium">
         <NavLink
           to="/"
