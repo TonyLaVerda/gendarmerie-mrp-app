@@ -1,0 +1,83 @@
+.commandement-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 24px;
+  font-family: 'Rubik', sans-serif;
+  color: #002654;
+}
+
+.commandement-container h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.commandement-content {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.commandement-agents {
+  flex: 1 1 300px;
+  background-color: #f0f4f9;
+  padding: 16px;
+  border-radius: 10px;
+  max-height: 600px;
+  overflow-y: auto;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.commandement-agents h2 {
+  margin-bottom: 16px;
+}
+
+.commandement-agents ul {
+  list-style: none;
+  padding-left: 0;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.commandement-patrols {
+  flex: 2 1 600px;
+}
+
+.commandement-patrols h2 {
+  margin-bottom: 16px;
+  font-weight: 700;
+}
+
+.patrol-card {
+  background-color: white;
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.patrol-card h3 {
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.patrol-card p {
+  margin: 6px 0;
+}
+
+.patrol-card label {
+  font-weight: 600;
+  display: block;
+  margin-top: 12px;
+  margin-bottom: 4px;
+}
+
+.patrol-card select {
+  width: 100%;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
