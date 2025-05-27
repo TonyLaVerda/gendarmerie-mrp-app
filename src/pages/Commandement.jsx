@@ -1,17 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import './Commandement.css';
 
-// Grades classés du plus haut au plus bas pour tri
 const gradesOrder = ["Col", "Lt Col", "Cen", "Cpt", "Lt", "Slt", "Maj", "Adj/C", "ADJ", "Mdl/C", "Gnd", "ELG"];
-
-// Statuts possibles pour patrouille
 const patrolStatusOptions = ["Disponible", "Engagée", "ASL", "Fin d'intervention"];
 
 export default function Commandement({ agents, setAgents, patrols, setPatrols }) {
-  // Assignations : { [patrolId]: [agentNom, ...] }
   const [assignments, setAssignments] = useState({});
-
-  // Statuts par patrouille : { [patrolId]: statut }
   const [patrolStatuses, setPatrolStatuses] = useState({});
 
   // Trier agents par grade (du plus gradé au moins gradé)
@@ -19,37 +13,86 @@ export default function Commandement({ agents, setAgents, patrols, setPatrols })
     (a, b) => gradesOrder.indexOf(a.grade) - gradesOrder.indexOf(b.grade)
   );
 
-  // Ajouter un agent à une patrouille (sans doublon)
+  // --- Charger assignments et statuses depuis API au chargement du composant ---
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        // Fetch assignments
+        const resAssignments = await fetch('/api/assignments');
+        if (resAssignments.ok) {
+          const data = await resAssignments.json();
+          setAssignments(data);
+        }
+        // Fetch patrol statuses
+        const resStatuses = await fetch('/api/patrol-statuses');
+        if (resStatuses.ok) {
+          const data = await resStatuses.json();
+          setPatrolStatuses(data);
+        }
+      } catch (error) {
+        console.error("Erreur chargement données commandement :", error);
+      }
+    }
+    fetchData();
+  }, []);
+
+  // --- Sauvegarder assignments via API ---
+  const saveAssignments = async (newAssignments) => {
+    try {
+      const res = await fetch('/api/assignments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newAssignments),
+      });
+      if (!res.ok) throw new Error("Erreur sauvegarde assignations");
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  // --- Sauvegarder patrol statuses via API ---
+  const savePatrolStatuses = async (newStatuses) => {
+    try {
+      const res = await fetch('/api/patrol-statuses', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newStatuses),
+      });
+      if (!res.ok) throw new Error("Erreur sauvegarde statuts");
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const handleAssignAgent = (patrolId, agentNom) => {
     setAssignments(prev => {
       const current = prev[patrolId] || [];
       if (!current.includes(agentNom)) {
-        return { ...prev, [patrolId]: [...current, agentNom] };
+        const newAssign = { ...prev, [patrolId]: [...current, agentNom] };
+        saveAssignments(newAssign);
+        return newAssign;
       }
       return prev;
     });
   };
 
-  // Supprimer un agent assigné d'une patrouille
   const handleRemoveAgent = (patrolId, agentNom) => {
     setAssignments(prev => {
       const current = prev[patrolId] || [];
-      return {
-        ...prev,
-        [patrolId]: current.filter(nom => nom !== agentNom)
-      };
+      const newAssign = { ...prev, [patrolId]: current.filter(nom => nom !== agentNom) };
+      saveAssignments(newAssign);
+      return newAssign;
     });
   };
 
-  // Modifier le statut d'une patrouille
   const handleStatusChange = (patrolId, newStatus) => {
-    setPatrolStatuses(prev => ({
-      ...prev,
-      [patrolId]: newStatus
-    }));
+    setPatrolStatuses(prev => {
+      const newStatuses = { ...prev, [patrolId]: newStatus };
+      savePatrolStatuses(newStatuses);
+      return newStatuses;
+    });
   };
 
-  // Statut affiché (priorité à celui modifié, sinon défaut)
   const getPatrolStatus = (patrolId) => {
     if (patrolStatuses[patrolId]) return patrolStatuses[patrolId];
     if (assignments[patrolId] && assignments[patrolId].length > 0) return "Engagée";
@@ -62,7 +105,6 @@ export default function Commandement({ agents, setAgents, patrols, setPatrols })
 
       <div className="commandement-content">
 
-        {/* Colonne agents */}
         <aside className="commandement-agents">
           <h2>Effectifs</h2>
           {sortedAgents.length === 0 && <p>Aucun agent enregistré.</p>}
@@ -75,7 +117,6 @@ export default function Commandement({ agents, setAgents, patrols, setPatrols })
           </ul>
         </aside>
 
-        {/* Colonne patrouilles */}
         <section className="commandement-patrols">
           <h2>Patrouilles en cours</h2>
           {patrols.length === 0 && <p>Aucune patrouille en cours.</p>}
