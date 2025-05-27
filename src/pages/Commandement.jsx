@@ -82,29 +82,6 @@ export default function Commandement({ agents, setAgents, patrols, setPatrols, i
     }
   };
 
-  // Ajouter un agent à une patrouille
-  const handleAssignAgent = (patrolId, agentNom) => {
-    setAssignments(prev => {
-      const current = prev[patrolId] || [];
-      if (!current.includes(agentNom)) {
-        const newAssign = { ...prev, [patrolId]: [...current, agentNom] };
-        saveAssignments(newAssign);
-        return newAssign;
-      }
-      return prev;
-    });
-  };
-
-  // Supprimer un agent d'une patrouille
-  const handleRemoveAgent = (patrolId, agentNom) => {
-    setAssignments(prev => {
-      const current = prev[patrolId] || [];
-      const newAssign = { ...prev, [patrolId]: current.filter(nom => nom !== agentNom) };
-      saveAssignments(newAssign);
-      return newAssign;
-    });
-  };
-
   // Modifier le statut d'une patrouille
   const handleStatusChange = (patrolId, newStatus) => {
     setPatrolStatuses(prev => {
@@ -120,6 +97,28 @@ export default function Commandement({ agents, setAgents, patrols, setPatrols, i
       const newMap = { ...prev, [patrolId]: interventionId };
       savePatrolInterventions(newMap);
       return newMap;
+    });
+  };
+
+  // Ajouter un agent à une patrouille (il faut aussi que tu implémentes handleAssignAgent et handleRemoveAgent ailleurs si tu les utilises ici)
+  const handleAssignAgent = (patrolId, agentNom) => {
+    setAssignments(prev => {
+      const current = prev[patrolId] || [];
+      if (!current.includes(agentNom)) {
+        const newAssign = { ...prev, [patrolId]: [...current, agentNom] };
+        saveAssignments(newAssign);
+        return newAssign;
+      }
+      return prev;
+    });
+  };
+
+  const handleRemoveAgent = (patrolId, agentNom) => {
+    setAssignments(prev => {
+      const current = prev[patrolId] || [];
+      const newAssign = { ...prev, [patrolId]: current.filter(nom => nom !== agentNom) };
+      saveAssignments(newAssign);
+      return newAssign;
     });
   };
 
