@@ -4,9 +4,9 @@ import Dashboard from './Dashboard';
 import Effectifs from './pages/Effectifs';
 import Bdsp from './pages/Bdsp';
 import Navbar from "./components/Navbar";
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
-// Page de connexion par mot de passe
+// 🔐 Page de connexion
 function Login() {
   const [input, setInput] = useState("");
   const [error, setError] = useState("");
@@ -43,33 +43,40 @@ function Login() {
   );
 }
 
-// Protection
+// 🔒 Composant de protection
 function RequireAuth({ children }) {
   const isAuth = localStorage.getItem("auth") === "true";
   return isAuth ? children : <Navigate to="/login" />;
 }
 
+// 🎯 Layout principal avec Navbar + pages
+function MainLayout() {
+  return (
+    <div className="flex h-screen">
+      <Navbar />
+      <div className="flex-1 p-4 overflow-y-auto">
+        <Routes>
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/effectifs" element={<Effectifs />} />
+          <Route path="/bdsp" element={<Bdsp />} />
+          {/* <Route path="/pulsar" element={<Pulsar />} /> plus tard */}
+        </Routes>
+      </div>
+    </div>
+  );
+}
+
+// 🌐 Application principale
 function App() {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/login" element={<Login />} />
-
         <Route
           path="/*"
           element={
             <RequireAuth>
-              <div className="flex h-screen">
-                <Navbar />
-                <div className="flex-1 p-4 overflow-y-auto">
-                  <Routes>
-                    <Route path="/" element={<Dashboard />} />
-                    <Route path="/effectifs" element={<Effectifs />} />
-                    <Route path="/bdsp" element={<Bdsp />} />
-                    {/* future pulsar ici */}
-                  </Routes>
-                </div>
-              </div>
+              <MainLayout />
             </RequireAuth>
           }
         />
