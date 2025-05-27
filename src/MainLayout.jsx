@@ -15,7 +15,7 @@ export default function MainLayout() {
       </header>
 
       {/* Contenu principal */}
-      <main className="flex-1 bg-gray-50 px-4 py-6">
+      <main className="flex-1 bg-gray-50 px-4 py-6 max-w-full w-full">
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/effectifs" element={<Effectifs />} />
