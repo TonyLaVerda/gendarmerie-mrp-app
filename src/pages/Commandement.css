@@ -1,5 +1,5 @@
 .commandement-container {
-  max-width: 1000px;
+  max-width: 900px;
   margin: 0 auto;
   padding: 24px;
   font-family: 'Rubik', sans-serif;
@@ -7,20 +7,21 @@
 }
 
 .commandement-container h1 {
-  font-size: 2rem;
+  font-size: 1.75rem; /* Légèrement réduit */
   font-weight: 700;
   margin-bottom: 24px;
-  text-align: center;
+  text-align: left; /* Alignement à gauche */
 }
 
 .commandement-content {
   display: flex;
   gap: 24px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap; /* Pas de retour à la ligne */
+  justify-content: space-between;
 }
 
 .commandement-agents {
-  flex: 1 1 300px;
+  flex: 0 0 38%; /* largeur fixe */
   background-color: #f0f4f9;
   padding: 16px;
   border-radius: 10px;
@@ -53,7 +54,7 @@
 }
 
 .commandement-patrols {
-  flex: 2 1 600px;
+  flex: 1 1 60%; /* largeur ajustée */
 }
 
 .commandement-patrols h2 {
