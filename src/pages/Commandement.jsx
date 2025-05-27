@@ -13,17 +13,15 @@ export default function Commandement({ agents, setAgents, patrols, setPatrols })
     (a, b) => gradesOrder.indexOf(a.grade) - gradesOrder.indexOf(b.grade)
   );
 
-  // --- Charger assignments et statuses depuis API au chargement du composant ---
+  // Charger assignments et statuses depuis l'API au chargement du composant
   useEffect(() => {
     async function fetchData() {
       try {
-        // Fetch assignments
         const resAssignments = await fetch('/api/assignments');
         if (resAssignments.ok) {
           const data = await resAssignments.json();
           setAssignments(data);
         }
-        // Fetch patrol statuses
         const resStatuses = await fetch('/api/patrol-statuses');
         if (resStatuses.ok) {
           const data = await resStatuses.json();
@@ -36,7 +34,7 @@ export default function Commandement({ agents, setAgents, patrols, setPatrols })
     fetchData();
   }, []);
 
-  // --- Sauvegarder assignments via API ---
+  // Sauvegarder assignments via API
   const saveAssignments = async (newAssignments) => {
     try {
       const res = await fetch('/api/assignments', {
@@ -50,7 +48,7 @@ export default function Commandement({ agents, setAgents, patrols, setPatrols })
     }
   };
 
-  // --- Sauvegarder patrol statuses via API ---
+  // Sauvegarder patrol statuses via API
   const savePatrolStatuses = async (newStatuses) => {
     try {
       const res = await fetch('/api/patrol-statuses', {
@@ -64,6 +62,7 @@ export default function Commandement({ agents, setAgents, patrols, setPatrols })
     }
   };
 
+  // Ajouter un agent à une patrouille
   const handleAssignAgent = (patrolId, agentNom) => {
     setAssignments(prev => {
       const current = prev[patrolId] || [];
@@ -76,6 +75,7 @@ export default function Commandement({ agents, setAgents, patrols, setPatrols })
     });
   };
 
+  // Supprimer un agent d'une patrouille
   const handleRemoveAgent = (patrolId, agentNom) => {
     setAssignments(prev => {
       const current = prev[patrolId] || [];
@@ -85,6 +85,7 @@ export default function Commandement({ agents, setAgents, patrols, setPatrols })
     });
   };
 
+  // Modifier le statut d'une patrouille
   const handleStatusChange = (patrolId, newStatus) => {
     setPatrolStatuses(prev => {
       const newStatuses = { ...prev, [patrolId]: newStatus };
@@ -93,6 +94,7 @@ export default function Commandement({ agents, setAgents, patrols, setPatrols })
     });
   };
 
+  // Récupérer le statut affiché
   const getPatrolStatus = (patrolId) => {
     if (patrolStatuses[patrolId]) return patrolStatuses[patrolId];
     if (assignments[patrolId] && assignments[patrolId].length > 0) return "Engagée";
