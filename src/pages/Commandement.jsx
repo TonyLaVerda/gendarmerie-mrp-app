@@ -4,9 +4,15 @@ import './Commandement.css';
 // Grades classés du plus haut au plus bas pour tri
 const gradesOrder = ["Col", "Lt Col", "Cen", "Cpt", "Lt", "Slt", "Maj", "Adj/C", "ADJ", "Mdl/C", "Gnd", "ELG"];
 
+// Statuts possibles pour patrouille
+const patrolStatusOptions = ["Disponible", "Engagée", "ASL", "Fin d'intervention"];
+
 export default function Commandement({ agents, setAgents, patrols, setPatrols }) {
   // Assignations : { [patrolId]: [agentNom, ...] }
   const [assignments, setAssignments] = useState({});
+  
+  // Statuts par patrouille : { [patrolId]: statut }
+  const [patrolStatuses, setPatrolStatuses] = useState({});
 
   // Trier agents par grade (du plus gradé au moins gradé)
   const sortedAgents = [...agents].sort(
@@ -24,8 +30,29 @@ export default function Commandement({ agents, setAgents, patrols, setPatrols })
     });
   };
 
-  // Exemple simple de calcul du statut d’une patrouille (à adapter)
+  // Supprimer un agent assigné d'une patrouille
+  const handleRemoveAgent = (patrolId, agentNom) => {
+    setAssignments(prev => {
+      const current = prev[patrolId] || [];
+      return { 
+        ...prev, 
+        [patrolId]: current.filter(nom => nom !== agentNom)
+      };
+    });
+  };
+
+  // Modifier le statut d'une patrouille
+  const handleStatusChange = (patrolId, newStatus) => {
+    setPatrolStatuses(prev => ({
+      ...prev,
+      [patrolId]: newStatus
+    }));
+  };
+
+  // Statut affiché (priorité à celui modifié, sinon default)
   const getPatrolStatus = (patrolId) => {
+    if (patrolStatuses[patrolId]) return patrolStatuses[patrolId];
+    // Par défaut, "Engagée" si agents assignés, sinon "Disponible"
     if (assignments[patrolId] && assignments[patrolId].length > 0) return "Engagée";
     return "Disponible";
   };
@@ -66,7 +93,18 @@ export default function Commandement({ agents, setAgents, patrols, setPatrols })
                 {(assignments[patrol.id] || []).length === 0 ? (
                   <li>Aucun agent assigné</li>
                 ) : (
-                  assignments[patrol.id].map((nom, i) => <li key={i}>{nom}</li>)
+                  assignments[patrol.id].map((nom, i) => (
+                    <li key={i}>
+                      {nom}{" "}
+                      <button 
+                        style={{ marginLeft: "8px", color: "red", cursor: "pointer" }}
+                        onClick={() => handleRemoveAgent(patrol.id, nom)}
+                        title="Retirer cet agent"
+                      >
+                        ✖️
+                      </button>
+                    </li>
+                  ))
                 )}
               </ul>
 
@@ -85,15 +123,21 @@ export default function Commandement({ agents, setAgents, patrols, setPatrols })
                   .filter(agent => !(assignments[patrol.id]?.includes(agent.nom)))
                   .map((agent, i) => (
                     <option key={i} value={agent.nom}>
-                      {agent.nom} { /* Retrait des parenthèses et grades */ }
+                      {agent.nom}
                     </option>
                   ))
                 }
               </select>
 
-              <p>
-                <strong>Statut :</strong> {getPatrolStatus(patrol.id)}
-              </p>
+              <label>Statut :</label>
+              <select
+                value={getPatrolStatus(patrol.id)}
+                onChange={(e) => handleStatusChange(patrol.id, e.target.value)}
+              >
+                {patrolStatusOptions.map(status => (
+                  <option key={status} value={status}>{status}</option>
+                ))}
+              </select>
             </div>
           ))}
         </section>
