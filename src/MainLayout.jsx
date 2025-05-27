@@ -28,14 +28,17 @@ export default function MainLayout() {
           <Route path="/effectifs" element={<Effectifs agents={agents} setAgents={setAgents} />} />
           <Route path="/bdsp" element={<Bdsp />} />
           <Route path="/pulsar" element={<Pulsar patrols={patrols} setPatrols={setPatrols} />} />
-          <Route path="/commandement" element={
-            <Commandement
-              agents={agents}
-              setAgents={setAgents}
-              patrols={patrols}
-              setPatrols={setPatrols}
-            />
-          } />
+          <Route
+            path="/commandement"
+            element={
+              <Commandement
+                agents={agents}
+                setAgents={setAgents}
+                patrols={patrols}
+                setPatrols={setPatrols}
+              />
+            }
+          />
           <Route path="/stats" element={<Stats />} />
         </Routes>
       </main>
