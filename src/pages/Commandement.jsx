@@ -24,10 +24,17 @@ export default function Commandement({ agents, setAgents, patrols, setPatrols })
     });
   };
 
+  // Enlever un agent d'une patrouille
+  const handleRemoveAgent = (patrolId, agentNom) => {
+    setAssignments(prev => {
+      const current = prev[patrolId] || [];
+      const newList = current.filter(nom => nom !== agentNom);
+      return { ...prev, [patrolId]: newList };
+    });
+  };
+
   // Exemple simple de calcul du statut d’une patrouille (à adapter)
   const getPatrolStatus = (patrolId) => {
-    // Ici on pourrait récupérer le statut réel, pour l'instant fixe
-    // Exemple : si assigné => Engagée, sinon Disponible
     if (assignments[patrolId] && assignments[patrolId].length > 0) return "Engagée";
     return "Disponible";
   };
@@ -65,10 +72,26 @@ export default function Commandement({ agents, setAgents, patrols, setPatrols })
 
               <label>Effectifs assignés :</label>
               <ul>
+                {(assignments[patrol.id] || []).length === 0 && <li>Aucun agent assigné</li>}
                 {(assignments[patrol.id] || []).map((nom, i) => (
-                  <li key={i}>{nom}</li>
+                  <li key={i}>
+                    {nom}{" "}
+                    <button 
+                      onClick={() => handleRemoveAgent(patrol.id, nom)} 
+                      style={{
+                        marginLeft: "8px", 
+                        color: "red", 
+                        cursor: "pointer",
+                        border: "none",
+                        background: "transparent",
+                        fontWeight: "bold"
+                      }}
+                      title="Retirer cet agent"
+                    >
+                      ✖
+                    </button>
+                  </li>
                 ))}
-                {(!assignments[patrol.id] || assignments[patrol.id].length === 0) && <li>Aucun agent assigné</li>}
               </ul>
 
               <label>Ajouter un agent :</label>
