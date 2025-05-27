@@ -6,7 +6,12 @@ export default function Navbar() {
       {/* Bandeau haut : Logo + Titre + Accroche */}
       <div className="flex flex-col md:flex-row justify-between items-center px-6 py-3">
         <div className="flex items-center space-x-3">
-          <img src="/logo-gn.png" alt="Logo GN" className="h-8 w-auto" />
+          <img
+  src="/logo-gn.png"
+  alt="Logo GN"
+  className="h-10 w-10 object-contain"
+  style={{ maxWidth: '40px', maxHeight: '40px' }}
+/>
           <h1 className="text-xl md:text-2xl font-bold">Gendarmerie MRP</h1>
         </div>
         <div className="text-sm italic text-gray-200 mt-2 md:mt-0 text-center md:text-right">
