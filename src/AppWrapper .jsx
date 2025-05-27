@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-route
 import Dashboard from './Dashboard';
 import Effectifs from './pages/Effectifs';
 import Bdsp from './pages/Bdsp';
+import Pulsar from './pages/Pulsar'; // ✅ ajout du module
 import Navbar from "./components/Navbar";
 import { useState } from 'react';
 
@@ -10,12 +11,12 @@ import { useState } from 'react';
 function Login() {
   const [input, setInput] = useState("");
   const [error, setError] = useState("");
-  const navigate = useNavigate(); // ← pour rediriger proprement
+  const navigate = useNavigate();
 
   const handleLogin = () => {
     if (input === "gendarmerie2025") {
       localStorage.setItem("auth", "true");
-      navigate("/"); // ← redirection sans recharger
+      navigate("/");
     } else {
       setError("Mot de passe incorrect.");
     }
@@ -44,13 +45,13 @@ function Login() {
   );
 }
 
-// 🔒 Composant de protection
+// 🔒 Protection
 function RequireAuth({ children }) {
   const isAuth = localStorage.getItem("auth") === "true";
   return isAuth ? children : <Navigate to="/login" />;
 }
 
-// 🎯 Layout principal avec Navbar + pages
+// 🧭 Layout global
 function MainLayout() {
   return (
     <div className="flex h-screen">
@@ -60,14 +61,14 @@ function MainLayout() {
           <Route path="/" element={<Dashboard />} />
           <Route path="/effectifs" element={<Effectifs />} />
           <Route path="/bdsp" element={<Bdsp />} />
-          {/* <Route path="/pulsar" element={<Pulsar />} /> plus tard */}
+          <Route path="/pulsar" element={<Pulsar />} /> {/* ✅ Route ajoutée */}
         </Routes>
       </div>
     </div>
   );
 }
 
-// 🌐 Application principale avec redirection
+// 🌐 App principale
 function AppWrapper() {
   return (
     <BrowserRouter>
