@@ -38,6 +38,8 @@
   padding-left: 0;
   font-size: 1rem;
   line-height: 1.5;
+  max-height: 520px;
+  overflow-y: auto;
 }
 
 .commandement-patrols {
@@ -80,4 +82,34 @@
   border: 1px solid #ccc;
   font-size: 1rem;
   box-sizing: border-box;
+  cursor: pointer;
+  transition: border-color 0.3s ease;
+}
+
+.patrol-card select:hover,
+.patrol-card select:focus {
+  border-color: #002654;
+  outline: none;
+}
+
+/* Scrollbar style for better UX */
+.commandement-agents ul::-webkit-scrollbar,
+.commandement-agents::-webkit-scrollbar {
+  width: 8px;
+}
+
+.commandement-agents ul::-webkit-scrollbar-thumb,
+.commandement-agents::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 38, 84, 0.5);
+  border-radius: 4px;
+}
+
+.patrol-card ul {
+  list-style: disc inside;
+  margin-left: 0;
+  padding-left: 16px;
+}
+
+.patrol-card ul li {
+  margin-bottom: 4px;
 }
