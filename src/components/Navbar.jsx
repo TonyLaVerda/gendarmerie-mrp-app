@@ -2,7 +2,7 @@ import { NavLink } from "react-router-dom";
 
 export default function Navbar() {
   return (
-    <div className="w-full bg-blue-900 text-white">
+    <div className="w-full bg-[#0c1e57] text-white">
       {/* Bandeau haut : Logo + Titre + Accroche */}
       <div className="flex flex-col md:flex-row justify-between items-center px-6 py-4">
         <div className="flex items-center space-x-4">
@@ -13,14 +13,14 @@ export default function Navbar() {
           />
           <h1 className="text-2xl font-bold">Gendarmerie MRP</h1>
         </div>
-        <p className="text-sm italic text-gray-200 mt-2 md:mt-0">
+        <p className="text-sm italic text-gray-300 mt-2 md:mt-0">
           “Notre Engagement, votre sécurité”
         </p>
       </div>
 
       {/* Barre de navigation */}
-      <nav className="bg-blue-800 border-t border-blue-700">
-        <ul className="flex justify-center space-x-8 py-3 text-sm font-medium">
+      <nav className="bg-[#0a184b] border-t border-[#072746]">
+        <ul className="flex justify-center space-x-12 py-4 text-base font-semibold">
           {[
             { to: "/", label: "🏠 Accueil" },
             { to: "/effectifs", label: "👮 Effectifs" },
@@ -33,8 +33,8 @@ export default function Navbar() {
                 to={to}
                 className={({ isActive }) =>
                   isActive
-                    ? "text-white border-b-2 border-white pb-1"
-                    : "text-gray-200 hover:text-white transition"
+                    ? "text-white border-b-4 border-white pb-1 transition"
+                    : "text-gray-300 hover:text-white transition"
                 }
               >
                 {label}
