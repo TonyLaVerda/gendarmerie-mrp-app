@@ -10,7 +10,7 @@ const patrolStatusOptions = ["Disponible", "Engagée", "ASL", "Fin d'interventio
 export default function Commandement({ agents, setAgents, patrols, setPatrols }) {
   // Assignations : { [patrolId]: [agentNom, ...] }
   const [assignments, setAssignments] = useState({});
-  
+
   // Statuts par patrouille : { [patrolId]: statut }
   const [patrolStatuses, setPatrolStatuses] = useState({});
 
@@ -34,8 +34,8 @@ export default function Commandement({ agents, setAgents, patrols, setPatrols })
   const handleRemoveAgent = (patrolId, agentNom) => {
     setAssignments(prev => {
       const current = prev[patrolId] || [];
-      return { 
-        ...prev, 
+      return {
+        ...prev,
         [patrolId]: current.filter(nom => nom !== agentNom)
       };
     });
@@ -49,10 +49,9 @@ export default function Commandement({ agents, setAgents, patrols, setPatrols })
     }));
   };
 
-  // Statut affiché (priorité à celui modifié, sinon default)
+  // Statut affiché (priorité à celui modifié, sinon défaut)
   const getPatrolStatus = (patrolId) => {
     if (patrolStatuses[patrolId]) return patrolStatuses[patrolId];
-    // Par défaut, "Engagée" si agents assignés, sinon "Disponible"
     if (assignments[patrolId] && assignments[patrolId].length > 0) return "Engagée";
     return "Disponible";
   };
@@ -96,7 +95,7 @@ export default function Commandement({ agents, setAgents, patrols, setPatrols })
                   assignments[patrol.id].map((nom, i) => (
                     <li key={i}>
                       {nom}{" "}
-                      <button 
+                      <button
                         style={{ marginLeft: "8px", color: "red", cursor: "pointer" }}
                         onClick={() => handleRemoveAgent(patrol.id, nom)}
                         title="Retirer cet agent"
