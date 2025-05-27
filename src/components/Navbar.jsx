@@ -3,13 +3,13 @@ import { NavLink } from "react-router-dom";
 export default function Navbar() {
   return (
     <div className="w-full bg-blue-900 text-white">
-      {/* Haut : Logo + Titre + Phrase */}
-      <div className="flex flex-col md:flex-row justify-between items-center px-6 py-4">
-        <div className="flex items-center space-x-4">
-          <img src="/logo-gn.png" alt="Logo GN" className="h-10 w-auto" />
-          <h1 className="text-2xl font-bold">Gendarmerie MRP</h1>
+      {/* Bandeau haut : Logo + Titre + Accroche */}
+      <div className="flex flex-col md:flex-row justify-between items-center px-6 py-3">
+        <div className="flex items-center space-x-3">
+          <img src="/logo-gn.png" alt="Logo GN" className="h-8 w-auto" />
+          <h1 className="text-xl md:text-2xl font-bold">Gendarmerie MRP</h1>
         </div>
-        <div className="text-sm italic text-gray-200 mt-2 md:mt-0">
+        <div className="text-sm italic text-gray-200 mt-2 md:mt-0 text-center md:text-right">
           “Notre Engagement, votre sécurité”
         </div>
       </div>
