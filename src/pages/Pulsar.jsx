@@ -1,40 +1,101 @@
-import './Pulsar.css'; // Ton CSS
-
-const serviceOptions = [
-  "PAM Fort de France", "PAM Trinité", "PAM Le Marin",
-  "PAM 2 Fort de France", "PAM 2 Trinité", "PAM 2 Le Marin",
-  "PSIG 1", "PSIG 2", "PSIG 3", "PMO 1", "PMO 2", "ERI",
-  "HELICO", "BRIGADE NAUTIQUE", "BRIGADE NAUTIQUE 2",
-  "GIC", "GIC 2", "DISR", "DIR 1", "DIR 2", "DIR 3",
-];
-
-const typeOptions = [
-  "Prevention de proximité", "Police route véhicule sérigraphié",
-  "Police route véhicule banalisé", "Patrouille pédestre",
-  "Enquête judiciaire", "Évènement culturel ou sportif",
-  "ORC", "OAD", "Surveillance aérienne",
-];
+import { useState } from "react";
+import './Pulsar.css';
 
 export default function Pulsar({ patrols, setPatrols }) {
-  const [formData, setFormData] = React.useState({
+  // Listes dynamiques pour services et types, modifiables plus tard
+  const [serviceOptions, setServiceOptions] = useState([
+    "PAM Fort de France",
+    "PAM Trinité",
+    "PAM Le Marin",
+    "PAM 2 Fort de France",
+    "PAM 2 Trinité",
+    "PAM 2 Le Marin",
+    "PSIG 1",
+    "PSIG 2",
+    "PSIG 3",
+    "PMO 1",
+    "PMO 2",
+    "ERI",
+    "HELICO",
+    "BRIGADE NAUTIQUE",
+    "BRIGADE NAUTIQUE 2",
+    "GIC",
+    "GIC 2",
+    "DISR",
+    "DIR 1",
+    "DIR 2",
+    "DIR 3",
+  ]);
+  
+  const [typeOptions, setTypeOptions] = useState([
+    "Prevention de proximité",
+    "Police route véhicule sérigraphié",
+    "Police route véhicule banalisé",
+    "Patrouille pédestre",
+    "Enquête judiciaire",
+    "Évènement culturel ou sportif",
+    "ORC",
+    "OAD",
+    "Surveillance aérienne",
+  ]);
+
+  const [formData, setFormData] = useState({
+    id: null,
     start: "",
     end: "",
     service: "",
     type: "",
   });
 
+  // Pour gestion admin (false par défaut), à intégrer plus tard
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  // États temporaires pour ajout service/type (admin)
+  const [newService, setNewService] = useState("");
+  const [newType, setNewType] = useState("");
+
   const handleChange = (e) => {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const handleAddPatrol = () => {
-    const { start, end, service, type } = formData;
+  const handleAddOrUpdatePatrol = () => {
+    const { id, start, end, service, type } = formData;
     if (!start || !end || !service || !type) {
       alert("Veuillez remplir tous les champs");
       return;
     }
-    setPatrols(prev => [...prev, { id: prev.length + 1, ...formData }]);
-    setFormData({ start: "", end: "", service: "", type: "" });
+    if (id !== null) {
+      setPatrols(prev => prev.map(p => p.id === id ? formData : p));
+    } else {
+      setPatrols(prev => [...prev, { ...formData, id: prev.length ? Math.max(...prev.map(p => p.id)) + 1 : 1 }]);
+    }
+    setFormData({ id: null, start: "", end: "", service: "", type: "" });
+  };
+
+  const handleEdit = (patrol) => {
+    setFormData(patrol);
+  };
+
+  const handleDelete = (id) => {
+    if(window.confirm("Supprimer cette patrouille ?")) {
+      setPatrols(prev => prev.filter(p => p.id !== id));
+    }
+  };
+
+  // Admin: ajouter nouveau service
+  const handleAddService = () => {
+    if(newService.trim() && !serviceOptions.includes(newService.trim())) {
+      setServiceOptions(prev => [...prev, newService.trim()]);
+      setNewService("");
+    }
+  };
+
+  // Admin: ajouter nouveau type
+  const handleAddType = () => {
+    if(newType.trim() && !typeOptions.includes(newType.trim())) {
+      setTypeOptions(prev => [...prev, newType.trim()]);
+      setNewType("");
+    }
   };
 
   return (
@@ -68,8 +129,8 @@ export default function Pulsar({ patrols, setPatrols }) {
           className="pulsar-select"
         >
           <option value="">Service</option>
-          {serviceOptions.map(s => (
-            <option key={s} value={s}>{s}</option>
+          {serviceOptions.map(service => (
+            <option key={service} value={service}>{service}</option>
           ))}
         </select>
         <select
@@ -79,14 +140,40 @@ export default function Pulsar({ patrols, setPatrols }) {
           className="pulsar-select"
         >
           <option value="">Type de patrouille</option>
-          {typeOptions.map(t => (
-            <option key={t} value={t}>{t}</option>
+          {typeOptions.map(type => (
+            <option key={type} value={type}>{type}</option>
           ))}
         </select>
-        <button onClick={handleAddPatrol} className="pulsar-button">
-          Ajouter
+        <button onClick={handleAddOrUpdatePatrol} className="pulsar-button">
+          {formData.id !== null ? "Modifier" : "Ajouter"}
         </button>
       </section>
+
+      {isAdmin && (
+        <section className="pulsar-admin-section" style={{maxWidth: "800px", margin:"auto", marginTop:"32px"}}>
+          <h3>Administration (ajouter services et types)</h3>
+          <div style={{display:"flex", gap:"12px", marginBottom:"12px"}}>
+            <input 
+              type="text" 
+              placeholder="Nouveau service" 
+              value={newService} 
+              onChange={e => setNewService(e.target.value)} 
+              className="pulsar-input"
+            />
+            <button onClick={handleAddService} className="pulsar-button">Ajouter service</button>
+          </div>
+          <div style={{display:"flex", gap:"12px"}}>
+            <input 
+              type="text" 
+              placeholder="Nouveau type de patrouille" 
+              value={newType} 
+              onChange={e => setNewType(e.target.value)} 
+              className="pulsar-input"
+            />
+            <button onClick={handleAddType} className="pulsar-button">Ajouter type</button>
+          </div>
+        </section>
+      )}
 
       <section className="pulsar-table-container">
         <h2>Liste des patrouilles</h2>
@@ -97,12 +184,13 @@ export default function Pulsar({ patrols, setPatrols }) {
               <th>Fin</th>
               <th>Service</th>
               <th>Type</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
             {patrols.length === 0 && (
               <tr>
-                <td colSpan="4" className="pulsar-empty">
+                <td colSpan="5" className="pulsar-empty">
                   Aucune patrouille enregistrée.
                 </td>
               </tr>
@@ -129,6 +217,10 @@ export default function Pulsar({ patrols, setPatrols }) {
                 </td>
                 <td>{service}</td>
                 <td>{type}</td>
+                <td>
+                  <button onClick={() => handleEdit({ id, start, end, service, type })}>✏️</button>
+                  <button onClick={() => handleDelete(id)} style={{marginLeft:"8px", color:"red"}}>🗑️</button>
+                </td>
               </tr>
             ))}
           </tbody>
