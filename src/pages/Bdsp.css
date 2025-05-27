@@ -21,6 +21,11 @@
   margin-bottom: 24px;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  transition: box-shadow 0.3s ease;
+}
+
+.bdsp-card:hover {
+  box-shadow: 0 6px 18px rgba(0,0,0,0.12);
 }
 
 .section-title {
@@ -48,6 +53,14 @@
   border: 1px solid #ccc;
   box-sizing: border-box;
   width: 100%;
+  transition: border-color 0.3s ease;
+}
+
+.bdsp-input:focus,
+.bdsp-select:focus,
+.bdsp-textarea:focus {
+  border-color: #002654;
+  outline: none;
 }
 
 .bdsp-textarea {
@@ -91,6 +104,7 @@
   margin-bottom: 12px;
   font-size: 1rem;
   color: #002654;
+  line-height: 1.4;
 }
 
 .bdsp-date {
@@ -98,6 +112,8 @@
   padding: 2px 8px;
   border-radius: 6px;
   font-size: 0.9rem;
+  display: inline-block;
+  margin-bottom: 6px;
 }
 
 .bdsp-empty {
@@ -110,4 +126,3 @@
 .bdsp-chart {
   height: 250px;
 }
-
