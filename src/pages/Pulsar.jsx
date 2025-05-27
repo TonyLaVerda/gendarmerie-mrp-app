@@ -83,9 +83,9 @@ export default function Pulsar() {
         <p className="text-gray-600">Organisation des patrouilles</p>
       </header>
 
-      <section className="mb-6">
+      <section className="mb-6 max-w-4xl mx-auto">
         <h2 className="font-semibold mb-2">Ajouter une patrouille</h2>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <input
             type="datetime-local"
             name="start"
@@ -131,22 +131,22 @@ export default function Pulsar() {
         </div>
         <button
           onClick={handleAddPatrol}
-          className="mt-4 px-4 py-2 bg-blue-900 text-white rounded hover:bg-blue-800 block mx-auto"
+          className="mt-4 px-6 py-3 bg-blue-900 text-white rounded hover:bg-blue-800 block mx-auto"
         >
           Ajouter
         </button>
       </section>
 
-      <section>
+      <section className="max-w-[95vw] mx-auto">
         <h2 className="font-semibold mb-4 text-lg text-center">Liste des patrouilles</h2>
-        <div className="max-w-[90vw] mx-auto overflow-x-auto rounded-lg shadow-lg border border-gray-300 bg-white">
-          <table className="min-w-[700px] w-full table-auto border-collapse">
+        <div className="overflow-x-auto rounded-lg shadow-lg border border-gray-300 bg-white">
+          <table className="min-w-[900px] w-full table-auto border-collapse">
             <thead>
               <tr className="bg-blue-900 text-white">
-                <th className="border-b border-blue-700 px-8 py-4 text-left">Début</th>
-                <th className="border-b border-blue-700 px-8 py-4 text-left">Fin</th>
-                <th className="border-b border-blue-700 px-8 py-4 text-left">Service</th>
-                <th className="border-b border-blue-700 px-8 py-4 text-left">Type</th>
+                <th className="border-b border-blue-700 px-10 py-4 text-left">Début</th>
+                <th className="border-b border-blue-700 px-10 py-4 text-left">Fin</th>
+                <th className="border-b border-blue-700 px-10 py-4 text-left">Service</th>
+                <th className="border-b border-blue-700 px-10 py-4 text-left">Type</th>
               </tr>
             </thead>
             <tbody>
@@ -154,9 +154,9 @@ export default function Pulsar() {
                 <tr
                   key={id}
                   className="border-b border-gray-200 hover:bg-blue-50 transition-colors"
-                  style={{ lineHeight: "2rem", fontSize: "1.05rem" }}
+                  style={{ lineHeight: "2rem", fontSize: "1.1rem" }}
                 >
-                  <td className="px-8 py-4 align-middle whitespace-nowrap">
+                  <td className="px-10 py-4 align-middle whitespace-nowrap">
                     {new Date(start).toLocaleString(undefined, {
                       year: "numeric",
                       month: "2-digit",
@@ -165,7 +165,7 @@ export default function Pulsar() {
                       minute: "2-digit",
                     })}
                   </td>
-                  <td className="px-8 py-4 align-middle whitespace-nowrap">
+                  <td className="px-10 py-4 align-middle whitespace-nowrap">
                     {new Date(end).toLocaleString(undefined, {
                       year: "numeric",
                       month: "2-digit",
@@ -174,8 +174,8 @@ export default function Pulsar() {
                       minute: "2-digit",
                     })}
                   </td>
-                  <td className="px-8 py-4 align-middle">{service}</td>
-                  <td className="px-8 py-4 align-middle">{type}</td>
+                  <td className="px-10 py-4 align-middle">{service}</td>
+                  <td className="px-10 py-4 align-middle">{type}</td>
                 </tr>
               ))}
               {patrols.length === 0 && (
