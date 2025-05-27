@@ -1,36 +1,44 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import './Commandement.css';
 
 // Grades classés du plus haut au plus bas pour tri
 const gradesOrder = ["Col", "Lt Col", "Cen", "Cpt", "Lt", "Slt", "Maj", "Adj/C", "ADJ", "Mdl/C", "Gnd", "ELG"];
 
 export default function Commandement({ agents, setAgents, patrols, setPatrols }) {
-  // Pour associer agents aux patrouilles (id patrouille -> liste d’agents)
+  // Assignations : { [patrolId]: [agentNom, ...] }
   const [assignments, setAssignments] = useState({});
 
-  // Trier agents par grade
-  const sortedAgents = [...agents].sort((a, b) => {
-    return gradesOrder.indexOf(a.grade) - gradesOrder.indexOf(b.grade);
-  });
+  // Trier agents par grade (du plus gradé au moins gradé)
+  const sortedAgents = [...agents].sort(
+    (a, b) => gradesOrder.indexOf(a.grade) - gradesOrder.indexOf(b.grade)
+  );
 
-  // Ajout d’un agent à une patrouille
+  // Ajouter un agent à une patrouille (sans doublon)
   const handleAssignAgent = (patrolId, agentNom) => {
-    setAssignments((prev) => {
+    setAssignments(prev => {
       const current = prev[patrolId] || [];
       if (!current.includes(agentNom)) {
-        return {...prev, [patrolId]: [...current, agentNom]};
+        return { ...prev, [patrolId]: [...current, agentNom] };
       }
       return prev;
     });
   };
 
-  // Liste des patrouilles "en cours" = toutes ici par défaut (ou filtrer si tu as un champ)
-  const ongoingPatrols = patrols;
+  // Exemple simple de calcul du statut d’une patrouille (à adapter)
+  const getPatrolStatus = (patrolId) => {
+    // Ici on pourrait récupérer le statut réel, pour l'instant fixe
+    // Exemple : si assigné => Engagée, sinon Disponible
+    if (assignments[patrolId] && assignments[patrolId].length > 0) return "Engagée";
+    return "Disponible";
+  };
 
   return (
     <div className="commandement-container">
       <h1>🛡 Commandement</h1>
+
       <div className="commandement-content">
+
+        {/* Colonne agents */}
         <aside className="commandement-agents">
           <h2>Effectifs (du plus gradé au moins gradé)</h2>
           {sortedAgents.length === 0 && <p>Aucun agent enregistré.</p>}
@@ -43,11 +51,12 @@ export default function Commandement({ agents, setAgents, patrols, setPatrols })
           </ul>
         </aside>
 
+        {/* Colonne patrouilles */}
         <section className="commandement-patrols">
           <h2>Patrouilles en cours</h2>
-          {ongoingPatrols.length === 0 && <p>Aucune patrouille en cours.</p>}
+          {patrols.length === 0 && <p>Aucune patrouille en cours.</p>}
 
-          {ongoingPatrols.map((patrol) => (
+          {patrols.map((patrol) => (
             <div key={patrol.id} className="patrol-card">
               <h3>{patrol.service}</h3>
               <p><strong>Début:</strong> {new Date(patrol.start).toLocaleString()}</p>
@@ -59,6 +68,7 @@ export default function Commandement({ agents, setAgents, patrols, setPatrols })
                 {(assignments[patrol.id] || []).map((nom, i) => (
                   <li key={i}>{nom}</li>
                 ))}
+                {(!assignments[patrol.id] || assignments[patrol.id].length === 0) && <li>Aucun agent assigné</li>}
               </ul>
 
               <label>Ajouter un agent :</label>
@@ -72,14 +82,19 @@ export default function Commandement({ agents, setAgents, patrols, setPatrols })
                 defaultValue=""
               >
                 <option value="" disabled>Choisir un agent</option>
-                {sortedAgents.map((agent, i) => (
-                  <option key={i} value={agent.nom}>{agent.nom} ({agent.grade})</option>
-                ))}
+                {sortedAgents
+                  // Filtrer les agents déjà assignés à cette patrouille
+                  .filter(agent => !(assignments[patrol.id]?.includes(agent.nom)))
+                  .map((agent, i) => (
+                    <option key={i} value={agent.nom}>
+                      {agent.nom} ({agent.grade})
+                    </option>
+                  ))
+                }
               </select>
 
               <p>
-                <strong>Statut :</strong> {/* Ici tu peux ajouter la logique pour le statut */}
-                Disponible / Occupée / Engagée
+                <strong>Statut :</strong> {getPatrolStatus(patrol.id)}
               </p>
             </div>
           ))}
