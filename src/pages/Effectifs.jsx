@@ -5,8 +5,7 @@ const grades = ["ELG", "Gnd", "Mdl/C", "ADJ", "Adj/C", "Maj", "Slt", "Lt", "Cpt"
 const unites = ["GD", "PMO", "PSIG"];
 const specialites = ["FAGN", "GIC", "TICP", "ERI"];
 
-export default function Effectifs() {
-  const [agents, setAgents] = useState([]);
+export default function Effectifs({ agents, setAgents }) {
   const [newAgent, setNewAgent] = useState({
     nom: "",
     grade: "",
