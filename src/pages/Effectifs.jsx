@@ -84,31 +84,33 @@ export default function Effectifs() {
       </section>
 
       <section className="effectifs-list">
-        {agents.length === 0 && <p>Aucun agent enregistré.</p>}
-
-        <div className="effectifs-cards">
-          {agents.map((agent, index) => (
-            <div key={index} className="effectifs-card">
-              <div className="effectifs-card-header">
-                <h3>{agent.nom}</h3>
-                <span className="effectifs-grade">{agent.grade}</span>
+        {agents.length === 0 ? (
+          <p>Aucun agent enregistré.</p>
+        ) : (
+          <div className="effectifs-cards">
+            {agents.map((agent, index) => (
+              <div key={index} className="effectifs-card">
+                <div className="effectifs-card-header">
+                  <h3>{agent.nom}</h3>
+                  <span className="effectifs-grade">{agent.grade}</span>
+                </div>
+                <p>
+                  <strong>Unité :</strong>{" "}
+                  <span className="effectifs-unit">{agent.unite}</span>
+                </p>
+                <p>
+                  <strong>Spécialité :</strong> {agent.specialite || "Aucune"}
+                </p>
+                <p>
+                  <strong>Statut :</strong>{" "}
+                  <span className={`effectifs-status effectifs-status-${agent.statut.toLowerCase()}`}>
+                    {agent.statut}
+                  </span>
+                </p>
               </div>
-              <p>
-                <strong>Unité :</strong>{" "}
-                <span className="effectifs-unit">{agent.unite}</span>
-              </p>
-              <p>
-                <strong>Spécialité :</strong> {agent.specialite || "Aucune"}
-              </p>
-              <p>
-                <strong>Statut :</strong>{" "}
-                <span className={`effectifs-status effectifs-status-${agent.statut.toLowerCase()}`}>
-                  {agent.statut}
-                </span>
-              </p>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </section>
     </div>
   );
