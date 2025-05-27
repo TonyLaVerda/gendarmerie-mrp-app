@@ -94,10 +94,9 @@ export default function Commandement({ agents, setAgents, patrols, setPatrols })
     });
   };
 
-  // Récupérer le statut affiché
+  // Récupérer le statut affiché — priorité au statut sauvegardé sinon "Disponible"
   const getPatrolStatus = (patrolId) => {
-    if (patrolStatuses[patrolId]) return patrolStatuses[patrolId];
-    if (assignments[patrolId] && assignments[patrolId].length > 0) return "Engagée";
+    if (patrolStatuses.hasOwnProperty(patrolId)) return patrolStatuses[patrolId];
     return "Disponible";
   };
 
@@ -107,6 +106,7 @@ export default function Commandement({ agents, setAgents, patrols, setPatrols })
 
       <div className="commandement-content">
 
+        {/* Colonne agents */}
         <aside className="commandement-agents">
           <h2>Effectifs</h2>
           {sortedAgents.length === 0 && <p>Aucun agent enregistré.</p>}
@@ -119,6 +119,7 @@ export default function Commandement({ agents, setAgents, patrols, setPatrols })
           </ul>
         </aside>
 
+        {/* Colonne patrouilles */}
         <section className="commandement-patrols">
           <h2>Patrouilles en cours</h2>
           {patrols.length === 0 && <p>Aucune patrouille en cours.</p>}
