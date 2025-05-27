@@ -2,6 +2,8 @@
   padding: 24px;
   background-color: #f0f4f9;
   min-height: 100vh;
+  font-family: 'Rubik', sans-serif;
+  color: #002654;
 }
 
 .pulsar-header {
@@ -9,6 +11,17 @@
   margin: 0 auto 24px;
   text-align: center;
   color: #002654;
+}
+
+.pulsar-header h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.pulsar-header p {
+  font-size: 1rem;
+  color: #555;
 }
 
 .pulsar-form {
@@ -21,11 +34,19 @@
 
 .pulsar-input,
 .pulsar-select {
-  padding: 8px;
+  padding: 10px;
   border-radius: 6px;
   border: 1px solid #ccc;
   width: 100%;
   box-sizing: border-box;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+.pulsar-input:focus,
+.pulsar-select:focus {
+  border-color: #002654;
+  outline: none;
 }
 
 .pulsar-button {
@@ -39,6 +60,12 @@
   display: block;
   margin-left: auto;
   margin-right: auto;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+}
+
+.pulsar-button:hover {
+  background-color: #001f4d;
 }
 
 .pulsar-table-container {
@@ -62,11 +89,13 @@
   padding: 12px 20px;
   border-bottom: 2px solid #004080;
   text-align: left;
+  font-size: 1rem;
 }
 
 .pulsar-table th {
   background-color: #002654;
   color: white;
+  font-weight: 700;
 }
 
 .pulsar-table tr:hover {
@@ -77,4 +106,6 @@
   text-align: center;
   padding: 32px;
   color: #777;
+  font-style: italic;
+  font-size: 1rem;
 }
