@@ -74,19 +74,22 @@ export default function Bdsp({ patrols = [] }) {
         if (iv.id !== interventionId) return iv;
         // Ne pas ré-ajouter la patrouille si déjà assignée
         if (iv.patrouilles.some((p) => p.idPatrol === patrolId)) return iv;
-
         return {
           ...iv,
           patrouilles: [
             ...iv.patrouilles,
-            { idPatrol: patrolId, statut: "Engagée", timestamp: new Date().toISOString() },
+            {
+              idPatrol: patrolId,
+              statut: "Engagée",
+              timestamp: new Date().toISOString(),
+            },
           ],
         };
       })
     );
   };
 
-  // Modifier le statut d'une patrouille dans une intervention
+  // Met à jour le statut d'une patrouille dans une intervention
   const updatePatrolStatus = (interventionId, patrolId, newStatus) => {
     setInterventions((prev) =>
       prev.map((iv) => {
@@ -101,7 +104,7 @@ export default function Bdsp({ patrols = [] }) {
     );
   };
 
-  // Retirer une patrouille d'une intervention
+  // Retire une patrouille d'une intervention
   const removePatrouille = (interventionId, patrolId) => {
     setInterventions((prev) =>
       prev.map((iv) => {
@@ -114,71 +117,52 @@ export default function Bdsp({ patrols = [] }) {
     );
   };
 
-  // Mettre à jour le compte rendu opérational (CRO)
-  const updateCompteRendu = (interventionId, newCRO) => {
+  // Fonction pour archiver une intervention (clôturer la fiche)
+  function closeIntervention(interventionId) {
     setInterventions((prev) =>
-      prev.map((iv) =>
-        iv.id === interventionId ? { ...iv, compteRendu: newCRO } : iv
-      )
+      prev.map((iv) => (iv.id === interventionId ? { ...iv, archived: true } : iv))
     );
-  };
-
-  // Clôturer (archiver) une intervention
-  const closeIntervention = (interventionId) => {
-    setInterventions((prev) =>
-      prev.map((iv) =>
-        iv.id === interventionId ? { ...iv, archived: true } : iv
-      )
-    );
-  };
+  }
 
   return (
-    <div style={{ maxWidth: 900, margin: "0 auto", padding: 24, fontFamily: "Rubik, sans-serif", color: "#002654" }}>
-      <h1 style={{ fontSize: "2.25rem", fontWeight: 700, marginBottom: 24, textAlign: "center" }}>BDSP - Gestion des Interventions</h1>
+    <div style={{ maxWidth: 900, margin: "0 auto", padding: 24, fontFamily: "'Rubik', sans-serif", color: "#002654" }}>
+      <h1 style={{ fontSize: 36, fontWeight: 700, marginBottom: 24, textAlign: "center" }}>BDSP - Interventions</h1>
 
       {/* Formulaire ajout/modif intervention */}
-      <div style={{ backgroundColor: "white", padding: 24, borderRadius: 12, boxShadow: "0 2px 8px rgba(0,0,0,0.06)", marginBottom: 32 }}>
-        <div style={{ marginBottom: 12 }}>
-          <select
-            value={form.type}
-            onChange={(e) => setForm({ ...form, type: e.target.value })}
-            style={{ width: "100%", padding: 8, borderRadius: 6, border: "1px solid #ccc" }}
-          >
-            <option value="">Type d'intervention</option>
-            {typesInterventions.map((t, i) => (
-              <option key={i} value={t}>{t}</option>
-            ))}
-          </select>
-        </div>
+      <div style={{ marginBottom: 24 }}>
+        <select
+          value={form.type}
+          onChange={(e) => setForm({ ...form, type: e.target.value })}
+          style={{ width: "100%", marginBottom: 12, padding: 8, borderRadius: 6, border: "1px solid #ccc" }}
+        >
+          <option value="">Type d'intervention</option>
+          {typesInterventions.map((t, i) => (
+            <option key={i} value={t}>{t}</option>
+          ))}
+        </select>
 
-        <div style={{ marginBottom: 12 }}>
-          <input
-            type="text"
-            placeholder="Lieu"
-            value={form.lieu}
-            onChange={(e) => setForm({ ...form, lieu: e.target.value })}
-            style={{ width: "100%", padding: 8, borderRadius: 6, border: "1px solid #ccc" }}
-          />
-        </div>
+        <input
+          type="text"
+          placeholder="Lieu"
+          value={form.lieu}
+          onChange={(e) => setForm({ ...form, lieu: e.target.value })}
+          style={{ width: "100%", marginBottom: 12, padding: 8, borderRadius: 6, border: "1px solid #ccc" }}
+        />
 
-        <div style={{ marginBottom: 12 }}>
-          <input
-            type="datetime-local"
-            value={form.date}
-            onChange={(e) => setForm({ ...form, date: e.target.value })}
-            style={{ width: "100%", padding: 8, borderRadius: 6, border: "1px solid #ccc" }}
-          />
-        </div>
+        <input
+          type="datetime-local"
+          value={form.date}
+          onChange={(e) => setForm({ ...form, date: e.target.value })}
+          style={{ width: "100%", marginBottom: 12, padding: 8, borderRadius: 6, border: "1px solid #ccc" }}
+        />
 
-        <div style={{ marginBottom: 12 }}>
-          <textarea
-            placeholder="Compte Rendu Opérationnel (CRO)"
-            value={form.compteRendu}
-            onChange={(e) => setForm({ ...form, compteRendu: e.target.value })}
-            rows={4}
-            style={{ width: "100%", padding: 8, borderRadius: 6, border: "1px solid #ccc", resize: "vertical" }}
-          />
-        </div>
+        <textarea
+          placeholder="Compte Rendu Opérationnel (CRO)"
+          value={form.compteRendu}
+          onChange={(e) => setForm({ ...form, compteRendu: e.target.value })}
+          rows={4}
+          style={{ width: "100%", marginBottom: 12, padding: 8, borderRadius: 6, border: "1px solid #ccc", resize: "vertical" }}
+        />
 
         <button
           onClick={handleAddOrUpdate}
@@ -290,7 +274,7 @@ export default function Bdsp({ patrols = [] }) {
     </div>
   );
 
-  // Fonction pour archiver une intervention
+  // Fonction pour archiver une intervention (clôturer la fiche)
   function closeIntervention(interventionId) {
     setInterventions((prev) =>
       prev.map((iv) => (iv.id === interventionId ? { ...iv, archived: true } : iv))
