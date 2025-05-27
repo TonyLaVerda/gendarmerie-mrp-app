@@ -1,18 +1,5 @@
-import { Routes, Route } from 'react-router-dom';
-import { useState } from 'react';
-
-import Dashboard from './Dashboard';
-import Effectifs from './pages/Effectifs';
-import Bdsp from './pages/Bdsp';
-import Pulsar from './pages/Pulsar';
-import Commandement from './pages/Commandement';
-import Navbar from './components/Navbar';
-import Stats from './pages/Stats';
-
 export default function MainLayout() {
-  // États partagés entre modules
-  const [agents, setAgents] = useState([]);
-  const [patrols, setPatrols] = useState([]);
+  // ... tes états et imports
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -22,7 +9,7 @@ export default function MainLayout() {
       </header>
 
       {/* Contenu principal */}
-      <main className="flex-1 bg-gray-50 px-4 py-6 max-w-full w-full">
+      <main className="flex-1 bg-gray-50 px-4 py-6 max-w-5xl w-full mx-auto"> {/* max-w-5xl et centré */}
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/effectifs" element={<Effectifs agents={agents} setAgents={setAgents} />} />
@@ -44,17 +31,19 @@ export default function MainLayout() {
       </main>
 
       {/* Pied de page */}
-      <footer className="text-center text-sm text-gray-500 py-2 bg-gray-100 border-t mt-6">
-        Ce site est fictif, réalisé pour un serveur de jeu RP. En savoir plus sur{' '}
-        <a
-          href="https://martinique-roleplay.fr/"
-          className="text-blue-700 underline"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          martinique-roleplay.fr
-        </a>
-      </footer>
+      <div className="footer-wrapper">
+        <footer className="text-center text-sm text-gray-500 py-2 bg-gray-100 border-t max-w-5xl mx-auto">
+          Ce site est fictif, réalisé pour un serveur de jeu RP. En savoir plus sur{' '}
+          <a
+            href="https://martinique-roleplay.fr/"
+            className="text-blue-700 underline"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            martinique-roleplay.fr
+          </a>
+        </footer>
+      </div>
     </div>
   );
 }
