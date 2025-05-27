@@ -78,7 +78,7 @@ export default function Pulsar() {
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
-      <header className="mb-6">
+      <header className="mb-6 max-w-4xl mx-auto">
         <h1 className="text-2xl font-bold text-blue-900">Pulsar Service</h1>
         <p className="text-gray-600">Organisation des patrouilles</p>
       </header>
