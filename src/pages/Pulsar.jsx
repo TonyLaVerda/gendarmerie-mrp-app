@@ -1,62 +1,22 @@
-import { useState } from "react";
-import './Pulsar.css'; // importe ton fichier CSS
-
-const initialPatrols = [
-  {
-    id: 1,
-    start: "2025-06-01T08:00",
-    end: "2025-06-01T12:00",
-    service: "PAM Fort de France",
-    type: "Police route véhicule sérigraphié",
-  },
-  {
-    id: 2,
-    start: "2025-06-01T14:00",
-    end: "2025-06-01T18:00",
-    service: "PSIG 2",
-    type: "Patrouille pédestre",
-  },
-];
+import './Pulsar.css'; // Ton CSS
 
 const serviceOptions = [
-  "PAM Fort de France",
-  "PAM Trinité",
-  "PAM Le Marin",
-  "PAM 2 Fort de France",
-  "PAM 2 Trinité",
-  "PAM 2 Le Marin",
-  "PSIG 1",
-  "PSIG 2",
-  "PSIG 3",
-  "PMO 1",
-  "PMO 2",
-  "ERI",
-  "HELICO",
-  "BRIGADE NAUTIQUE",
-  "BRIGADE NAUTIQUE 2",
-  "GIC",
-  "GIC 2",
-  "DISR",
-  "DIR 1",
-  "DIR 2",
-  "DIR 3",
+  "PAM Fort de France", "PAM Trinité", "PAM Le Marin",
+  "PAM 2 Fort de France", "PAM 2 Trinité", "PAM 2 Le Marin",
+  "PSIG 1", "PSIG 2", "PSIG 3", "PMO 1", "PMO 2", "ERI",
+  "HELICO", "BRIGADE NAUTIQUE", "BRIGADE NAUTIQUE 2",
+  "GIC", "GIC 2", "DISR", "DIR 1", "DIR 2", "DIR 3",
 ];
 
 const typeOptions = [
-  "Prevention de proximité",
-  "Police route véhicule sérigraphié",
-  "Police route véhicule banalisé",
-  "Patrouille pédestre",
-  "Enquête judiciaire",
-  "Évènement culturel ou sportif",
-  "ORC",
-  "OAD",
-  "Surveillance aérienne",
+  "Prevention de proximité", "Police route véhicule sérigraphié",
+  "Police route véhicule banalisé", "Patrouille pédestre",
+  "Enquête judiciaire", "Évènement culturel ou sportif",
+  "ORC", "OAD", "Surveillance aérienne",
 ];
 
-export default function Pulsar() {
-  const [patrols, setPatrols] = useState(initialPatrols);
-  const [formData, setFormData] = useState({
+export default function Pulsar({ patrols, setPatrols }) {
+  const [formData, setFormData] = React.useState({
     start: "",
     end: "",
     service: "",
@@ -64,7 +24,7 @@ export default function Pulsar() {
   });
 
   const handleChange = (e) => {
-    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
   const handleAddPatrol = () => {
@@ -73,7 +33,7 @@ export default function Pulsar() {
       alert("Veuillez remplir tous les champs");
       return;
     }
-    setPatrols((prev) => [...prev, { id: prev.length + 1, ...formData }]);
+    setPatrols(prev => [...prev, { id: prev.length + 1, ...formData }]);
     setFormData({ start: "", end: "", service: "", type: "" });
   };
 
@@ -108,10 +68,8 @@ export default function Pulsar() {
           className="pulsar-select"
         >
           <option value="">Service</option>
-          {serviceOptions.map((service) => (
-            <option key={service} value={service}>
-              {service}
-            </option>
+          {serviceOptions.map(s => (
+            <option key={s} value={s}>{s}</option>
           ))}
         </select>
         <select
@@ -121,10 +79,8 @@ export default function Pulsar() {
           className="pulsar-select"
         >
           <option value="">Type de patrouille</option>
-          {typeOptions.map((type) => (
-            <option key={type} value={type}>
-              {type}
-            </option>
+          {typeOptions.map(t => (
+            <option key={t} value={t}>{t}</option>
           ))}
         </select>
         <button onClick={handleAddPatrol} className="pulsar-button">
