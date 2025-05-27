@@ -53,6 +53,59 @@ const typeOptions = [
   "Surveillance aérienne",
 ];
 
+const inputStyle = {
+  padding: "8px",
+  borderRadius: "6px",
+  border: "1px solid #ccc",
+  width: "100%",
+  boxSizing: "border-box",
+};
+
+const buttonStyle = {
+  marginTop: "16px",
+  padding: "12px 24px",
+  backgroundColor: "#002654",
+  color: "white",
+  border: "none",
+  borderRadius: "8px",
+  cursor: "pointer",
+  display: "block",
+  marginLeft: "auto",
+  marginRight: "auto",
+};
+
+const tableContainerStyle = {
+  maxWidth: "95vw",
+  margin: "0 auto",
+  overflowX: "auto",
+  backgroundColor: "white",
+  border: "1px solid #ccc",
+  borderRadius: "8px",
+  boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+};
+
+const tableStyle = {
+  minWidth: "900px",
+  width: "100%",
+  borderCollapse: "collapse",
+};
+
+const thTdStyle = {
+  padding: "12px 20px",
+  borderBottom: "2px solid #004080",
+  textAlign: "left",
+};
+
+const thStyle = {
+  ...thTdStyle,
+  backgroundColor: "#002654",
+  color: "white",
+};
+
+const trHoverStyle = {
+  backgroundColor: "#e6f0ff",
+};
+
 export default function Pulsar() {
   const [patrols, setPatrols] = useState(initialPatrols);
   const [formData, setFormData] = useState({
@@ -77,36 +130,36 @@ export default function Pulsar() {
   };
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
-      <header className="mb-6 max-w-4xl mx-auto">
-        <h1 className="text-2xl font-bold text-blue-900">Pulsar Service</h1>
-        <p className="text-gray-600">Organisation des patrouilles</p>
+    <div style={{ padding: "24px", backgroundColor: "#f0f4f9", minHeight: "100vh" }}>
+      <header style={{ maxWidth: "800px", margin: "0 auto 24px auto", textAlign: "center" }}>
+        <h1 style={{ color: "#002654", fontSize: "28px", marginBottom: "8px" }}>Pulsar Service</h1>
+        <p style={{ color: "#555" }}>Organisation des patrouilles</p>
       </header>
 
-      <section className="mb-6 max-w-4xl mx-auto">
-        <h2 className="font-semibold mb-2">Ajouter une patrouille</h2>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <section style={{ maxWidth: "800px", margin: "0 auto 32px auto" }}>
+        <h2 style={{ fontWeight: "600", marginBottom: "12px" }}>Ajouter une patrouille</h2>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "16px" }}>
           <input
             type="datetime-local"
             name="start"
             value={formData.start}
             onChange={handleChange}
-            className="border rounded px-3 py-2"
             placeholder="Début"
+            style={inputStyle}
           />
           <input
             type="datetime-local"
             name="end"
             value={formData.end}
             onChange={handleChange}
-            className="border rounded px-3 py-2"
             placeholder="Fin"
+            style={inputStyle}
           />
           <select
             name="service"
             value={formData.service}
             onChange={handleChange}
-            className="border rounded px-3 py-2"
+            style={inputStyle}
           >
             <option value="">Service</option>
             {serviceOptions.map((service) => (
@@ -119,7 +172,7 @@ export default function Pulsar() {
             name="type"
             value={formData.type}
             onChange={handleChange}
-            className="border rounded px-3 py-2"
+            style={inputStyle}
           >
             <option value="">Type de patrouille</option>
             {typeOptions.map((type) => (
@@ -129,34 +182,41 @@ export default function Pulsar() {
             ))}
           </select>
         </div>
-        <button
-          onClick={handleAddPatrol}
-          className="mt-4 px-6 py-3 bg-blue-900 text-white rounded hover:bg-blue-800 block mx-auto"
-        >
+        <button onClick={handleAddPatrol} style={buttonStyle}>
           Ajouter
         </button>
       </section>
 
-      <section className="max-w-[95vw] mx-auto">
-        <h2 className="font-semibold mb-4 text-lg text-center">Liste des patrouilles</h2>
-        <div className="overflow-x-auto rounded-lg shadow-lg border border-gray-300 bg-white">
-          <table className="min-w-[900px] w-full table-auto border-collapse">
+      <section style={{ maxWidth: "95vw", margin: "0 auto" }}>
+        <h2 style={{ fontWeight: "600", marginBottom: "16px", fontSize: "18px", textAlign: "center" }}>
+          Liste des patrouilles
+        </h2>
+        <div style={tableContainerStyle}>
+          <table style={tableStyle}>
             <thead>
-              <tr className="bg-blue-900 text-white">
-                <th className="border-b border-blue-700 px-10 py-4 text-left">Début</th>
-                <th className="border-b border-blue-700 px-10 py-4 text-left">Fin</th>
-                <th className="border-b border-blue-700 px-10 py-4 text-left">Service</th>
-                <th className="border-b border-blue-700 px-10 py-4 text-left">Type</th>
+              <tr>
+                <th style={thStyle}>Début</th>
+                <th style={thStyle}>Fin</th>
+                <th style={thStyle}>Service</th>
+                <th style={thStyle}>Type</th>
               </tr>
             </thead>
             <tbody>
+              {patrols.length === 0 && (
+                <tr>
+                  <td colSpan="4" style={{ textAlign: "center", padding: "32px", color: "#777" }}>
+                    Aucune patrouille enregistrée.
+                  </td>
+                </tr>
+              )}
               {patrols.map(({ id, start, end, service, type }) => (
                 <tr
                   key={id}
-                  className="border-b border-gray-200 hover:bg-blue-50 transition-colors"
-                  style={{ lineHeight: "2rem", fontSize: "1.1rem" }}
+                  style={{ cursor: "default" }}
+                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#e6f0ff")}
+                  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
                 >
-                  <td className="px-10 py-4 align-middle whitespace-nowrap">
+                  <td style={{ ...thTdStyle, whiteSpace: "nowrap" }}>
                     {new Date(start).toLocaleString(undefined, {
                       year: "numeric",
                       month: "2-digit",
@@ -165,7 +225,7 @@ export default function Pulsar() {
                       minute: "2-digit",
                     })}
                   </td>
-                  <td className="px-10 py-4 align-middle whitespace-nowrap">
+                  <td style={{ ...thTdStyle, whiteSpace: "nowrap" }}>
                     {new Date(end).toLocaleString(undefined, {
                       year: "numeric",
                       month: "2-digit",
@@ -174,17 +234,10 @@ export default function Pulsar() {
                       minute: "2-digit",
                     })}
                   </td>
-                  <td className="px-10 py-4 align-middle">{service}</td>
-                  <td className="px-10 py-4 align-middle">{type}</td>
+                  <td style={thTdStyle}>{service}</td>
+                  <td style={thTdStyle}>{type}</td>
                 </tr>
               ))}
-              {patrols.length === 0 && (
-                <tr>
-                  <td colSpan="4" className="text-center py-8 text-gray-500">
-                    Aucune patrouille enregistrée.
-                  </td>
-                </tr>
-              )}
             </tbody>
           </table>
         </div>
