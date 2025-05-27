@@ -2,22 +2,19 @@ import { NavLink } from "react-router-dom";
 
 export default function Navbar() {
   return (
-    <div className="bg-blue-900 text-white shadow-md w-full">
-      {/* Bandeau supérieur : logo + titre + accroche */}
-      <div className="flex items-center justify-between px-6 py-4">
-        {/* Logo + Titre */}
+    <div className="w-full bg-blue-900 text-white">
+      {/* Haut : Logo + Titre + Phrase */}
+      <div className="flex flex-col md:flex-row justify-between items-center px-6 py-4">
         <div className="flex items-center space-x-4">
           <img src="/logo-gn.png" alt="Logo GN" className="h-10 w-auto" />
           <h1 className="text-2xl font-bold">Gendarmerie MRP</h1>
         </div>
-
-        {/* Phrase d’accroche */}
-        <div className="text-sm italic text-gray-200">
+        <div className="text-sm italic text-gray-200 mt-2 md:mt-0">
           “Notre Engagement, votre sécurité”
         </div>
       </div>
 
-      {/* Barre de navigation onglets */}
+      {/* Barre de navigation */}
       <div className="bg-blue-800 flex justify-center flex-wrap space-x-6 py-2 text-sm font-medium border-t border-blue-700">
         <NavLink
           to="/"
