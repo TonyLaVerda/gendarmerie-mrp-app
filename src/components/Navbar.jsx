@@ -6,6 +6,7 @@ const links = [
   { to: "/effectifs", label: "👮 Effectifs" },
   { to: "/bdsp", label: "🚨 BDSP" },
   { to: "/pulsar", label: "📅 Pulsar" },
+  { to: "/commandement", label: "🛡 Commandement" },  // <-- Ajout ici
   { to: "/stats", label: "📊 Statistiques" },
 ];
 
