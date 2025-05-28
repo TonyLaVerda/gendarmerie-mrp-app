@@ -46,12 +46,7 @@ export default function Bdsp({ patrols = [] }) {
     if (editingId !== null) {
       setInterventions((prev) =>
         prev.map((iv) =>
-          iv.id === editingId
-            ? {
-                ...iv,
-                ...form,
-              }
-            : iv
+          iv.id === editingId ? { ...iv, ...form } : iv
         )
       );
       setEditingId(null);
@@ -72,7 +67,7 @@ export default function Bdsp({ patrols = [] }) {
     setInterventions((prev) =>
       prev.map((iv) => {
         if (iv.id !== interventionId) return iv;
-        // Ne pas ré-ajouter la patrouille si déjà assignée
+        // Eviter doublon
         if (iv.patrouilles.some((p) => p.idPatrol === patrolId)) return iv;
         return {
           ...iv,
@@ -118,15 +113,25 @@ export default function Bdsp({ patrols = [] }) {
   };
 
   // Fonction pour archiver une intervention (clôturer la fiche)
-  function closeIntervention(interventionId) {
+  const closeIntervention = (interventionId) => {
     setInterventions((prev) =>
       prev.map((iv) => (iv.id === interventionId ? { ...iv, archived: true } : iv))
     );
-  }
+  };
 
   return (
-    <div style={{ maxWidth: 900, margin: "0 auto", padding: 24, fontFamily: "'Rubik', sans-serif", color: "#002654" }}>
-      <h1 style={{ fontSize: 36, fontWeight: 700, marginBottom: 24, textAlign: "center" }}>BDSP - Interventions</h1>
+    <div
+      style={{
+        maxWidth: 900,
+        margin: "0 auto",
+        padding: 24,
+        fontFamily: "'Rubik', sans-serif",
+        color: "#002654",
+      }}
+    >
+      <h1 style={{ fontSize: 36, fontWeight: 700, marginBottom: 24, textAlign: "center" }}>
+        BDSP - Interventions
+      </h1>
 
       {/* Formulaire ajout/modif intervention */}
       <div style={{ marginBottom: 24 }}>
@@ -137,7 +142,9 @@ export default function Bdsp({ patrols = [] }) {
         >
           <option value="">Type d'intervention</option>
           {typesInterventions.map((t, i) => (
-            <option key={i} value={t}>{t}</option>
+            <option key={i} value={t}>
+              {t}
+            </option>
           ))}
         </select>
 
@@ -182,7 +189,9 @@ export default function Bdsp({ patrols = [] }) {
         >
           <option value="">-- Toutes les interventions --</option>
           {typesInterventions.map((t, i) => (
-            <option key={i} value={t}>{t}</option>
+            <option key={i} value={t}>
+              {t}
+            </option>
           ))}
         </select>
       </div>
@@ -190,15 +199,30 @@ export default function Bdsp({ patrols = [] }) {
       {/* Liste des interventions */}
       <div style={{ maxHeight: 600, overflowY: "auto" }}>
         {filteredInterventions.length === 0 ? (
-          <p style={{ fontStyle: "italic", color: "#666", textAlign: "center" }}>Aucune intervention enregistrée.</p>
+          <p style={{ fontStyle: "italic", color: "#666", textAlign: "center" }}>
+            Aucune intervention enregistrée.
+          </p>
         ) : (
           filteredInterventions.map((iv) => (
-            <div key={iv.id} style={{ backgroundColor: "#f9fafb", borderLeft: "4px solid #1E3A8A", padding: 16, borderRadius: 6, marginBottom: 24 }}>
+            <div
+              key={iv.id}
+              style={{
+                backgroundColor: "#f9fafb",
+                borderLeft: "4px solid #1E3A8A",
+                padding: 16,
+                borderRadius: 6,
+                marginBottom: 24,
+              }}
+            >
               <h3>{iv.type}</h3>
               <p>
-                Le {new Date(iv.date).toLocaleDateString()} à {new Date(iv.date).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} - Lieu : {iv.lieu}
+                Le {new Date(iv.date).toLocaleDateString()} à{" "}
+                {new Date(iv.date).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} - Lieu :{" "}
+                {iv.lieu}
               </p>
-              <p><em>{iv.compteRendu || "Aucun compte-rendu opérationnel (CRO)."}</em></p>
+              <p>
+                <em>{iv.compteRendu || "Aucun compte-rendu opérationnel (CRO)."}</em>
+              </p>
 
               <div>
                 <strong>Patrouilles engagées :</strong>
@@ -219,7 +243,9 @@ export default function Bdsp({ patrols = [] }) {
                           style={{ marginLeft: 8, marginRight: 8, borderRadius: 6 }}
                         >
                           {patrolStatusOptions.map((option) => (
-                            <option key={option} value={option}>{option}</option>
+                            <option key={option} value={option}>
+                              {option}
+                            </option>
                           ))}
                         </select>
                         <button
@@ -273,11 +299,4 @@ export default function Bdsp({ patrols = [] }) {
       </div>
     </div>
   );
-
-  // Fonction pour archiver une intervention (clôturer la fiche)
-  function closeIntervention(interventionId) {
-    setInterventions((prev) =>
-      prev.map((iv) => (iv.id === interventionId ? { ...iv, archived: true } : iv))
-    );
-  }
 }
