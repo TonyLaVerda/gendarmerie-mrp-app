@@ -9,12 +9,10 @@ export default function Commandement({ agents, setAgents, patrols, setPatrols, i
   const [patrolStatuses, setPatrolStatuses] = useState({});
   const [patrolInterventions, setPatrolInterventions] = useState({}); // patrouilleId => interventionId
 
-  // Trier agents par grade (du plus gradé au moins gradé)
   const sortedAgents = [...agents].sort(
     (a, b) => gradesOrder.indexOf(a.grade) - gradesOrder.indexOf(b.grade)
   );
 
-  // Charger assignments, statuses et patrouille-intervention au chargement
   useEffect(() => {
     async function fetchData() {
       try {
@@ -40,7 +38,6 @@ export default function Commandement({ agents, setAgents, patrols, setPatrols, i
     fetchData();
   }, []);
 
-  // Sauvegarder assignments via API
   const saveAssignments = async (newAssignments) => {
     try {
       const res = await fetch('/api/assignments', {
@@ -54,7 +51,6 @@ export default function Commandement({ agents, setAgents, patrols, setPatrols, i
     }
   };
 
-  // Sauvegarder patrol statuses via API
   const savePatrolStatuses = async (newStatuses) => {
     try {
       const res = await fetch('/api/patrol-statuses', {
@@ -68,7 +64,6 @@ export default function Commandement({ agents, setAgents, patrols, setPatrols, i
     }
   };
 
-  // Sauvegarder liaison patrouille -> intervention via API
   const savePatrolInterventions = async (newMap) => {
     try {
       const res = await fetch('/api/patrol-interventions', {
@@ -82,7 +77,6 @@ export default function Commandement({ agents, setAgents, patrols, setPatrols, i
     }
   };
 
-  // Modifier le statut d'une patrouille
   const handleStatusChange = (patrolId, newStatus) => {
     setPatrolStatuses(prev => {
       const newStatuses = { ...prev, [patrolId]: newStatus };
@@ -91,7 +85,6 @@ export default function Commandement({ agents, setAgents, patrols, setPatrols, i
     });
   };
 
-  // Modifier liaison intervention de patrouille
   const handleInterventionChange = (patrolId, interventionId) => {
     setPatrolInterventions(prev => {
       const newMap = { ...prev, [patrolId]: interventionId };
@@ -100,7 +93,6 @@ export default function Commandement({ agents, setAgents, patrols, setPatrols, i
     });
   };
 
-  // Ajouter un agent à une patrouille (il faut aussi que tu implémentes handleAssignAgent et handleRemoveAgent ailleurs si tu les utilises ici)
   const handleAssignAgent = (patrolId, agentNom) => {
     setAssignments(prev => {
       const current = prev[patrolId] || [];
@@ -122,7 +114,6 @@ export default function Commandement({ agents, setAgents, patrols, setPatrols, i
     });
   };
 
-  // Récupérer le statut affiché
   const getPatrolStatus = (patrolId) => {
     if (patrolStatuses[patrolId]) return patrolStatuses[patrolId];
     if (assignments[patrolId] && assignments[patrolId].length > 0) return "Engagée";
@@ -134,8 +125,6 @@ export default function Commandement({ agents, setAgents, patrols, setPatrols, i
       <h1>🛡 Commandement</h1>
 
       <div className="commandement-content">
-
-        {/* Colonne agents */}
         <aside className="commandement-agents">
           <h2>Effectifs</h2>
           {sortedAgents.length === 0 && <p>Aucun agent enregistré.</p>}
@@ -148,7 +137,6 @@ export default function Commandement({ agents, setAgents, patrols, setPatrols, i
           </ul>
         </aside>
 
-        {/* Colonne patrouilles */}
         <section className="commandement-patrols">
           <h2>Patrouilles en cours</h2>
           {patrols.length === 0 && <p>Aucune patrouille en cours.</p>}
@@ -201,8 +189,7 @@ export default function Commandement({ agents, setAgents, patrols, setPatrols, i
                       <option key={i} value={agent.nom}>
                         {agent.nom}
                       </option>
-                    ))
-                  }
+                    ))}
                 </select>
 
                 <label>Statut :</label>
@@ -215,7 +202,6 @@ export default function Commandement({ agents, setAgents, patrols, setPatrols, i
                   ))}
                 </select>
 
-                {/* Nouveau menu intervention BDSP */}
                 <label>Intervention BDSP :</label>
                 <select
                   value={interventionId || ""}
