@@ -12,6 +12,7 @@ import Stats from './pages/Stats';
 export default function MainLayout() {
   const [agents, setAgents] = useState([]);
   const [patrols, setPatrols] = useState([]);
+  const [interventions, setInterventions] = useState([]);
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -25,7 +26,16 @@ export default function MainLayout() {
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/effectifs" element={<Effectifs agents={agents} setAgents={setAgents} />} />
-          <Route path="/bdsp" element={<Bdsp />} />
+          <Route
+            path="/bdsp"
+            element={
+              <Bdsp
+                patrols={patrols}
+                interventions={interventions}
+                setInterventions={setInterventions}
+              />
+            }
+          />
           <Route path="/pulsar" element={<Pulsar patrols={patrols} setPatrols={setPatrols} />} />
           <Route
             path="/commandement"
@@ -35,6 +45,7 @@ export default function MainLayout() {
                 setAgents={setAgents}
                 patrols={patrols}
                 setPatrols={setPatrols}
+                interventions={interventions}
               />
             }
           />
@@ -43,19 +54,17 @@ export default function MainLayout() {
       </main>
 
       {/* Pied de page */}
-      <div className="footer-wrapper">
-        <footer className="text-center text-sm text-gray-500 py-2 bg-gray-100 border-t max-w-5xl mx-auto">
-          Ce site est fictif, réalisé pour un serveur de jeu RP. En savoir plus sur{' '}
-          <a
-            href="https://martinique-roleplay.fr/"
-            className="text-blue-700 underline"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            martinique-roleplay.fr
-          </a>
-        </footer>
-      </div>
+      <footer className="text-center text-sm text-gray-500 py-2 bg-gray-100 border-t max-w-5xl mx-auto">
+        Ce site est fictif, réalisé pour un serveur de jeu RP. En savoir plus sur{' '}
+        <a
+          href="https://martinique-roleplay.fr/"
+          className="text-blue-700 underline"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          martinique-roleplay.fr
+        </a>
+      </footer>
     </div>
   );
 }
