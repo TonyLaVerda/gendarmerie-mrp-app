@@ -54,9 +54,11 @@ export default function Pulsar({ patrols, setPatrols }) {
         if (res.ok) {
           const data = await res.json();
           setPatrols(data);
+        } else {
+          console.error("Erreur lors du chargement des patrouilles");
         }
       } catch (e) {
-        console.error("Erreur chargement patrouilles", e);
+        console.error("Erreur réseau chargement patrouilles", e);
       }
     }
     fetchPatrols();
@@ -73,30 +75,19 @@ export default function Pulsar({ patrols, setPatrols }) {
       return;
     }
     try {
-      let res;
-      if (id !== null) {
-        // Modifier : on pourrait faire PUT /api/patrols/:id mais on garde POST simplifié
-        // Ici on simule suppression + ajout, ou remplacer dans API selon implémentation
-        res = await fetch('/api/patrols', {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify(formData),
-        });
-      } else {
-        // Ajouter
-        res = await fetch('/api/patrols', {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify(formData),
-        });
-      }
+      const res = await fetch('/api/patrols', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(formData),
+      });
       if (res.ok) {
         const newPatrol = await res.json();
-        // Mise à jour locale
         setPatrols(prev => {
           if (id !== null) {
+            // Mise à jour locale de la patrouille modifiée
             return prev.map(p => p.id === id ? newPatrol : p);
           } else {
+            // Ajout local
             return [...prev, newPatrol];
           }
         });
@@ -117,7 +108,7 @@ export default function Pulsar({ patrols, setPatrols }) {
   const handleDelete = async (id) => {
     if (!window.confirm("Voulez-vous vraiment supprimer cette patrouille ?")) return;
     try {
-      // Créer une route DELETE /api/patrols/:id côté API pour cela
+      // Crée la route DELETE /api/patrols/:id côté serveur pour que ça fonctionne
       const res = await fetch(`/api/patrols/${id}`, { method: 'DELETE' });
       if (res.ok) {
         setPatrols(prev => prev.filter(p => p.id !== id));
@@ -125,7 +116,7 @@ export default function Pulsar({ patrols, setPatrols }) {
           setFormData({ id: null, start: "", end: "", service: "", type: "" });
         }
       } else {
-        alert("Erreur suppression");
+        alert("Erreur lors de la suppression");
       }
     } catch (e) {
       console.error(e);
@@ -133,12 +124,112 @@ export default function Pulsar({ patrols, setPatrols }) {
     }
   };
 
-  // Reste inchangé pour la partie admin ajout services/types
+  // Admin: gestion services/types reste inchangée, tu peux la remettre ici si besoin
 
   return (
     <div className="pulsar-container">
-      {/* ... même JSX que ton précédent code ... */}
-      {/* Formulaire, admin et table */}
+      <header className="pulsar-header">
+        <h1>Pulsar Service</h1>
+        <p>Organisation des patrouilles</p>
+      </header>
+
+      <section className="pulsar-form">
+        <input
+          type="datetime-local"
+          name="start"
+          value={formData.start}
+          onChange={handleChange}
+          placeholder="Début"
+          className="pulsar-input"
+        />
+        <input
+          type="datetime-local"
+          name="end"
+          value={formData.end}
+          onChange={handleChange}
+          placeholder="Fin"
+          className="pulsar-input"
+        />
+        <select
+          name="service"
+          value={formData.service}
+          onChange={handleChange}
+          className="pulsar-select"
+        >
+          <option value="">Service</option>
+          {serviceOptions.map(service => (
+            <option key={service} value={service}>{service}</option>
+          ))}
+        </select>
+        <select
+          name="type"
+          value={formData.type}
+          onChange={handleChange}
+          className="pulsar-select"
+        >
+          <option value="">Type de patrouille</option>
+          {typeOptions.map(type => (
+            <option key={type} value={type}>{type}</option>
+          ))}
+        </select>
+        <button onClick={handleAddOrUpdatePatrol} className="pulsar-button">
+          {formData.id !== null ? "Modifier" : "Ajouter"}
+        </button>
+      </section>
+
+      {/* Ajoute ici la partie admin si besoin */}
+
+      <section className="pulsar-table-container">
+        <h2>Liste des patrouilles</h2>
+        <table className="pulsar-table">
+          <thead>
+            <tr>
+              <th>Début</th>
+              <th>Fin</th>
+              <th>Service</th>
+              <th>Type</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {patrols.length === 0 && (
+              <tr>
+                <td colSpan="5" className="pulsar-empty">
+                  Aucune patrouille enregistrée.
+                </td>
+              </tr>
+            )}
+            {patrols.map(({ id, start, end, service, type }) => (
+              <tr key={id}>
+                <td style={{ whiteSpace: "nowrap" }}>
+                  {new Date(start).toLocaleString(undefined, {
+                    year: "numeric",
+                    month: "2-digit",
+                    day: "2-digit",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </td>
+                <td style={{ whiteSpace: "nowrap" }}>
+                  {new Date(end).toLocaleString(undefined, {
+                    year: "numeric",
+                    month: "2-digit",
+                    day: "2-digit",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </td>
+                <td>{service}</td>
+                <td>{type}</td>
+                <td>
+                  <button onClick={() => handleEdit({ id, start, end, service, type })}>✏️</button>
+                  <button onClick={() => handleDelete(id)} style={{ marginLeft:"8px", color:"red" }}>🗑️</button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </section>
     </div>
   );
 }
