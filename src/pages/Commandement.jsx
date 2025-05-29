@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import './Commandement.css';
+import { getResource, postResource } from "../api/api"; // ajuste le chemin si besoin
 
 const gradesOrder = ["Col", "Lt Col", "Cen", "Cpt", "Lt", "Slt", "Maj", "Adj/C", "ADJ", "Mdl/C", "Gnd", "ELG"];
 const patrolStatusOptions = ["Disponible", "Engagée", "ASL", "Fin d'intervention"];
@@ -7,7 +8,7 @@ const patrolStatusOptions = ["Disponible", "Engagée", "ASL", "Fin d'interventio
 export default function Commandement({ agents, setAgents, patrols, setPatrols, interventions = [] }) {
   const [assignments, setAssignments] = useState({});
   const [patrolStatuses, setPatrolStatuses] = useState({});
-  const [patrolInterventions, setPatrolInterventions] = useState({}); // patrouilleId => interventionId
+  const [patrolInterventions, setPatrolInterventions] = useState({});
 
   // Trier agents par grade (du plus gradé au moins gradé)
   const sortedAgents = [...agents].sort(
@@ -18,19 +19,25 @@ export default function Commandement({ agents, setAgents, patrols, setPatrols, i
   useEffect(() => {
     async function fetchData() {
       try {
-        const [resAgents, resPatrols, resAssignments, resStatuses, resPatrolInterv] = await Promise.all([
-          fetch('/api/agents'),
-          fetch('/api/patrols'),
-          fetch('/api/assignments'),
-          fetch('/api/patrol-statuses'),
-          fetch('/api/patrol-interventions'),
+        const [
+          fetchedAgents,
+          fetchedPatrols,
+          fetchedAssignments,
+          fetchedPatrolStatuses,
+          fetchedPatrolInterventions
+        ] = await Promise.all([
+          getResource("agents"),
+          getResource("patrols"),
+          getResource("assignments"),
+          getResource("patrol-statuses"),
+          getResource("patrol-interventions"),
         ]);
 
-        if (resAgents.ok) setAgents(await resAgents.json());
-        if (resPatrols.ok) setPatrols(await resPatrols.json());
-        if (resAssignments.ok) setAssignments(await resAssignments.json());
-        if (resStatuses.ok) setPatrolStatuses(await resStatuses.json());
-        if (resPatrolInterv.ok) setPatrolInterventions(await resPatrolInterv.json());
+        setAgents(fetchedAgents);
+        setPatrols(fetchedPatrols);
+        setAssignments(fetchedAssignments);
+        setPatrolStatuses(fetchedPatrolStatuses);
+        setPatrolInterventions(fetchedPatrolInterventions);
       } catch (error) {
         console.error("Erreur chargement données commandement :", error);
       }
@@ -38,49 +45,30 @@ export default function Commandement({ agents, setAgents, patrols, setPatrols, i
     fetchData();
   }, [setAgents, setPatrols]);
 
-  // Sauvegarder assignations
   const saveAssignments = async (newAssignments) => {
     try {
-      const res = await fetch('/api/assignments', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newAssignments),
-      });
-      if (!res.ok) throw new Error("Erreur sauvegarde assignations");
+      await postResource("assignments", newAssignments);
     } catch (error) {
-      console.error(error);
+      console.error("Erreur sauvegarde assignations", error);
     }
   };
 
-  // Sauvegarder statuts patrouilles
   const savePatrolStatuses = async (newStatuses) => {
     try {
-      const res = await fetch('/api/patrol-statuses', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newStatuses),
-      });
-      if (!res.ok) throw new Error("Erreur sauvegarde statuts");
+      await postResource("patrol-statuses", newStatuses);
     } catch (error) {
-      console.error(error);
+      console.error("Erreur sauvegarde statuts", error);
     }
   };
 
-  // Sauvegarder liaison patrouille-intervention
   const savePatrolInterventions = async (newMap) => {
     try {
-      const res = await fetch('/api/patrol-interventions', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newMap),
-      });
-      if (!res.ok) throw new Error("Erreur sauvegarde liaison patrouille-intervention");
+      await postResource("patrol-interventions", newMap);
     } catch (error) {
-      console.error(error);
+      console.error("Erreur sauvegarde liaison patrouille-intervention", error);
     }
   };
 
-  // Gestion des changements de statut patrouille
   const handleStatusChange = (patrolId, newStatus) => {
     setPatrolStatuses(prev => {
       const newStatuses = { ...prev, [patrolId]: newStatus };
@@ -89,7 +77,6 @@ export default function Commandement({ agents, setAgents, patrols, setPatrols, i
     });
   };
 
-  // Gestion liaison intervention patrouille
   const handleInterventionChange = (patrolId, interventionId) => {
     setPatrolInterventions(prev => {
       const newMap = { ...prev, [patrolId]: interventionId };
@@ -98,7 +85,6 @@ export default function Commandement({ agents, setAgents, patrols, setPatrols, i
     });
   };
 
-  // Assignation agent à patrouille
   const handleAssignAgent = (patrolId, agentNom) => {
     setAssignments(prev => {
       const current = prev[patrolId] || [];
@@ -111,7 +97,6 @@ export default function Commandement({ agents, setAgents, patrols, setPatrols, i
     });
   };
 
-  // Retirer agent d'une patrouille
   const handleRemoveAgent = (patrolId, agentNom) => {
     setAssignments(prev => {
       const current = prev[patrolId] || [];
@@ -121,7 +106,6 @@ export default function Commandement({ agents, setAgents, patrols, setPatrols, i
     });
   };
 
-  // Statut affiché d'une patrouille
   const getPatrolStatus = (patrolId) => {
     if (patrolStatuses[patrolId]) return patrolStatuses[patrolId];
     if (assignments[patrolId] && assignments[patrolId].length > 0) return "Engagée";
