@@ -47,7 +47,6 @@ export default function Pulsar({ patrols, setPatrols }) {
   });
 
   useEffect(() => {
-    // Charger patrouilles depuis API au montage
     async function fetchPatrols() {
       try {
         const res = await fetch('/api/patrols');
@@ -108,7 +107,6 @@ export default function Pulsar({ patrols, setPatrols }) {
   const handleDelete = async (id) => {
     if (!window.confirm("Voulez-vous vraiment supprimer cette patrouille ?")) return;
     try {
-      // Crée la route DELETE /api/patrols/:id côté serveur pour que ça fonctionne
       const res = await fetch(`/api/patrols/${id}`, { method: 'DELETE' });
       if (res.ok) {
         setPatrols(prev => prev.filter(p => p.id !== id));
@@ -123,8 +121,6 @@ export default function Pulsar({ patrols, setPatrols }) {
       alert("Erreur réseau");
     }
   };
-
-  // Admin: gestion services/types reste inchangée, tu peux la remettre ici si besoin
 
   return (
     <div className="pulsar-container">
@@ -176,8 +172,6 @@ export default function Pulsar({ patrols, setPatrols }) {
           {formData.id !== null ? "Modifier" : "Ajouter"}
         </button>
       </section>
-
-      {/* Ajoute ici la partie admin si besoin */}
 
       <section className="pulsar-table-container">
         <h2>Liste des patrouilles</h2>
