@@ -18,7 +18,6 @@ export default function Commandement({ agents, setAgents, patrols, setPatrols, i
   useEffect(() => {
     async function fetchData() {
       try {
-        // Charger agents et patrouilles aussi (si pas déjà fait)
         const [resAgents, resPatrols, resAssignments, resStatuses, resPatrolInterv] = await Promise.all([
           fetch('/api/agents'),
           fetch('/api/patrols'),
