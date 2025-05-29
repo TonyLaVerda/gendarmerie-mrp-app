@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import './Effectifs.css';
+import { getResource, postResource } from "../api/api"; // ajuste le chemin si besoin
 
 const grades = ["ELG", "Gnd", "Mdl/C", "ADJ", "Adj/C", "Maj", "Slt", "Lt", "Cpt", "Cen", "Lt Col", "Col"];
 const unites = ["GD", "PMO", "PSIG"];
@@ -17,13 +18,8 @@ export default function Effectifs({ agents, setAgents }) {
   useEffect(() => {
     async function fetchAgents() {
       try {
-        const res = await fetch('/api/agents');
-        if (res.ok) {
-          const data = await res.json();
-          setAgents(data);
-        } else {
-          console.error("Erreur lors du chargement des agents");
-        }
+        const data = await getResource("agents");
+        setAgents(data);
       } catch (e) {
         console.error("Erreur réseau chargement agents", e);
       }
@@ -37,21 +33,12 @@ export default function Effectifs({ agents, setAgents }) {
       return;
     }
     try {
-      const res = await fetch('/api/agents', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newAgent),
-      });
-      if (res.ok) {
-        const createdAgent = await res.json();
-        setAgents(prev => [...prev, createdAgent]);
-        setNewAgent({ nom: "", grade: "", unite: "", specialite: "", statut: "Indispo" });
-      } else {
-        alert("Erreur lors de la création de l'agent");
-      }
+      const createdAgent = await postResource("agents", newAgent);
+      setAgents(prev => [...prev, createdAgent]);
+      setNewAgent({ nom: "", grade: "", unite: "", specialite: "", statut: "Indispo" });
     } catch (e) {
       console.error(e);
-      alert("Erreur réseau");
+      alert("Erreur lors de la création de l'agent");
     }
   };
 
