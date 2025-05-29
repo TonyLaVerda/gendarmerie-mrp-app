@@ -12,7 +12,7 @@ let agents = [];
 let patrols = [];
 let interventions = [];
 
-// Pour simplifier, voici une structure pour les assignations (patrolId => [agentNoms])
+// Pour simplifier, structure assignations (patrolId => [agentNoms])
 let assignments = {};
 
 // Statuts des patrouilles (patrolId => statut)
@@ -52,7 +52,6 @@ app.post("/api/patrols", (req, res) => {
   res.status(201).json(newPatrol);
 });
 
-// DELETE patrouille
 app.delete("/api/patrols/:id", (req, res) => {
   const id = Number(req.params.id);
   const index = patrols.findIndex(p => p.id === id);
@@ -63,7 +62,6 @@ app.delete("/api/patrols/:id", (req, res) => {
   res.status(200).json({ message: "Patrouille supprimée" });
 });
 
-// PUT (remplacement complet) patrouille
 app.put("/api/patrols/:id", (req, res) => {
   const id = Number(req.params.id);
   const index = patrols.findIndex(p => p.id === id);
@@ -75,7 +73,6 @@ app.put("/api/patrols/:id", (req, res) => {
   res.status(200).json(updatedPatrol);
 });
 
-// PATCH (mise à jour partielle) patrouille
 app.patch("/api/patrols/:id", (req, res) => {
   const id = Number(req.params.id);
   const index = patrols.findIndex(p => p.id === id);
