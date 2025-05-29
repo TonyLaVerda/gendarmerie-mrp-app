@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 
 const typesInterventions = [
   "Rixe", "ACR Matériel", "ACR", "Incendie", "Vol de VL", "Vol", "Cambriolage",
@@ -17,87 +17,158 @@ export default function Bdsp({ patrols = [], interventions, setInterventions }) 
   });
   const [editingId, setEditingId] = useState(null);
 
+  // Charger interventions au montage
+  useEffect(() => {
+    async function fetchInterventions() {
+      try {
+        const res = await fetch('/api/interventions');
+        if (res.ok) {
+          const data = await res.json();
+          setInterventions(data);
+        } else {
+          console.error("Erreur chargement interventions");
+        }
+      } catch (e) {
+        console.error("Erreur réseau chargement interventions", e);
+      }
+    }
+    fetchInterventions();
+  }, [setInterventions]);
+
   const filteredInterventions = useMemo(() => {
     return interventions.filter(
       (iv) => !iv.archived && (filtreType ? iv.type === filtreType : true)
     );
   }, [interventions, filtreType]);
 
-  const handleAddOrUpdate = () => {
+  // Envoi ajout ou mise à jour via API
+  const handleAddOrUpdate = async () => {
     const { type, lieu, date } = form;
     if (!type || !lieu || !date) {
       alert("Veuillez remplir le type, lieu et date");
       return;
     }
-    if (editingId !== null) {
-      setInterventions((prev) =>
-        prev.map((iv) =>
-          iv.id === editingId ? { ...iv, ...form } : iv
-        )
-      );
-      setEditingId(null);
-    } else {
-      const newIntervention = {
-        id: interventions.length ? Math.max(...interventions.map((iv) => iv.id)) + 1 : 1,
-        ...form,
-        patrouilles: [],
-        archived: false,
-      };
-      setInterventions((prev) => [...prev, newIntervention]);
+
+    try {
+      let res;
+      if (editingId !== null) {
+        // Ici on n’a pas de route PUT donc on simule avec POST (peut être amélioré côté API)
+        res = await fetch('/api/interventions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: editingId, ...form }),
+        });
+      } else {
+        res = await fetch('/api/interventions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(form),
+        });
+      }
+      if (res.ok) {
+        const updatedOrCreated = await res.json();
+        setInterventions(prev => {
+          if (editingId !== null) {
+            return prev.map(iv => iv.id === editingId ? updatedOrCreated : iv);
+          } else {
+            return [...prev, updatedOrCreated];
+          }
+        });
+        setEditingId(null);
+        setForm({ type: "", lieu: "", date: "", compteRendu: "" });
+      } else {
+        alert("Erreur lors de la sauvegarde");
+      }
+    } catch (e) {
+      console.error(e);
+      alert("Erreur réseau");
     }
-    setForm({ type: "", lieu: "", date: "", compteRendu: "" });
   };
 
-  const addPatrouilleToIntervention = (interventionId, patrolId) => {
-    setInterventions((prev) =>
-      prev.map((iv) => {
-        if (iv.id !== interventionId) return iv;
-        if (iv.patrouilles.some((p) => p.idPatrol === patrolId)) return iv;
-        return {
-          ...iv,
-          patrouilles: [
-            ...iv.patrouilles,
-            {
-              idPatrol: patrolId,
-              statut: "Engagée",
-              timestamp: new Date().toISOString(),
-            },
-          ],
-        };
-      })
-    );
+  // Ajout patrouille via API
+  const addPatrouilleToIntervention = async (interventionId, patrolId) => {
+    const iv = interventions.find(i => i.id === interventionId);
+    if (!iv) return;
+    if (iv.patrouilles.some(p => p.idPatrol === patrolId)) return;
+
+    const updatedPatrouilles = [
+      ...iv.patrouilles,
+      { idPatrol: patrolId, statut: "Engagée", timestamp: new Date().toISOString() },
+    ];
+
+    await updatePatrouilles(interventionId, updatedPatrouilles);
   };
 
-  const updatePatrolStatus = (interventionId, patrolId, newStatus) => {
-    setInterventions((prev) =>
-      prev.map((iv) => {
-        if (iv.id !== interventionId) return iv;
-        return {
-          ...iv,
-          patrouilles: iv.patrouilles.map((p) =>
-            p.idPatrol === patrolId ? { ...p, statut: newStatus } : p
-          ),
-        };
-      })
+  // Mise à jour statut patrouille via API
+  const updatePatrolStatus = async (interventionId, patrolId, newStatus) => {
+    const iv = interventions.find(i => i.id === interventionId);
+    if (!iv) return;
+
+    const updatedPatrouilles = iv.patrouilles.map(p =>
+      p.idPatrol === patrolId ? { ...p, statut: newStatus } : p
     );
+
+    await updatePatrouilles(interventionId, updatedPatrouilles);
   };
 
-  const removePatrouille = (interventionId, patrolId) => {
-    setInterventions((prev) =>
-      prev.map((iv) => {
-        if (iv.id !== interventionId) return iv;
-        return {
-          ...iv,
-          patrouilles: iv.patrouilles.filter((p) => p.idPatrol !== patrolId),
-        };
-      })
-    );
+  // Suppression patrouille via API
+  const removePatrouille = async (interventionId, patrolId) => {
+    const iv = interventions.find(i => i.id === interventionId);
+    if (!iv) return;
+
+    const updatedPatrouilles = iv.patrouilles.filter(p => p.idPatrol !== patrolId);
+
+    await updatePatrouilles(interventionId, updatedPatrouilles);
   };
 
-  const closeIntervention = (interventionId) => {
-    setInterventions((prev) =>
-      prev.map((iv) => (iv.id === interventionId ? { ...iv, archived: true } : iv))
-    );
+  // Clôture intervention (archivage) via API
+  const closeIntervention = async (interventionId) => {
+    try {
+      const iv = interventions.find(i => i.id === interventionId);
+      if (!iv) return;
+
+      const updated = { ...iv, archived: true };
+      const res = await fetch('/api/interventions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updated),
+      });
+      if (res.ok) {
+        setInterventions(prev =>
+          prev.map(i => (i.id === interventionId ? updated : i))
+        );
+      } else {
+        alert("Erreur lors de la clôture");
+      }
+    } catch (e) {
+      console.error(e);
+      alert("Erreur réseau");
+    }
+  };
+
+  // Fonction commune pour mettre à jour patrouilles dans une intervention (utilisée par add, update statut, remove)
+  const updatePatrouilles = async (interventionId, patrouilles) => {
+    try {
+      const iv = interventions.find(i => i.id === interventionId);
+      if (!iv) return;
+
+      const updated = { ...iv, patrouilles };
+      const res = await fetch('/api/interventions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updated),
+      });
+      if (res.ok) {
+        setInterventions(prev =>
+          prev.map(i => (i.id === interventionId ? updated : i))
+        );
+      } else {
+        alert("Erreur mise à jour patrouilles");
+      }
+    } catch (e) {
+      console.error(e);
+      alert("Erreur réseau");
+    }
   };
 
   return (
