@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import './Pulsar.css';
+import { getResource, postResource, deleteResource } from "../api/api"; // Ajuste le chemin si besoin
 
 export default function Pulsar({ patrols, setPatrols }) {
-  const [serviceOptions, setServiceOptions] = useState([
+  const [serviceOptions] = useState([
     "PAM Fort de France",
     "PAM Trinité",
     "PAM Le Marin",
@@ -26,7 +27,7 @@ export default function Pulsar({ patrols, setPatrols }) {
     "DIR 3",
   ]);
   
-  const [typeOptions, setTypeOptions] = useState([
+  const [typeOptions] = useState([
     "Prevention de proximité",
     "Police route véhicule sérigraphié",
     "Police route véhicule banalisé",
@@ -49,13 +50,8 @@ export default function Pulsar({ patrols, setPatrols }) {
   useEffect(() => {
     async function fetchPatrols() {
       try {
-        const res = await fetch('/api/patrols');
-        if (res.ok) {
-          const data = await res.json();
-          setPatrols(data);
-        } else {
-          console.error("Erreur lors du chargement des patrouilles");
-        }
+        const data = await getResource("patrols");
+        setPatrols(data);
       } catch (e) {
         console.error("Erreur réseau chargement patrouilles", e);
       }
@@ -74,29 +70,19 @@ export default function Pulsar({ patrols, setPatrols }) {
       return;
     }
     try {
-      const res = await fetch('/api/patrols', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(formData),
-      });
-      if (res.ok) {
-        const newPatrol = await res.json();
-        setPatrols(prev => {
-          if (id !== null) {
-            // Mise à jour locale de la patrouille modifiée
-            return prev.map(p => p.id === id ? newPatrol : p);
-          } else {
-            // Ajout local
-            return [...prev, newPatrol];
-          }
-        });
-        setFormData({ id: null, start: "", end: "", service: "", type: "" });
+      if (id !== null) {
+        // Ici tu pourrais utiliser updateResource si tu l'as défini dans api.js
+        // Mais ton API fait POST aussi pour update, donc on utilise postResource
+        const updatedPatrol = await postResource("patrols", formData);
+        setPatrols(prev => prev.map(p => p.id === id ? updatedPatrol : p));
       } else {
-        alert("Erreur lors de la sauvegarde");
+        const newPatrol = await postResource("patrols", formData);
+        setPatrols(prev => [...prev, newPatrol]);
       }
+      setFormData({ id: null, start: "", end: "", service: "", type: "" });
     } catch (e) {
       console.error(e);
-      alert("Erreur réseau");
+      alert("Erreur lors de la sauvegarde");
     }
   };
 
@@ -107,18 +93,14 @@ export default function Pulsar({ patrols, setPatrols }) {
   const handleDelete = async (id) => {
     if (!window.confirm("Voulez-vous vraiment supprimer cette patrouille ?")) return;
     try {
-      const res = await fetch(`/api/patrols/${id}`, { method: 'DELETE' });
-      if (res.ok) {
-        setPatrols(prev => prev.filter(p => p.id !== id));
-        if (formData.id === id) {
-          setFormData({ id: null, start: "", end: "", service: "", type: "" });
-        }
-      } else {
-        alert("Erreur lors de la suppression");
+      await deleteResource("patrols", id);
+      setPatrols(prev => prev.filter(p => p.id !== id));
+      if (formData.id === id) {
+        setFormData({ id: null, start: "", end: "", service: "", type: "" });
       }
     } catch (e) {
       console.error(e);
-      alert("Erreur réseau");
+      alert("Erreur lors de la suppression");
     }
   };
 
