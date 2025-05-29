@@ -1,4 +1,5 @@
 import React, { useMemo, useState, useEffect } from "react";
+import { getResource, postResource } from "../api/api";  // ajuste le chemin si besoin
 
 const typesInterventions = [
   "Rixe", "ACR Matériel", "ACR", "Incendie", "Vol de VL", "Vol", "Cambriolage",
@@ -17,19 +18,14 @@ export default function Bdsp({ patrols = [], interventions, setInterventions }) 
   });
   const [editingId, setEditingId] = useState(null);
 
-  // Charger interventions au montage
+  // Charger interventions au montage avec la fonction getResource
   useEffect(() => {
     async function fetchInterventions() {
       try {
-        const res = await fetch('/api/interventions');
-        if (res.ok) {
-          const data = await res.json();
-          setInterventions(data);
-        } else {
-          console.error("Erreur chargement interventions");
-        }
+        const data = await getResource("interventions");
+        setInterventions(data);
       } catch (e) {
-        console.error("Erreur réseau chargement interventions", e);
+        console.error("Erreur chargement interventions", e);
       }
     }
     fetchInterventions();
@@ -49,38 +45,37 @@ export default function Bdsp({ patrols = [], interventions, setInterventions }) 
     }
 
     try {
-      let res;
-      if (editingId !== null) {
-        // Ici on simule update avec POST
-        res = await fetch('/api/interventions', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ id: editingId, ...form }),
-        });
-      } else {
-        res = await fetch('/api/interventions', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(form),
-        });
-      }
-      if (res.ok) {
-        const updatedOrCreated = await res.json();
-        setInterventions(prev => {
-          if (editingId !== null) {
-            return prev.map(iv => iv.id === editingId ? updatedOrCreated : iv);
-          } else {
-            return [...prev, updatedOrCreated];
-          }
-        });
-        setEditingId(null);
-        setForm({ type: "", lieu: "", date: "", compteRendu: "" });
-      } else {
-        alert("Erreur lors de la sauvegarde");
-      }
+      // Ici on simule update avec POST (à améliorer côté backend)
+      const payload = editingId !== null ? { id: editingId, ...form } : form;
+      const updatedOrCreated = await postResource("interventions", payload);
+
+      setInterventions(prev => {
+        if (editingId !== null) {
+          return prev.map(iv => iv.id === editingId ? updatedOrCreated : iv);
+        } else {
+          return [...prev, updatedOrCreated];
+        }
+      });
+      setEditingId(null);
+      setForm({ type: "", lieu: "", date: "", compteRendu: "" });
     } catch (e) {
       console.error(e);
-      alert("Erreur réseau");
+      alert("Erreur lors de la sauvegarde");
+    }
+  };
+
+  const updatePatrouilles = async (interventionId, patrouilles) => {
+    try {
+      const iv = interventions.find(i => i.id === interventionId);
+      if (!iv) return;
+      const updated = { ...iv, patrouilles };
+      const updatedIntervention = await postResource("interventions", updated);
+      setInterventions(prev =>
+        prev.map(i => (i.id === interventionId ? updatedIntervention : i))
+      );
+    } catch (e) {
+      console.error(e);
+      alert("Erreur mise à jour patrouilles");
     }
   };
 
@@ -123,45 +118,13 @@ export default function Bdsp({ patrols = [], interventions, setInterventions }) 
       if (!iv) return;
 
       const updated = { ...iv, archived: true };
-      const res = await fetch('/api/interventions', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updated),
-      });
-      if (res.ok) {
-        setInterventions(prev =>
-          prev.map(i => (i.id === interventionId ? updated : i))
-        );
-      } else {
-        alert("Erreur lors de la clôture");
-      }
+      const updatedIntervention = await postResource("interventions", updated);
+      setInterventions(prev =>
+        prev.map(i => (i.id === interventionId ? updatedIntervention : i))
+      );
     } catch (e) {
       console.error(e);
-      alert("Erreur réseau");
-    }
-  };
-
-  const updatePatrouilles = async (interventionId, patrouilles) => {
-    try {
-      const iv = interventions.find(i => i.id === interventionId);
-      if (!iv) return;
-
-      const updated = { ...iv, patrouilles };
-      const res = await fetch('/api/interventions', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updated),
-      });
-      if (res.ok) {
-        setInterventions(prev =>
-          prev.map(i => (i.id === interventionId ? updated : i))
-        );
-      } else {
-        alert("Erreur mise à jour patrouilles");
-      }
-    } catch (e) {
-      console.error(e);
-      alert("Erreur réseau");
+      alert("Erreur lors de la clôture");
     }
   };
 
