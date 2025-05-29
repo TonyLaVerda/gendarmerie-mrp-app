@@ -34,10 +34,20 @@ app.get("/api/agents", (req, res) => {
 });
 
 app.post("/api/agents", (req, res) => {
-  const newAgent = req.body;
-  newAgent.id = agents.length ? agents[agents.length - 1].id + 1 : 1;
-  agents.push(newAgent);
-  res.status(201).json(newAgent);
+  console.log("POST /api/agents - body:", req.body);
+  try {
+    const newAgent = req.body;
+    if (!newAgent.nom || !newAgent.grade || !newAgent.unite) {
+      return res.status(400).json({ error: "Champs obligatoires manquants (nom, grade, unite)" });
+    }
+    newAgent.id = agents.length ? agents[agents.length - 1].id + 1 : 1;
+    agents.push(newAgent);
+    console.log("Agent ajouté:", newAgent);
+    res.status(201).json(newAgent);
+  } catch (error) {
+    console.error("Erreur POST /api/agents:", error);
+    res.status(500).json({ error: "Erreur serveur lors de la création de l'agent" });
+  }
 });
 
 // Patrouilles
@@ -46,12 +56,23 @@ app.get("/api/patrols", (req, res) => {
 });
 
 app.post("/api/patrols", (req, res) => {
-  const newPatrol = req.body;
-  newPatrol.id = patrols.length ? patrols[patrols.length - 1].id + 1 : 1;
-  patrols.push(newPatrol);
-  res.status(201).json(newPatrol);
+  console.log("POST /api/patrols - body:", req.body);
+  try {
+    const newPatrol = req.body;
+    if (!newPatrol.start || !newPatrol.end || !newPatrol.service || !newPatrol.type) {
+      return res.status(400).json({ error: "Champs obligatoires manquants (start, end, service, type)" });
+    }
+    newPatrol.id = patrols.length ? patrols[patrols.length - 1].id + 1 : 1;
+    patrols.push(newPatrol);
+    console.log("Patrouille ajoutée:", newPatrol);
+    res.status(201).json(newPatrol);
+  } catch (error) {
+    console.error("Erreur POST /api/patrols:", error);
+    res.status(500).json({ error: "Erreur serveur lors de la création de la patrouille" });
+  }
 });
 
+// DELETE, PUT, PATCH patrouilles restent inchangés
 app.delete("/api/patrols/:id", (req, res) => {
   const id = Number(req.params.id);
   const index = patrols.findIndex(p => p.id === id);
@@ -89,10 +110,20 @@ app.get("/api/interventions", (req, res) => {
 });
 
 app.post("/api/interventions", (req, res) => {
-  const newIntervention = req.body;
-  newIntervention.id = interventions.length ? Math.max(...interventions.map(i => i.id)) + 1 : 1;
-  interventions.push(newIntervention);
-  res.status(201).json(newIntervention);
+  console.log("POST /api/interventions - body:", req.body);
+  try {
+    const newIntervention = req.body;
+    if (!newIntervention.type || !newIntervention.lieu || !newIntervention.date) {
+      return res.status(400).json({ error: "Champs obligatoires manquants (type, lieu, date)" });
+    }
+    newIntervention.id = interventions.length ? Math.max(...interventions.map(i => i.id)) + 1 : 1;
+    interventions.push(newIntervention);
+    console.log("Intervention ajoutée:", newIntervention);
+    res.status(201).json(newIntervention);
+  } catch (error) {
+    console.error("Erreur POST /api/interventions:", error);
+    res.status(500).json({ error: "Erreur serveur lors de la création de l'intervention" });
+  }
 });
 
 // Assignments (patrolId => [agentNom])
@@ -101,6 +132,7 @@ app.get("/api/assignments", (req, res) => {
 });
 
 app.post("/api/assignments", (req, res) => {
+  console.log("POST /api/assignments - body:", req.body);
   assignments = req.body;
   res.status(200).json({ message: "Assignments updated" });
 });
@@ -111,6 +143,7 @@ app.get("/api/patrol-statuses", (req, res) => {
 });
 
 app.post("/api/patrol-statuses", (req, res) => {
+  console.log("POST /api/patrol-statuses - body:", req.body);
   patrolStatuses = req.body;
   res.status(200).json({ message: "Patrol statuses updated" });
 });
@@ -121,6 +154,7 @@ app.get("/api/patrol-interventions", (req, res) => {
 });
 
 app.post("/api/patrol-interventions", (req, res) => {
+  console.log("POST /api/patrol-interventions - body:", req.body);
   patrolInterventions = req.body;
   res.status(200).json({ message: "Patrol interventions updated" });
 });
