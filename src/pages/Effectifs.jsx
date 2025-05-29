@@ -32,26 +32,26 @@ export default function Effectifs({ agents, setAgents }) {
   }, [setAgents]);
 
   const handleAddAgent = async () => {
-    if (newAgent.nom && newAgent.grade && newAgent.unite) {
-      try {
-        const res = await fetch('/api/agents', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(newAgent),
-        });
-        if (res.ok) {
-          const createdAgent = await res.json();
-          setAgents(prev => [...prev, createdAgent]);
-          setNewAgent({ nom: "", grade: "", unite: "", specialite: "", statut: "Indispo" });
-        } else {
-          alert("Erreur lors de la création de l'agent");
-        }
-      } catch (e) {
-        console.error(e);
-        alert("Erreur réseau");
-      }
-    } else {
+    if (!newAgent.nom || !newAgent.grade || !newAgent.unite) {
       alert("Veuillez remplir au minimum le nom, le grade et l'unité.");
+      return;
+    }
+    try {
+      const res = await fetch('/api/agents', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newAgent),
+      });
+      if (res.ok) {
+        const createdAgent = await res.json();
+        setAgents(prev => [...prev, createdAgent]);
+        setNewAgent({ nom: "", grade: "", unite: "", specialite: "", statut: "Indispo" });
+      } else {
+        alert("Erreur lors de la création de l'agent");
+      }
+    } catch (e) {
+      console.error(e);
+      alert("Erreur réseau");
     }
   };
 
