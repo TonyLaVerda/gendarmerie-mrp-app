@@ -18,12 +18,17 @@ export default function Commandement({ agents, setAgents, patrols, setPatrols, i
   useEffect(() => {
     async function fetchData() {
       try {
-        const [resAssignments, resStatuses, resPatrolInterv] = await Promise.all([
+        // Charger agents et patrouilles aussi (si pas déjà fait)
+        const [resAgents, resPatrols, resAssignments, resStatuses, resPatrolInterv] = await Promise.all([
+          fetch('/api/agents'),
+          fetch('/api/patrols'),
           fetch('/api/assignments'),
           fetch('/api/patrol-statuses'),
           fetch('/api/patrol-interventions'),
         ]);
 
+        if (resAgents.ok) setAgents(await resAgents.json());
+        if (resPatrols.ok) setPatrols(await resPatrols.json());
         if (resAssignments.ok) setAssignments(await resAssignments.json());
         if (resStatuses.ok) setPatrolStatuses(await resStatuses.json());
         if (resPatrolInterv.ok) setPatrolInterventions(await resPatrolInterv.json());
@@ -32,7 +37,7 @@ export default function Commandement({ agents, setAgents, patrols, setPatrols, i
       }
     }
     fetchData();
-  }, []);
+  }, [setAgents, setPatrols]);
 
   // Sauvegarder assignations
   const saveAssignments = async (newAssignments) => {
