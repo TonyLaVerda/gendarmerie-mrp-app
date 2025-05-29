@@ -247,37 +247,4 @@ export default function Bdsp({ patrols = [], interventions, setInterventions }) 
       </div>
     </div>
   );
-
-  // Définir les fonctions updatePatrolStatus, removePatrouille et closeIntervention ici
-  function updatePatrolStatus(interventionId, patrolId, newStatus) {
-    setInterventions((prev) =>
-      prev.map((iv) => {
-        if (iv.id !== interventionId) return iv;
-        return {
-          ...iv,
-          patrouilles: iv.patrouilles.map((p) =>
-            p.idPatrol === patrolId ? { ...p, statut: newStatus } : p
-          ),
-        };
-      })
-    );
-  }
-
-  function removePatrouille(interventionId, patrolId) {
-    setInterventions((prev) =>
-      prev.map((iv) => {
-        if (iv.id !== interventionId) return iv;
-        return {
-          ...iv,
-          patrouilles: iv.patrouilles.filter((p) => p.idPatrol !== patrolId),
-        };
-      })
-    );
-  }
-
-  function closeIntervention(interventionId) {
-    setInterventions((prev) =>
-      prev.map((iv) => (iv.id === interventionId ? { ...iv, archived: true } : iv))
-    );
-  }
 }
