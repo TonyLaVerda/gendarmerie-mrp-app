@@ -13,13 +13,18 @@ let patrols = [];
 let interventions = [];
 
 // Pour simplifier, voici une structure pour les assignations (patrolId => [agentNoms])
-let assignments = {}; 
+let assignments = {};
 
 // Statuts des patrouilles (patrolId => statut)
 let patrolStatuses = {};
 
 // Liaison patrouille -> intervention (patrolId => interventionId)
 let patrolInterventions = {};
+
+// Route racine simple pour tester le serveur
+app.get("/", (req, res) => {
+  res.send("API Gendarmerie MR Projet - serveur actif");
+});
 
 // Routes API
 
