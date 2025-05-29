@@ -128,7 +128,7 @@ app.post("/api/patrol-interventions", (req, res) => {
   res.status(200).json({ message: "Patrol interventions updated" });
 });
 
-// Démarrage du serveur
+console.log("Démarrage du serveur...");
 app.listen(port, '0.0.0.0', () => {
   console.log(`API server running on port ${port}`);
 });
