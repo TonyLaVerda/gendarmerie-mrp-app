@@ -9,28 +9,24 @@ export default function Commandement({ agents, setAgents, patrols, setPatrols, i
   const [patrolStatuses, setPatrolStatuses] = useState({});
   const [patrolInterventions, setPatrolInterventions] = useState({}); // patrouilleId => interventionId
 
+  // Trier agents par grade (du plus gradé au moins gradé)
   const sortedAgents = [...agents].sort(
     (a, b) => gradesOrder.indexOf(a.grade) - gradesOrder.indexOf(b.grade)
   );
 
+  // Charger les données au démarrage
   useEffect(() => {
     async function fetchData() {
       try {
-        const resAssignments = await fetch('/api/assignments');
-        if (resAssignments.ok) {
-          const data = await resAssignments.json();
-          setAssignments(data);
-        }
-        const resStatuses = await fetch('/api/patrol-statuses');
-        if (resStatuses.ok) {
-          const data = await resStatuses.json();
-          setPatrolStatuses(data);
-        }
-        const resPatrolInterv = await fetch('/api/patrol-interventions');
-        if (resPatrolInterv.ok) {
-          const data = await resPatrolInterv.json();
-          setPatrolInterventions(data);
-        }
+        const [resAssignments, resStatuses, resPatrolInterv] = await Promise.all([
+          fetch('/api/assignments'),
+          fetch('/api/patrol-statuses'),
+          fetch('/api/patrol-interventions'),
+        ]);
+
+        if (resAssignments.ok) setAssignments(await resAssignments.json());
+        if (resStatuses.ok) setPatrolStatuses(await resStatuses.json());
+        if (resPatrolInterv.ok) setPatrolInterventions(await resPatrolInterv.json());
       } catch (error) {
         console.error("Erreur chargement données commandement :", error);
       }
@@ -38,6 +34,7 @@ export default function Commandement({ agents, setAgents, patrols, setPatrols, i
     fetchData();
   }, []);
 
+  // Sauvegarder assignations
   const saveAssignments = async (newAssignments) => {
     try {
       const res = await fetch('/api/assignments', {
@@ -51,6 +48,7 @@ export default function Commandement({ agents, setAgents, patrols, setPatrols, i
     }
   };
 
+  // Sauvegarder statuts patrouilles
   const savePatrolStatuses = async (newStatuses) => {
     try {
       const res = await fetch('/api/patrol-statuses', {
@@ -64,6 +62,7 @@ export default function Commandement({ agents, setAgents, patrols, setPatrols, i
     }
   };
 
+  // Sauvegarder liaison patrouille-intervention
   const savePatrolInterventions = async (newMap) => {
     try {
       const res = await fetch('/api/patrol-interventions', {
@@ -77,6 +76,7 @@ export default function Commandement({ agents, setAgents, patrols, setPatrols, i
     }
   };
 
+  // Gestion des changements de statut patrouille
   const handleStatusChange = (patrolId, newStatus) => {
     setPatrolStatuses(prev => {
       const newStatuses = { ...prev, [patrolId]: newStatus };
@@ -85,6 +85,7 @@ export default function Commandement({ agents, setAgents, patrols, setPatrols, i
     });
   };
 
+  // Gestion liaison intervention patrouille
   const handleInterventionChange = (patrolId, interventionId) => {
     setPatrolInterventions(prev => {
       const newMap = { ...prev, [patrolId]: interventionId };
@@ -93,6 +94,7 @@ export default function Commandement({ agents, setAgents, patrols, setPatrols, i
     });
   };
 
+  // Assignation agent à patrouille
   const handleAssignAgent = (patrolId, agentNom) => {
     setAssignments(prev => {
       const current = prev[patrolId] || [];
@@ -105,6 +107,7 @@ export default function Commandement({ agents, setAgents, patrols, setPatrols, i
     });
   };
 
+  // Retirer agent d'une patrouille
   const handleRemoveAgent = (patrolId, agentNom) => {
     setAssignments(prev => {
       const current = prev[patrolId] || [];
@@ -114,6 +117,7 @@ export default function Commandement({ agents, setAgents, patrols, setPatrols, i
     });
   };
 
+  // Statut affiché d'une patrouille
   const getPatrolStatus = (patrolId) => {
     if (patrolStatuses[patrolId]) return patrolStatuses[patrolId];
     if (assignments[patrolId] && assignments[patrolId].length > 0) return "Engagée";
@@ -125,6 +129,7 @@ export default function Commandement({ agents, setAgents, patrols, setPatrols, i
       <h1>🛡 Commandement</h1>
 
       <div className="commandement-content">
+        {/* Colonne agents */}
         <aside className="commandement-agents">
           <h2>Effectifs</h2>
           {sortedAgents.length === 0 && <p>Aucun agent enregistré.</p>}
@@ -137,6 +142,7 @@ export default function Commandement({ agents, setAgents, patrols, setPatrols, i
           </ul>
         </aside>
 
+        {/* Colonne patrouilles */}
         <section className="commandement-patrols">
           <h2>Patrouilles en cours</h2>
           {patrols.length === 0 && <p>Aucune patrouille en cours.</p>}
