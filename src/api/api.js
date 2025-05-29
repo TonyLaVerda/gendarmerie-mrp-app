@@ -1,4 +1,4 @@
-const API_BASE = "/api";
+const API_BASE = "http://37.187.205.167:3001/api";
 
 export async function getResource(resource) {
   const res = await fetch(`${API_BASE}/${resource}`);
