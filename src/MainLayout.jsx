@@ -1,5 +1,5 @@
 import { Routes, Route } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import Navbar from './components/Navbar';
 import Dashboard from './Dashboard';
@@ -13,6 +13,36 @@ export default function MainLayout() {
   const [agents, setAgents] = useState([]);
   const [patrols, setPatrols] = useState([]);
   const [interventions, setInterventions] = useState([]);
+
+  // Charger les données au montage du composant
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const [agentsRes, patrolsRes, interventionsRes] = await Promise.all([
+          fetch('/api/agents'),
+          fetch('/api/patrols'),
+          fetch('/api/interventions'),
+        ]);
+
+        if (!agentsRes.ok || !patrolsRes.ok || !interventionsRes.ok) {
+          throw new Error('Erreur lors du chargement des données');
+        }
+
+        const [agentsData, patrolsData, interventionsData] = await Promise.all([
+          agentsRes.json(),
+          patrolsRes.json(),
+          interventionsRes.json(),
+        ]);
+
+        setAgents(agentsData);
+        setPatrols(patrolsData);
+        setInterventions(interventionsData);
+      } catch (error) {
+        console.error('Erreur fetch data:', error);
+      }
+    }
+    fetchData();
+  }, []);
 
   return (
     <div className="flex flex-col min-h-screen">
