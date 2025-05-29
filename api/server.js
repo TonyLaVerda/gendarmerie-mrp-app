@@ -52,6 +52,40 @@ app.post("/api/patrols", (req, res) => {
   res.status(201).json(newPatrol);
 });
 
+// DELETE patrouille
+app.delete("/api/patrols/:id", (req, res) => {
+  const id = Number(req.params.id);
+  const index = patrols.findIndex(p => p.id === id);
+  if (index === -1) {
+    return res.status(404).json({ error: "Patrouille non trouvée" });
+  }
+  patrols.splice(index, 1);
+  res.status(200).json({ message: "Patrouille supprimée" });
+});
+
+// PUT (remplacement complet) patrouille
+app.put("/api/patrols/:id", (req, res) => {
+  const id = Number(req.params.id);
+  const index = patrols.findIndex(p => p.id === id);
+  if (index === -1) {
+    return res.status(404).json({ error: "Patrouille non trouvée" });
+  }
+  const updatedPatrol = { ...req.body, id };
+  patrols[index] = updatedPatrol;
+  res.status(200).json(updatedPatrol);
+});
+
+// PATCH (mise à jour partielle) patrouille
+app.patch("/api/patrols/:id", (req, res) => {
+  const id = Number(req.params.id);
+  const index = patrols.findIndex(p => p.id === id);
+  if (index === -1) {
+    return res.status(404).json({ error: "Patrouille non trouvée" });
+  }
+  patrols[index] = { ...patrols[index], ...req.body };
+  res.status(200).json(patrols[index]);
+});
+
 // Interventions
 app.get("/api/interventions", (req, res) => {
   res.json(interventions);
