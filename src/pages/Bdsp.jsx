@@ -41,7 +41,6 @@ export default function Bdsp({ patrols = [], interventions, setInterventions }) 
     );
   }, [interventions, filtreType]);
 
-  // Envoi ajout ou mise à jour via API
   const handleAddOrUpdate = async () => {
     const { type, lieu, date } = form;
     if (!type || !lieu || !date) {
@@ -52,7 +51,7 @@ export default function Bdsp({ patrols = [], interventions, setInterventions }) 
     try {
       let res;
       if (editingId !== null) {
-        // Ici on n’a pas de route PUT donc on simule avec POST (peut être amélioré côté API)
+        // Ici on simule update avec POST
         res = await fetch('/api/interventions', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -85,7 +84,6 @@ export default function Bdsp({ patrols = [], interventions, setInterventions }) 
     }
   };
 
-  // Ajout patrouille via API
   const addPatrouilleToIntervention = async (interventionId, patrolId) => {
     const iv = interventions.find(i => i.id === interventionId);
     if (!iv) return;
@@ -99,7 +97,6 @@ export default function Bdsp({ patrols = [], interventions, setInterventions }) 
     await updatePatrouilles(interventionId, updatedPatrouilles);
   };
 
-  // Mise à jour statut patrouille via API
   const updatePatrolStatus = async (interventionId, patrolId, newStatus) => {
     const iv = interventions.find(i => i.id === interventionId);
     if (!iv) return;
@@ -111,7 +108,6 @@ export default function Bdsp({ patrols = [], interventions, setInterventions }) 
     await updatePatrouilles(interventionId, updatedPatrouilles);
   };
 
-  // Suppression patrouille via API
   const removePatrouille = async (interventionId, patrolId) => {
     const iv = interventions.find(i => i.id === interventionId);
     if (!iv) return;
@@ -121,7 +117,6 @@ export default function Bdsp({ patrols = [], interventions, setInterventions }) 
     await updatePatrouilles(interventionId, updatedPatrouilles);
   };
 
-  // Clôture intervention (archivage) via API
   const closeIntervention = async (interventionId) => {
     try {
       const iv = interventions.find(i => i.id === interventionId);
@@ -146,7 +141,6 @@ export default function Bdsp({ patrols = [], interventions, setInterventions }) 
     }
   };
 
-  // Fonction commune pour mettre à jour patrouilles dans une intervention (utilisée par add, update statut, remove)
   const updatePatrouilles = async (interventionId, patrouilles) => {
     try {
       const iv = interventions.find(i => i.id === interventionId);
