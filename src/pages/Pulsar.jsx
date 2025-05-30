@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import './Pulsar.css';
-import { getResource, postResource, deleteResource } from "../api/api"; // Ajuste le chemin si besoin
+import { getResource, postResource, deleteResource } from "../api/api";
 
-export default function Pulsar({ patrols, setPatrols }) {
+export default function Pulsar({ patrols = [], setPatrols }) {
   const [serviceOptions] = useState([
     "PAM Fort de France",
     "PAM Trinité",
@@ -26,7 +26,7 @@ export default function Pulsar({ patrols, setPatrols }) {
     "DIR 2",
     "DIR 3",
   ]);
-  
+
   const [typeOptions] = useState([
     "Prevention de proximité",
     "Police route véhicule sérigraphié",
@@ -47,6 +47,9 @@ export default function Pulsar({ patrols, setPatrols }) {
     type: "",
   });
 
+  const [errorMessage, setErrorMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+
   useEffect(() => {
     async function fetchPatrols() {
       try {
@@ -54,6 +57,7 @@ export default function Pulsar({ patrols, setPatrols }) {
         setPatrols(data);
       } catch (e) {
         console.error("Erreur réseau chargement patrouilles", e);
+        setErrorMessage("Erreur réseau lors du chargement des patrouilles.");
       }
     }
     fetchPatrols();
@@ -64,15 +68,16 @@ export default function Pulsar({ patrols, setPatrols }) {
   };
 
   const handleAddOrUpdatePatrol = async () => {
+    setErrorMessage("");
     const { id, start, end, service, type } = formData;
     if (!start || !end || !service || !type) {
-      alert("Veuillez remplir tous les champs");
+      setErrorMessage("Veuillez remplir tous les champs.");
       return;
     }
+    setLoading(true);
     try {
       if (id !== null) {
-        // Ici tu pourrais utiliser updateResource si tu l'as défini dans api.js
-        // Mais ton API fait POST aussi pour update, donc on utilise postResource
+        // Update avec POST si API le permet, sinon prévoir updateResource
         const updatedPatrol = await postResource("patrols", formData);
         setPatrols(prev => prev.map(p => p.id === id ? updatedPatrol : p));
       } else {
@@ -82,16 +87,20 @@ export default function Pulsar({ patrols, setPatrols }) {
       setFormData({ id: null, start: "", end: "", service: "", type: "" });
     } catch (e) {
       console.error(e);
-      alert("Erreur lors de la sauvegarde");
+      setErrorMessage("Erreur lors de la sauvegarde");
     }
+    setLoading(false);
   };
 
   const handleEdit = (patrol) => {
     setFormData(patrol);
+    setErrorMessage("");
   };
 
   const handleDelete = async (id) => {
     if (!window.confirm("Voulez-vous vraiment supprimer cette patrouille ?")) return;
+    setErrorMessage("");
+    setLoading(true);
     try {
       await deleteResource("patrols", id);
       setPatrols(prev => prev.filter(p => p.id !== id));
@@ -100,8 +109,9 @@ export default function Pulsar({ patrols, setPatrols }) {
       }
     } catch (e) {
       console.error(e);
-      alert("Erreur lors de la suppression");
+      setErrorMessage("Erreur lors de la suppression");
     }
+    setLoading(false);
   };
 
   return (
@@ -119,6 +129,7 @@ export default function Pulsar({ patrols, setPatrols }) {
           onChange={handleChange}
           placeholder="Début"
           className="pulsar-input"
+          disabled={loading}
         />
         <input
           type="datetime-local"
@@ -127,12 +138,14 @@ export default function Pulsar({ patrols, setPatrols }) {
           onChange={handleChange}
           placeholder="Fin"
           className="pulsar-input"
+          disabled={loading}
         />
         <select
           name="service"
           value={formData.service}
           onChange={handleChange}
           className="pulsar-select"
+          disabled={loading}
         >
           <option value="">Service</option>
           {serviceOptions.map(service => (
@@ -144,15 +157,22 @@ export default function Pulsar({ patrols, setPatrols }) {
           value={formData.type}
           onChange={handleChange}
           className="pulsar-select"
+          disabled={loading}
         >
           <option value="">Type de patrouille</option>
           {typeOptions.map(type => (
             <option key={type} value={type}>{type}</option>
           ))}
         </select>
-        <button onClick={handleAddOrUpdatePatrol} className="pulsar-button">
+        <button
+          onClick={handleAddOrUpdatePatrol}
+          className="pulsar-button"
+          disabled={loading}
+          style={{ cursor: loading ? "wait" : "pointer" }}
+        >
           {formData.id !== null ? "Modifier" : "Ajouter"}
         </button>
+        {errorMessage && <p style={{ color: "red", marginTop: 10, fontWeight: "bold" }}>{errorMessage}</p>}
       </section>
 
       <section className="pulsar-table-container">
@@ -168,41 +188,48 @@ export default function Pulsar({ patrols, setPatrols }) {
             </tr>
           </thead>
           <tbody>
-            {patrols.length === 0 && (
+            {patrols.length === 0 ? (
               <tr>
                 <td colSpan="5" className="pulsar-empty">
                   Aucune patrouille enregistrée.
                 </td>
               </tr>
+            ) : (
+              patrols.map(({ id, start, end, service, type }) => (
+                <tr key={id}>
+                  <td style={{ whiteSpace: "nowrap" }}>
+                    {new Date(start).toLocaleString(undefined, {
+                      year: "numeric",
+                      month: "2-digit",
+                      day: "2-digit",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </td>
+                  <td style={{ whiteSpace: "nowrap" }}>
+                    {new Date(end).toLocaleString(undefined, {
+                      year: "numeric",
+                      month: "2-digit",
+                      day: "2-digit",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </td>
+                  <td>{service}</td>
+                  <td>{type}</td>
+                  <td>
+                    <button onClick={() => handleEdit({ id, start, end, service, type })} disabled={loading}>✏️</button>
+                    <button
+                      onClick={() => handleDelete(id)}
+                      style={{ marginLeft: "8px", color: "red" }}
+                      disabled={loading}
+                    >
+                      🗑️
+                    </button>
+                  </td>
+                </tr>
+              ))
             )}
-            {patrols.map(({ id, start, end, service, type }) => (
-              <tr key={id}>
-                <td style={{ whiteSpace: "nowrap" }}>
-                  {new Date(start).toLocaleString(undefined, {
-                    year: "numeric",
-                    month: "2-digit",
-                    day: "2-digit",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
-                </td>
-                <td style={{ whiteSpace: "nowrap" }}>
-                  {new Date(end).toLocaleString(undefined, {
-                    year: "numeric",
-                    month: "2-digit",
-                    day: "2-digit",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
-                </td>
-                <td>{service}</td>
-                <td>{type}</td>
-                <td>
-                  <button onClick={() => handleEdit({ id, start, end, service, type })}>✏️</button>
-                  <button onClick={() => handleDelete(id)} style={{ marginLeft:"8px", color:"red" }}>🗑️</button>
-                </td>
-              </tr>
-            ))}
           </tbody>
         </table>
       </section>
