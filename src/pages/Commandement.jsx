@@ -1,23 +1,26 @@
 import { useState, useEffect } from "react";
 import './Commandement.css';
-import { getResource, postResource } from "../api/api"; // ajuste le chemin si besoin
+import { getResource, postResource } from "../api/api";
 
 const gradesOrder = ["Col", "Lt Col", "Cen", "Cpt", "Lt", "Slt", "Maj", "Adj/C", "ADJ", "Mdl/C", "Gnd", "ELG"];
 const patrolStatusOptions = ["Disponible", "Engagée", "ASL", "Fin d'intervention"];
 
-export default function Commandement({ agents, setAgents, patrols, setPatrols, interventions = [] }) {
+export default function Commandement({ agents = [], setAgents, patrols = [], setPatrols, interventions = [] }) {
   const [assignments, setAssignments] = useState({});
   const [patrolStatuses, setPatrolStatuses] = useState({});
   const [patrolInterventions, setPatrolInterventions] = useState({});
+  const [errorMessage, setErrorMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  // Trier agents par grade (du plus gradé au moins gradé)
+  // Trier agents du plus gradé au moins gradé
   const sortedAgents = [...agents].sort(
     (a, b) => gradesOrder.indexOf(a.grade) - gradesOrder.indexOf(b.grade)
   );
 
-  // Charger les données au démarrage
   useEffect(() => {
     async function fetchData() {
+      setLoading(true);
+      setErrorMessage("");
       try {
         const [
           fetchedAgents,
@@ -40,6 +43,9 @@ export default function Commandement({ agents, setAgents, patrols, setPatrols, i
         setPatrolInterventions(fetchedPatrolInterventions);
       } catch (error) {
         console.error("Erreur chargement données commandement :", error);
+        setErrorMessage("Erreur lors du chargement des données.");
+      } finally {
+        setLoading(false);
       }
     }
     fetchData();
@@ -50,6 +56,7 @@ export default function Commandement({ agents, setAgents, patrols, setPatrols, i
       await postResource("assignments", newAssignments);
     } catch (error) {
       console.error("Erreur sauvegarde assignations", error);
+      setErrorMessage("Erreur lors de la sauvegarde des assignations.");
     }
   };
 
@@ -58,6 +65,7 @@ export default function Commandement({ agents, setAgents, patrols, setPatrols, i
       await postResource("patrol-statuses", newStatuses);
     } catch (error) {
       console.error("Erreur sauvegarde statuts", error);
+      setErrorMessage("Erreur lors de la sauvegarde des statuts.");
     }
   };
 
@@ -66,6 +74,7 @@ export default function Commandement({ agents, setAgents, patrols, setPatrols, i
       await postResource("patrol-interventions", newMap);
     } catch (error) {
       console.error("Erreur sauvegarde liaison patrouille-intervention", error);
+      setErrorMessage("Erreur lors de la sauvegarde des interventions liées.");
     }
   };
 
@@ -115,12 +124,14 @@ export default function Commandement({ agents, setAgents, patrols, setPatrols, i
   return (
     <div className="commandement-container" style={{ maxWidth: "1000px", margin: "0 auto" }}>
       <h1>🛡 Commandement</h1>
+      {errorMessage && <p style={{ color: "red", fontWeight: "bold" }}>{errorMessage}</p>}
 
       <div className="commandement-content">
         {/* Colonne agents */}
         <aside className="commandement-agents">
           <h2>Effectifs</h2>
-          {sortedAgents.length === 0 && <p>Aucun agent enregistré.</p>}
+          {loading && <p>Chargement en cours...</p>}
+          {!loading && sortedAgents.length === 0 && <p>Aucun agent enregistré.</p>}
           <ul>
             {sortedAgents.map((agent, idx) => (
               <li key={idx}>
@@ -133,7 +144,8 @@ export default function Commandement({ agents, setAgents, patrols, setPatrols, i
         {/* Colonne patrouilles */}
         <section className="commandement-patrols">
           <h2>Patrouilles en cours</h2>
-          {patrols.length === 0 && <p>Aucune patrouille en cours.</p>}
+          {loading && <p>Chargement en cours...</p>}
+          {!loading && patrols.length === 0 && <p>Aucune patrouille en cours.</p>}
 
           {patrols.map((patrol) => {
             const interventionId = patrolInterventions[patrol.id];
