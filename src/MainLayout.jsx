@@ -14,7 +14,7 @@ export default function MainLayout() {
   const [patrols, setPatrols] = useState([]);
   const [interventions, setInterventions] = useState([]);
 
-  // Charger les données au montage du composant
+  // Charger toutes les données dès le montage
   useEffect(() => {
     async function fetchData() {
       try {
@@ -55,7 +55,10 @@ export default function MainLayout() {
       <main className="flex-1 bg-gray-50 px-4 py-6 max-w-5xl w-full mx-auto">
         <Routes>
           <Route path="/" element={<Dashboard />} />
-          <Route path="/effectifs" element={<Effectifs agents={agents} setAgents={setAgents} />} />
+          <Route
+            path="/effectifs"
+            element={<Effectifs agents={agents} setAgents={setAgents} />}
+          />
           <Route
             path="/bdsp"
             element={
@@ -66,7 +69,10 @@ export default function MainLayout() {
               />
             }
           />
-          <Route path="/pulsar" element={<Pulsar patrols={patrols} setPatrols={setPatrols} />} />
+          <Route
+            path="/pulsar"
+            element={<Pulsar patrols={patrols} setPatrols={setPatrols} />}
+          />
           <Route
             path="/commandement"
             element={
