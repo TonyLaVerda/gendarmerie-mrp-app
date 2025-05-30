@@ -7,7 +7,8 @@ const unites = ["GD", "PMO", "PSIG"];
 const specialites = ["FAGN", "GIC", "TICP", "ERI"];
 
 export default function Effectifs({ agents, setAgents }) {
-    console.log("Effectifs render - agents:", agents);
+  console.log("Effectifs render - agents:", agents);
+
   const [newAgent, setNewAgent] = useState({
     nom: "",
     grade: "",
@@ -20,11 +21,13 @@ export default function Effectifs({ agents, setAgents }) {
 
   useEffect(() => {
     async function fetchAgents() {
+      console.log("Début fetch agents...");
       try {
         const data = await getResource("agents");
+        console.log("Agents reçus :", data);
         setAgents(data);
       } catch (e) {
-        console.error("Erreur réseau chargement agents", e);
+        console.error("Erreur réseau lors du chargement des agents :", e);
         setErrorMessage("Erreur réseau lors du chargement des agents.");
       }
     }
@@ -35,10 +38,13 @@ export default function Effectifs({ agents, setAgents }) {
     setErrorMessage(""); // reset message erreur
     if (!newAgent.nom || !newAgent.grade || !newAgent.unite) {
       setErrorMessage("Veuillez remplir au minimum le nom, le grade et l'unité.");
+      console.warn("Validation échouée : nom, grade ou unité manquant");
       return;
     }
     try {
+      console.log("Création de l'agent :", newAgent);
       const createdAgent = await postResource("agents", newAgent);
+      console.log("Agent créé avec succès :", createdAgent);
       setAgents(prev => [...prev, createdAgent]);
       setNewAgent({
         nom: "",
