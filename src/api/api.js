@@ -1,4 +1,4 @@
-const API_BASE = "http://mrptony.martinique-roleplay.fr/api";
+const API_BASE = "/api";  // URL relative, passe par Nginx
 
 export async function getResource(resource) {
   const res = await fetch(`${API_BASE}/${resource}`);
