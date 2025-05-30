@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useEffect } from "react";
-import { getResource, postResource } from "../api/api";  // ajuste le chemin si besoin
+import { getResource, postResource } from "../api/api";
 
 const typesInterventions = [
   "Rixe", "ACR Matériel", "ACR", "Incendie", "Vol de VL", "Vol", "Cambriolage",
@@ -17,8 +17,9 @@ export default function Bdsp({ patrols = [], interventions, setInterventions }) 
     compteRendu: "",
   });
   const [editingId, setEditingId] = useState(null);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  // Charger interventions au montage avec la fonction getResource
   useEffect(() => {
     async function fetchInterventions() {
       try {
@@ -26,6 +27,7 @@ export default function Bdsp({ patrols = [], interventions, setInterventions }) 
         setInterventions(data);
       } catch (e) {
         console.error("Erreur chargement interventions", e);
+        setErrorMessage("Erreur réseau lors du chargement des interventions.");
       }
     }
     fetchInterventions();
@@ -38,17 +40,16 @@ export default function Bdsp({ patrols = [], interventions, setInterventions }) 
   }, [interventions, filtreType]);
 
   const handleAddOrUpdate = async () => {
+    setErrorMessage("");
     const { type, lieu, date } = form;
     if (!type || !lieu || !date) {
-      alert("Veuillez remplir le type, lieu et date");
+      setErrorMessage("Veuillez remplir le type, lieu et date.");
       return;
     }
-
+    setLoading(true);
     try {
-      // Ici on simule update avec POST (à améliorer côté backend)
       const payload = editingId !== null ? { id: editingId, ...form } : form;
       const updatedOrCreated = await postResource("interventions", payload);
-
       setInterventions(prev => {
         if (editingId !== null) {
           return prev.map(iv => iv.id === editingId ? updatedOrCreated : iv);
@@ -60,8 +61,9 @@ export default function Bdsp({ patrols = [], interventions, setInterventions }) 
       setForm({ type: "", lieu: "", date: "", compteRendu: "" });
     } catch (e) {
       console.error(e);
-      alert("Erreur lors de la sauvegarde");
+      setErrorMessage("Erreur lors de la sauvegarde");
     }
+    setLoading(false);
   };
 
   const updatePatrouilles = async (interventionId, patrouilles) => {
@@ -75,17 +77,17 @@ export default function Bdsp({ patrols = [], interventions, setInterventions }) 
       );
     } catch (e) {
       console.error(e);
-      alert("Erreur mise à jour patrouilles");
+      setErrorMessage("Erreur mise à jour patrouilles");
     }
   };
 
   const addPatrouilleToIntervention = async (interventionId, patrolId) => {
     const iv = interventions.find(i => i.id === interventionId);
     if (!iv) return;
-    if (iv.patrouilles.some(p => p.idPatrol === patrolId)) return;
+    if (iv.patrouilles && iv.patrouilles.some(p => p.idPatrol === patrolId)) return;
 
     const updatedPatrouilles = [
-      ...iv.patrouilles,
+      ...(iv.patrouilles || []),
       { idPatrol: patrolId, statut: "Engagée", timestamp: new Date().toISOString() },
     ];
 
@@ -124,7 +126,7 @@ export default function Bdsp({ patrols = [], interventions, setInterventions }) 
       );
     } catch (e) {
       console.error(e);
-      alert("Erreur lors de la clôture");
+      setErrorMessage("Erreur lors de la clôture");
     }
   };
 
@@ -138,6 +140,7 @@ export default function Bdsp({ patrols = [], interventions, setInterventions }) 
           value={form.type}
           onChange={(e) => setForm({ ...form, type: e.target.value })}
           style={{ width: "100%", marginBottom: 12, padding: 8, borderRadius: 6, border: "1px solid #ccc" }}
+          disabled={loading}
         >
           <option value="">Type d'intervention</option>
           {typesInterventions.map((t, i) => <option key={i} value={t}>{t}</option>)}
@@ -149,6 +152,7 @@ export default function Bdsp({ patrols = [], interventions, setInterventions }) 
           value={form.lieu}
           onChange={(e) => setForm({ ...form, lieu: e.target.value })}
           style={{ width: "100%", marginBottom: 12, padding: 8, borderRadius: 6, border: "1px solid #ccc" }}
+          disabled={loading}
         />
 
         <input
@@ -156,6 +160,7 @@ export default function Bdsp({ patrols = [], interventions, setInterventions }) 
           value={form.date}
           onChange={(e) => setForm({ ...form, date: e.target.value })}
           style={{ width: "100%", marginBottom: 12, padding: 8, borderRadius: 6, border: "1px solid #ccc" }}
+          disabled={loading}
         />
 
         <textarea
@@ -164,14 +169,17 @@ export default function Bdsp({ patrols = [], interventions, setInterventions }) 
           onChange={(e) => setForm({ ...form, compteRendu: e.target.value })}
           rows={4}
           style={{ width: "100%", marginBottom: 12, padding: 8, borderRadius: 6, border: "1px solid #ccc", resize: "vertical" }}
+          disabled={loading}
         />
 
         <button
           onClick={handleAddOrUpdate}
-          style={{ backgroundColor: "#002654", color: "white", padding: "10px 16px", borderRadius: 6, cursor: "pointer" }}
+          style={{ backgroundColor: "#002654", color: "white", padding: "10px 16px", borderRadius: 6, cursor: loading ? "wait" : "pointer" }}
+          disabled={loading}
         >
           {editingId !== null ? "Modifier l'intervention" : "Ajouter l'intervention"}
         </button>
+        {errorMessage && <p style={{ color: "red", marginTop: 10, fontWeight: "bold" }}>{errorMessage}</p>}
       </div>
 
       {/* Filtrer */}
@@ -189,7 +197,7 @@ export default function Bdsp({ patrols = [], interventions, setInterventions }) 
 
       {/* Liste interventions */}
       <div style={{ maxHeight: 600, overflowY: "auto" }}>
-        {filteredInterventions.length === 0 ? (
+        {(!filteredInterventions || filteredInterventions.length === 0) ? (
           <p style={{ fontStyle: "italic", color: "#666", textAlign: "center" }}>Aucune intervention enregistrée.</p>
         ) : (
           filteredInterventions.map((iv) => (
@@ -206,9 +214,9 @@ export default function Bdsp({ patrols = [], interventions, setInterventions }) 
 
               <div>
                 <strong>Patrouilles engagées :</strong>
-                {iv.patrouilles.length === 0 && <p>Aucune patrouille assignée.</p>}
+                {(!iv.patrouilles || iv.patrouilles.length === 0) && <p>Aucune patrouille assignée.</p>}
                 <ul>
-                  {iv.patrouilles.map(({ idPatrol, statut, timestamp }) => {
+                  {(iv.patrouilles || []).map(({ idPatrol, statut, timestamp }) => {
                     const patrol = patrols.find((p) => p.id === idPatrol);
                     if (!patrol) return null;
                     return (
@@ -242,8 +250,9 @@ export default function Bdsp({ patrols = [], interventions, setInterventions }) 
               <div style={{ marginTop: 12 }}>
                 <select
                   onChange={(e) => {
-                    if (e.target.value) {
-                      addPatrouilleToIntervention(iv.id, Number(e.target.value));
+                    const val = e.target.value;
+                    if (val) {
+                      addPatrouilleToIntervention(iv.id, Number(val));
                       e.target.value = "";
                     }
                   }}
@@ -252,7 +261,7 @@ export default function Bdsp({ patrols = [], interventions, setInterventions }) 
                 >
                   <option value="">Ajouter une patrouille engagée</option>
                   {patrols
-                    .filter((p) => !iv.patrouilles.some((pa) => pa.idPatrol === p.id))
+                    .filter((p) => !iv.patrouilles?.some((pa) => pa.idPatrol === p.id))
                     .map((p) => (
                       <option key={p.id} value={p.id}>
                         {p.service} - {p.type}
