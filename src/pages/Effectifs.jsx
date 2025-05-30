@@ -130,7 +130,7 @@ export default function Effectifs({ agents, setAgents }) {
         ) : (
           <div className="effectifs-cards">
             {agents.map((agent) => (
-              <div key={agent.id} className="effectifs-card">
+              <div key={agent.id ?? agent.nom} className="effectifs-card">
                 <div className="effectifs-card-header">
                   <h3>{agent.nom}</h3>
                   <span className="effectifs-grade">{agent.grade}</span>
@@ -144,7 +144,7 @@ export default function Effectifs({ agents, setAgents }) {
                 </p>
                 <p>
                   <strong>Statut :</strong>{" "}
-                  <span className={`effectifs-status effectifs-status-${agent.statut.toLowerCase()}`}>
+                  <span className={`effectifs-status effectifs-status-${agent.statut?.toLowerCase() || "indispo"}`}>
                     {agent.statut}
                   </span>
                 </p>
