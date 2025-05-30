@@ -15,6 +15,8 @@ export default function Effectifs({ agents, setAgents }) {
     statut: "Indispo",
   });
 
+  const [errorMessage, setErrorMessage] = useState("");
+
   useEffect(() => {
     async function fetchAgents() {
       try {
@@ -22,14 +24,16 @@ export default function Effectifs({ agents, setAgents }) {
         setAgents(data);
       } catch (e) {
         console.error("Erreur réseau chargement agents", e);
+        setErrorMessage("Erreur réseau lors du chargement des agents.");
       }
     }
     fetchAgents();
   }, [setAgents]);
 
   const handleAddAgent = async () => {
+    setErrorMessage(""); // reset message erreur
     if (!newAgent.nom || !newAgent.grade || !newAgent.unite) {
-      alert("Veuillez remplir au minimum le nom, le grade et l'unité.");
+      setErrorMessage("Veuillez remplir au minimum le nom, le grade et l'unité.");
       return;
     }
     try {
@@ -37,8 +41,10 @@ export default function Effectifs({ agents, setAgents }) {
       setAgents(prev => [...prev, createdAgent]);
       setNewAgent({ nom: "", grade: "", unite: "", specialite: "", statut: "Indispo" });
     } catch (e) {
-      console.error(e);
-      alert("Erreur lors de la création de l'agent");
+      console.error("Erreur création agent :", e);
+      // Essayer d'extraire message d'erreur du serveur si possible
+      const msg = e.message || "Erreur lors de la création de l'agent";
+      setErrorMessage(msg);
     }
   };
 
@@ -99,6 +105,11 @@ export default function Effectifs({ agents, setAgents }) {
             💾 Enregistrer
           </button>
         </div>
+        {errorMessage && (
+          <p style={{ color: "red", marginTop: 10, fontWeight: "bold" }}>
+            {errorMessage}
+          </p>
+        )}
       </section>
 
       <section className="effectifs-list">
