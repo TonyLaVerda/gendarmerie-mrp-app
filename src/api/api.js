@@ -1,4 +1,4 @@
-const API_BASE = "/api";  // URL relative, passe par Nginx
+const API_BASE = "/api";  // URL relative, passe par Nginx proxy
 
 export async function getResource(resource) {
   const res = await fetch(`${API_BASE}/${resource}`);
