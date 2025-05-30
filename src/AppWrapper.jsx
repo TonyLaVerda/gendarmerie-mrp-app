@@ -12,7 +12,7 @@ function Login() {
   const handleLogin = () => {
     if (input === "gendarmerie2025") {
       localStorage.setItem("auth", "true");
-      navigate("/");
+      navigate("/", { replace: true });  // remplace historique pour éviter retour page login
     } else {
       setError("Mot de passe incorrect.");
     }
@@ -26,8 +26,13 @@ function Login() {
           type="password"
           placeholder="Mot de passe"
           value={input}
-          onChange={(e) => setInput(e.target.value)}
+          onChange={(e) => {
+            setInput(e.target.value);
+            if (error) setError("");  // reset erreur à la saisie
+          }}
           className="border p-2 rounded w-full mb-4"
+          autoFocus
+          onKeyDown={e => { if (e.key === 'Enter') handleLogin(); }} // login au Enter
         />
         <button
           onClick={handleLogin}
@@ -41,10 +46,10 @@ function Login() {
   );
 }
 
-// 🔒 Composant de protection
+// 🔒 Composant de protection des routes
 function RequireAuth({ children }) {
   const isAuth = localStorage.getItem("auth") === "true";
-  return isAuth ? children : <Navigate to="/login" />;
+  return isAuth ? children : <Navigate to="/login" replace />;
 }
 
 // 🌐 Application principale avec redirection sécurisée
