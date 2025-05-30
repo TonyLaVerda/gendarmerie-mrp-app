@@ -7,6 +7,7 @@ const unites = ["GD", "PMO", "PSIG"];
 const specialites = ["FAGN", "GIC", "TICP", "ERI"];
 
 export default function Effectifs({ agents, setAgents }) {
+    console.log("Effectifs render - agents:", agents);
   const [newAgent, setNewAgent] = useState({
     nom: "",
     grade: "",
