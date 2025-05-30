@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import './Effectifs.css';
-import { getResource, postResource } from "../api/api"; // ajuste le chemin si besoin
+import { getResource, postResource } from "../api/api";
 
 const grades = ["ELG", "Gnd", "Mdl/C", "ADJ", "Adj/C", "Maj", "Slt", "Lt", "Cpt", "Cen", "Lt Col", "Col"];
 const unites = ["GD", "PMO", "PSIG"];
@@ -39,10 +39,15 @@ export default function Effectifs({ agents, setAgents }) {
     try {
       const createdAgent = await postResource("agents", newAgent);
       setAgents(prev => [...prev, createdAgent]);
-      setNewAgent({ nom: "", grade: "", unite: "", specialite: "", statut: "Indispo" });
+      setNewAgent({
+        nom: "",
+        grade: "",
+        unite: "",
+        specialite: "",
+        statut: "Indispo",
+      });
     } catch (e) {
       console.error("Erreur création agent :", e);
-      // Essayer d'extraire message d'erreur du serveur si possible
       const msg = e.message || "Erreur lors de la création de l'agent";
       setErrorMessage(msg);
     }
@@ -113,12 +118,12 @@ export default function Effectifs({ agents, setAgents }) {
       </section>
 
       <section className="effectifs-list">
-        {agents.length === 0 ? (
+        {!agents || agents.length === 0 ? (
           <p>Aucun agent enregistré.</p>
         ) : (
           <div className="effectifs-cards">
-            {agents.map((agent, index) => (
-              <div key={index} className="effectifs-card">
+            {agents.map((agent) => (
+              <div key={agent.id} className="effectifs-card">
                 <div className="effectifs-card-header">
                   <h3>{agent.nom}</h3>
                   <span className="effectifs-grade">{agent.grade}</span>
