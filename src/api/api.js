@@ -1,9 +1,22 @@
 const API_BASE = "/api";  // URL relative, passe par Nginx proxy
 
+async function handleResponse(res, method, resource, id) {
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`Erreur ${method} ${resource}${id ? ' ' + id : ''} : ${res.status} - ${text}`);
+  }
+  // Si réponse vide (ex DELETE souvent), retourne vide sinon json
+  const contentType = res.headers.get("content-type");
+  if (contentType && contentType.indexOf("application/json") !== -1) {
+    return res.json();
+  } else {
+    return null;
+  }
+}
+
 export async function getResource(resource) {
   const res = await fetch(`${API_BASE}/${resource}`);
-  if (!res.ok) throw new Error(`Erreur GET ${resource}`);
-  return res.json();
+  return handleResponse(res, "GET", resource);
 }
 
 export async function postResource(resource, data) {
@@ -12,8 +25,7 @@ export async function postResource(resource, data) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   });
-  if (!res.ok) throw new Error(`Erreur POST ${resource}`);
-  return res.json();
+  return handleResponse(res, "POST", resource);
 }
 
 export async function updateResource(resource, id, data) {
@@ -22,8 +34,7 @@ export async function updateResource(resource, id, data) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   });
-  if (!res.ok) throw new Error(`Erreur PUT ${resource} ${id}`);
-  return res.json();
+  return handleResponse(res, "PUT", resource, id);
 }
 
 export async function patchResource(resource, id, data) {
@@ -32,14 +43,12 @@ export async function patchResource(resource, id, data) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   });
-  if (!res.ok) throw new Error(`Erreur PATCH ${resource} ${id}`);
-  return res.json();
+  return handleResponse(res, "PATCH", resource, id);
 }
 
 export async function deleteResource(resource, id) {
   const res = await fetch(`${API_BASE}/${resource}/${id}`, {
     method: "DELETE",
   });
-  if (!res.ok) throw new Error(`Erreur DELETE ${resource} ${id}`);
-  return res.json();
+  return handleResponse(res, "DELETE", resource, id);
 }
