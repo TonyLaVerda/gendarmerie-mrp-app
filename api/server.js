@@ -1,34 +1,28 @@
 const express = require("express");
 const cors = require("cors");
-const bodyParser = require("body-parser");
 
 const app = express();
 const port = process.env.PORT || 3001;
 
-app.use(cors());
-app.use(bodyParser.json());
+// Middleware
+app.use(cors());          // Autorise toutes origines par défaut
+app.use(express.json());  // Parse JSON, remplace body-parser
 
+// Données en mémoire
 let agents = [];
 let patrols = [];
 let interventions = [];
 
-// Pour simplifier, structure assignations (patrolId => [agentNoms])
 let assignments = {};
-
-// Statuts des patrouilles (patrolId => statut)
 let patrolStatuses = {};
-
-// Liaison patrouille -> intervention (patrolId => interventionId)
 let patrolInterventions = {};
 
-// Route racine simple pour tester le serveur
+// Route racine pour test
 app.get("/", (req, res) => {
   res.send("API Gendarmerie MR Projet - serveur actif");
 });
 
-// Routes API
-
-// Agents
+// --- Agents ---
 app.get("/api/agents", (req, res) => {
   res.json(agents);
 });
@@ -50,7 +44,7 @@ app.post("/api/agents", (req, res) => {
   }
 });
 
-// Patrouilles
+// --- Patrouilles ---
 app.get("/api/patrols", (req, res) => {
   res.json(patrols);
 });
@@ -72,7 +66,6 @@ app.post("/api/patrols", (req, res) => {
   }
 });
 
-// DELETE, PUT, PATCH patrouilles restent inchangés
 app.delete("/api/patrols/:id", (req, res) => {
   const id = Number(req.params.id);
   const index = patrols.findIndex(p => p.id === id);
@@ -104,7 +97,7 @@ app.patch("/api/patrols/:id", (req, res) => {
   res.status(200).json(patrols[index]);
 });
 
-// Interventions
+// --- Interventions ---
 app.get("/api/interventions", (req, res) => {
   res.json(interventions);
 });
@@ -126,7 +119,7 @@ app.post("/api/interventions", (req, res) => {
   }
 });
 
-// Assignments (patrolId => [agentNom])
+// --- Assignments ---
 app.get("/api/assignments", (req, res) => {
   res.json(assignments);
 });
@@ -137,7 +130,7 @@ app.post("/api/assignments", (req, res) => {
   res.status(200).json({ message: "Assignments updated" });
 });
 
-// Patrol statuses (patrolId => statut)
+// --- Patrol statuses ---
 app.get("/api/patrol-statuses", (req, res) => {
   res.json(patrolStatuses);
 });
@@ -148,7 +141,7 @@ app.post("/api/patrol-statuses", (req, res) => {
   res.status(200).json({ message: "Patrol statuses updated" });
 });
 
-// Liaison patrouille -> intervention (patrolId => interventionId)
+// --- Liaison patrouille -> intervention ---
 app.get("/api/patrol-interventions", (req, res) => {
   res.json(patrolInterventions);
 });
@@ -159,7 +152,15 @@ app.post("/api/patrol-interventions", (req, res) => {
   res.status(200).json({ message: "Patrol interventions updated" });
 });
 
-console.log("Démarrage du serveur...");
-app.listen(port, '0.0.0.0', () => {
+// Gestion des erreurs asynchrones non catchées
+process.on('uncaughtException', (err) => {
+  console.error('Erreur non catchée :', err);
+});
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Promesse non gérée :', reason);
+});
+
+// Démarrage du serveur
+app.listen(port, () => {
   console.log(`API server running on port ${port}`);
 });
