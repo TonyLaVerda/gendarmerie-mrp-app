@@ -5,7 +5,7 @@
 
 .effectifs-title {
   font-size: 2rem;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 .effectifs-form-section {
@@ -17,8 +17,8 @@
 .effectifs-form {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
-  align-items: center;
+  gap: 1rem;
+  align-items: flex-start;
 }
 
 .effectifs-input,
@@ -33,14 +33,17 @@
 .effectifs-checkbox-group {
   display: flex;
   flex-wrap: wrap;
-  gap: 1rem;
-  margin-top: 0.5rem;
+  gap: 0.5rem;
+  align-items: center;
 }
 
 .effectifs-checkbox-group label {
   display: flex;
   align-items: center;
-  font-size: 0.95rem;
+  gap: 0.3rem;
+  background-color: #f1f1f1;
+  padding: 0.3rem 0.6rem;
+  border-radius: 6px;
 }
 
 .effectifs-button {
@@ -51,11 +54,16 @@
   border-radius: 5px;
   cursor: pointer;
   font-weight: bold;
+  transition: background-color 0.2s ease;
+}
+
+.effectifs-button:hover {
+  background-color: #003eaa;
 }
 
 .effectifs-cards {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 1rem;
 }
 
@@ -64,17 +72,20 @@
   padding: 1rem;
   border-radius: 10px;
   background: #f9f9f9;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
 }
 
 .effectifs-card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 0.5rem;
 }
 
 .effectifs-grade {
   font-weight: bold;
   font-size: 1rem;
+  color: #222;
 }
 
 .effectifs-badges {
@@ -88,8 +99,9 @@
   background-color: #007bff;
   color: white;
   padding: 0.25rem 0.6rem;
-  border-radius: 15px;
-  font-size: 0.8rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 500;
 }
 
 .effectifs-status-disponible {
