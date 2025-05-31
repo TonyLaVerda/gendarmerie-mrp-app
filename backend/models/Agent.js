@@ -1,3 +1,4 @@
+// backend/models/Agent.js
 import mongoose from "mongoose";
 
 const agentSchema = new mongoose.Schema({
@@ -6,6 +7,7 @@ const agentSchema = new mongoose.Schema({
   unite: { type: String, required: true },
   specialites: { type: [String], default: [] },
   statut: { type: String, default: "Indispo" },
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }, // ✅ Lien avec User
 }, { timestamps: true });
 
 export default mongoose.model("Agent", agentSchema);
