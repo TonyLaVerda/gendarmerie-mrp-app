@@ -1,27 +1,43 @@
-/* src/components/UserMenu.css */
 .user-menu {
   position: absolute;
   top: 1rem;
   right: 1rem;
-  background: #e6e6e6;
+  background: #ffffff;
   padding: 0.8rem 1rem;
   border-radius: 8px;
   font-size: 0.9rem;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-  margin-top: 0.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  color: #222;
+  font-family: 'Rubik', sans-serif;
+  text-align: left;
+  min-width: 200px;
 }
 
 .user-menu p {
-  margin: 0;
-  font-weight: bold;
+  margin: 0 0 0.5rem 0;
+  font-weight: 600;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.user-menu p::before {
+  content: "👤";
 }
 
 .user-menu button {
-  margin-top: 0.5rem;
-  padding: 0.3rem 0.6rem;
+  width: 100%;
+  padding: 0.4rem 0.6rem;
   border: none;
   background: crimson;
   color: white;
   border-radius: 5px;
   cursor: pointer;
+  font-weight: bold;
+  transition: background 0.2s ease;
+}
+
+.user-menu button:hover {
+  background: darkred;
 }
