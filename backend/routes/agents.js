@@ -5,13 +5,17 @@ import authMiddleware from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-// GET all agents (public)
+// 🔓 GET all agents (accessible à tous)
 router.get("/", async (req, res) => {
-  const agents = await Agent.find();
-  res.json(agents);
+  try {
+    const agents = await Agent.find();
+    res.json(agents);
+  } catch (e) {
+    res.status(500).json({ error: "Erreur serveur lors du chargement des agents." });
+  }
 });
 
-// POST new agent (utilisateur authentifié)
+// 🔐 POST un nouvel agent (utilisateur connecté requis)
 router.post("/", authMiddleware, async (req, res) => {
   try {
     const agent = new Agent({ ...req.body, userId: req.user.id });
@@ -22,7 +26,7 @@ router.post("/", authMiddleware, async (req, res) => {
   }
 });
 
-// PATCH update (seul l’agent concerné OU un officier peut modifier)
+// 🔐 PATCH agent (seul le propriétaire ou un officier peut modifier)
 router.patch("/:id", authMiddleware, async (req, res) => {
   try {
     const agent = await Agent.findById(req.params.id);
@@ -42,11 +46,11 @@ router.patch("/:id", authMiddleware, async (req, res) => {
   }
 });
 
-// DELETE (officier uniquement)
+// 🔐 DELETE un agent (officier uniquement)
 router.delete("/:id", authMiddleware, async (req, res) => {
   try {
     if (req.user.role !== "officier") {
-      return res.status(403).json({ error: "Réservé aux officiers" });
+      return res.status(403).json({ error: "Suppression réservée aux officiers" });
     }
 
     await Agent.findByIdAndDelete(req.params.id);
