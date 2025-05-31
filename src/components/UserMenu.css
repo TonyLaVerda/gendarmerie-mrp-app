@@ -1,0 +1,25 @@
+.user-menu {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: #e6e6e6;
+  padding: 0.8rem 1rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.user-menu p {
+  margin: 0;
+  font-weight: bold;
+}
+
+.user-menu button {
+  margin-top: 0.5rem;
+  padding: 0.3rem 0.6rem;
+  border: none;
+  background: crimson;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+}
