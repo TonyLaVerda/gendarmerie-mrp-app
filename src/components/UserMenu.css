@@ -1,3 +1,4 @@
+/* src/components/UserMenu.css */
 .user-menu {
   position: absolute;
   top: 1rem;
@@ -7,6 +8,7 @@
   border-radius: 8px;
   font-size: 0.9rem;
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  margin-top: 0.5rem;
 }
 
 .user-menu p {
@@ -22,8 +24,4 @@
   color: white;
   border-radius: 5px;
   cursor: pointer;
-}
-
-.user-menu {
-  margin-top: 0.5rem;
 }
