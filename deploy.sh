@@ -2,26 +2,23 @@
 
 echo "🔄 Début du déploiement..."
 
-# Étape 1 : Pull depuis GitHub
-echo "📦 [FRONT] Pull depuis GitHub..."
-git pull origin main || { echo "❌ Erreur pull GitHub"; exit 1; }
+# Aller à la racine du projet
+cd ~/gendarmerie-mrp-app/gendarmerie-mrp-app || exit
 
-# Étape 2 : Installer les dépendances
-echo "📥 [FRONT] Installation des dépendances..."
-npm install || { echo "❌ Erreur npm install"; exit 1; }
+# Étape 1 : Ajouter tous les fichiers (tracked + untracked)
+git add .
 
-# Étape 3 : Build Vite
-echo "⚙️ [FRONT] Build production avec Vite..."
-npm run build || { echo "❌ Erreur build Vite"; exit 1; }
+# Étape 2 : Commit avec un message standard
+git commit -m "🔁 MàJ auto via deploy.sh"
 
-# Étape 4 : Copier le build dans /var/www/html
-echo "🚚 [FRONT] Copie vers /var/www/html..."
-rm -rf /var/www/html/*
-cp -r dist/* /var/www/html/
+# Étape 3 : Pull avec rebase pour éviter les conflits
+git pull --rebase origin main
 
-# Étape 5 : Redémarrer API avec PM2
-echo "🔁 [API] Redémarrage de l'API via PM2..."
-cd backend
-pm2 restart gendarmerie-api
+# Étape 4 : Push vers GitHub
+git push origin main
+
+# Étape 5 : Redémarrer l’API avec les dernières variables d'environnement
+pm2 restart gendarmerie-api --update-env
 
 echo "✅ Déploiement terminé avec succès."
+
