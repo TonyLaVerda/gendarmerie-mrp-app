@@ -28,6 +28,3 @@ export default function UserMenu() {
   );
 }
 
-.user-menu {
-  margin-top: 0.5rem;
-}
