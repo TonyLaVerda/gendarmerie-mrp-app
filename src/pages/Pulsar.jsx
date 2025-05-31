@@ -1,42 +1,16 @@
 import { useState, useEffect } from "react";
 import './Pulsar.css';
-import { getResource, postResource, deleteResource } from "../api/api";
 
 export default function Pulsar({ patrols = [], setPatrols }) {
   const [serviceOptions] = useState([
-    "PAM Fort de France",
-    "PAM Trinité",
-    "PAM Le Marin",
-    "PAM 2 Fort de France",
-    "PAM 2 Trinité",
-    "PAM 2 Le Marin",
-    "PSIG 1",
-    "PSIG 2",
-    "PSIG 3",
-    "PMO 1",
-    "PMO 2",
-    "ERI",
-    "HELICO",
-    "BRIGADE NAUTIQUE",
-    "BRIGADE NAUTIQUE 2",
-    "GIC",
-    "GIC 2",
-    "DISR",
-    "DIR 1",
-    "DIR 2",
-    "DIR 3",
+    "PAM Fort de France", "PAM Trinité", "PAM Le Marin", "PAM 2 Fort de France", "PAM 2 Trinité", "PAM 2 Le Marin",
+    "PSIG 1", "PSIG 2", "PSIG 3", "PMO 1", "PMO 2", "ERI", "HELICO", "BRIGADE NAUTIQUE", "BRIGADE NAUTIQUE 2",
+    "GIC", "GIC 2", "DISR", "DIR 1", "DIR 2", "DIR 3"
   ]);
 
   const [typeOptions] = useState([
-    "Prevention de proximité",
-    "Police route véhicule sérigraphié",
-    "Police route véhicule banalisé",
-    "Patrouille pédestre",
-    "Enquête judiciaire",
-    "Évènement culturel ou sportif",
-    "ORC",
-    "OAD",
-    "Surveillance aérienne",
+    "Prevention de proximité", "Police route véhicule sérigraphié", "Police route véhicule banalisé",
+    "Patrouille pédestre", "Enquête judiciaire", "Évènement culturel ou sportif", "ORC", "OAD", "Surveillance aérienne"
   ]);
 
   const [formData, setFormData] = useState({
@@ -53,7 +27,8 @@ export default function Pulsar({ patrols = [], setPatrols }) {
   useEffect(() => {
     async function fetchPatrols() {
       try {
-        const data = await getResource("patrols");
+        const response = await fetch("http://localhost:3001/api/patrols");
+        const data = await response.json();
         setPatrols(data);
       } catch (e) {
         console.error("Erreur réseau chargement patrouilles", e);
@@ -76,12 +51,16 @@ export default function Pulsar({ patrols = [], setPatrols }) {
     }
     setLoading(true);
     try {
+      const response = await fetch("http://localhost:3001/api/patrols", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+      const newPatrol = await response.json();
+
       if (id !== null) {
-        // Update avec POST si API le permet, sinon prévoir updateResource
-        const updatedPatrol = await postResource("patrols", formData);
-        setPatrols(prev => prev.map(p => p.id === id ? updatedPatrol : p));
+        setPatrols(prev => prev.map(p => p.id === id ? newPatrol : p));
       } else {
-        const newPatrol = await postResource("patrols", formData);
         setPatrols(prev => [...prev, newPatrol]);
       }
       setFormData({ id: null, start: "", end: "", service: "", type: "" });
@@ -102,7 +81,7 @@ export default function Pulsar({ patrols = [], setPatrols }) {
     setErrorMessage("");
     setLoading(true);
     try {
-      await deleteResource("patrols", id);
+      await fetch(`http://localhost:3001/api/patrols/${id}`, { method: "DELETE" });
       setPatrols(prev => prev.filter(p => p.id !== id));
       if (formData.id === id) {
         setFormData({ id: null, start: "", end: "", service: "", type: "" });
@@ -190,42 +169,28 @@ export default function Pulsar({ patrols = [], setPatrols }) {
           <tbody>
             {patrols.length === 0 ? (
               <tr>
-                <td colSpan="5" className="pulsar-empty">
-                  Aucune patrouille enregistrée.
-                </td>
+                <td colSpan="5" className="pulsar-empty">Aucune patrouille enregistrée.</td>
               </tr>
             ) : (
               patrols.map(({ id, start, end, service, type }) => (
                 <tr key={id}>
                   <td style={{ whiteSpace: "nowrap" }}>
-                    {new Date(start).toLocaleString(undefined, {
-                      year: "numeric",
-                      month: "2-digit",
-                      day: "2-digit",
-                      hour: "2-digit",
-                      minute: "2-digit",
+                    {new Date(start).toLocaleString("fr-FR", {
+                      year: "numeric", month: "2-digit", day: "2-digit",
+                      hour: "2-digit", minute: "2-digit"
                     })}
                   </td>
                   <td style={{ whiteSpace: "nowrap" }}>
-                    {new Date(end).toLocaleString(undefined, {
-                      year: "numeric",
-                      month: "2-digit",
-                      day: "2-digit",
-                      hour: "2-digit",
-                      minute: "2-digit",
+                    {new Date(end).toLocaleString("fr-FR", {
+                      year: "numeric", month: "2-digit", day: "2-digit",
+                      hour: "2-digit", minute: "2-digit"
                     })}
                   </td>
                   <td>{service}</td>
                   <td>{type}</td>
                   <td>
                     <button onClick={() => handleEdit({ id, start, end, service, type })} disabled={loading}>✏️</button>
-                    <button
-                      onClick={() => handleDelete(id)}
-                      style={{ marginLeft: "8px", color: "red" }}
-                      disabled={loading}
-                    >
-                      🗑️
-                    </button>
+                    <button onClick={() => handleDelete(id)} style={{ marginLeft: "8px", color: "red" }} disabled={loading}>🗑️</button>
                   </td>
                 </tr>
               ))
