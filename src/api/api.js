@@ -1,23 +1,24 @@
-const API_BASE = "/api"; // Proxy via nginx
+const API_BASE = "/api"; // Utilise le proxy nginx
 
 function getAuthHeaders() {
   const token = localStorage.getItem("token");
-  return token
-    ? { Authorization: `Bearer ${token}`, "Content-Type": "application/json" }
-    : { "Content-Type": "application/json" };
+  return {
+    "Content-Type": "application/json",
+    ...(token && { Authorization: `Bearer ${token}` }),
+  };
 }
 
 async function handleResponse(res, method, resource, id) {
+  const isJSON = res.headers.get("content-type")?.includes("application/json");
+
   if (!res.ok) {
-    const text = await res.text();
-    throw new Error(`Erreur ${method} ${resource}${id ? ' ' + id : ''} : ${res.status} - ${text}`);
+    const errorContent = isJSON ? await res.json() : await res.text();
+    const message = typeof errorContent === "string" ? errorContent : errorContent?.error || "Erreur inconnue";
+    console.error(`❌ [${method}] ${resource}${id ? `/${id}` : ""} → ${res.status}:`, message);
+    throw new Error(`Erreur ${method} ${resource}${id ? ' ' + id : ''} : ${res.status} - ${message}`);
   }
 
-  const contentType = res.headers.get("content-type");
-  if (contentType && contentType.includes("application/json")) {
-    return res.json();
-  }
-  return null;
+  return isJSON ? res.json() : null;
 }
 
 export async function getResource(resource) {
