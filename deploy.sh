@@ -2,26 +2,23 @@
 
 echo "🔄 Début du déploiement..."
 
-cd ~/gendarmerie-mrp-app/gendarmerie-mrp-app || exit
-
-# Étape 1 : Ajout des modifications
-echo "📦 Ajout des fichiers modifiés..."
+# Étape 1 : Ajout des fichiers modifiés (tout le projet)
 git add .
 
-# Étape 2 : Commit avec message automatique horodaté
-echo "📝 Commit des modifications..."
+# Étape 2 : Commit avec horodatage
 git commit -m "Déploiement automatique du $(date '+%Y-%m-%d %H:%M:%S')"
 
-# Étape 3 : Pull pour éviter les conflits
+# Étape 3 : Pull (synchronisation)
 echo "🔃 Synchronisation avec GitHub (pull)..."
-git pull --rebase origin main
+git pull --rebase
 
-# Étape 4 : Push des changements
+# Étape 4 : Push vers GitHub
 echo "🚀 Envoi sur GitHub (push)..."
-git push origin main
+git push
 
-# Étape 5 : Redémarrage de l’API backend
+# Étape 5 : Redémarrage backend uniquement
 echo "♻️ Redémarrage du serveur backend (PM2)..."
+cd backend
 pm2 restart gendarmerie-api --update-env
 
 echo "✅ Déploiement terminé avec succès."
