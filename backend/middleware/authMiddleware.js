@@ -1,24 +1,16 @@
 // backend/middleware/authMiddleware.js
 import jwt from "jsonwebtoken";
 
-export function authenticateToken(req, res, next) {
-  const authHeader = req.headers.authorization;
-  const token = authHeader && authHeader.split(" ")[1]; // Format: Bearer TOKEN
+export default function authMiddleware(req, res, next) {
+  const token = req.headers.authorization?.split(" ")[1];
 
-  if (!token) return res.status(401).json({ error: "Accès refusé. Token requis." });
+  if (!token) return res.status(401).json({ error: "Token manquant" });
 
-  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-    if (err) return res.status(403).json({ error: "Token invalide." });
-    req.user = user; // On ajoute l'objet user (id, role, etc.) dans la requête
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded;
     next();
-  });
-}
-
-export function authorizeRoles(...allowedRoles) {
-  return (req, res, next) => {
-    if (!req.user || !allowedRoles.includes(req.user.role)) {
-      return res.status(403).json({ error: "Accès interdit. Rôle insuffisant." });
-    }
-    next();
-  };
+  } catch (e) {
+    res.status(401).json({ error: "Token invalide" });
+  }
 }
