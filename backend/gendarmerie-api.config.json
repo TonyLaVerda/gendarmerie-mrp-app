@@ -1,0 +1,14 @@
+{
+  "apps": [
+    {
+      "name": "gendarmerie-api",
+      "script": "./server.js",
+      "cwd": "/root/gendarmerie-mrp-app/gendarmerie-mrp-app/backend",
+      "env": {
+        "PORT": "3001",
+        "MONGO_URI": "mongodb://localhost:27017/gendarmerie",
+        "JWT_SECRET": "maCleUltraSecrete123"
+      }
+    }
+  ]
+}
