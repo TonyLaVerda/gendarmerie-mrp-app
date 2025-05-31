@@ -1,8 +1,8 @@
 // backend/server.js
+import dotenv from "dotenv";
 import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
-import dotenv from "dotenv";
 import authMiddleware from "./middleware/authMiddleware.js";
 
 // Routes principales
