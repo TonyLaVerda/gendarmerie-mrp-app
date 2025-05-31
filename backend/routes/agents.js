@@ -1,24 +1,20 @@
+// backend/routes/agents.js
 import express from "express";
 import Agent from "../models/Agent.js";
+import { authenticateToken, authorizeRoles } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-// GET all agents
-router.get("/", async (req, res) => {
+// GET all agents (accessible à tous les utilisateurs connectés)
+router.get("/", authenticateToken, async (req, res) => {
   const agents = await Agent.find();
   res.json(agents);
 });
 
-// POST new agent
-router.post("/", async (req, res) => {
+// POST new agent (officier uniquement)
+router.post("/", authenticateToken, authorizeRoles("officier"), async (req, res) => {
   try {
-    const newAgent = new Agent({
-      nom: req.body.nom,
-      grade: req.body.grade,
-      unite: req.body.unite,
-      specialites: req.body.specialites || [],
-      statut: req.body.statut || "Indispo"
-    });
+    const newAgent = new Agent(req.body);
     const saved = await newAgent.save();
     res.status(201).json(saved);
   } catch (e) {
@@ -26,18 +22,28 @@ router.post("/", async (req, res) => {
   }
 });
 
-// PATCH agent by ID
-router.patch("/:id", async (req, res) => {
+// PATCH agent (officier uniquement pour modifier fiche)
+router.patch("/:id", authenticateToken, async (req, res) => {
+  const { role, id: userId } = req.user;
+  const updatedFields = req.body;
+
+  // 🛡️ Si non-officier, ne peut modifier que son statut
+  if (role !== "officier") {
+    if (Object.keys(updatedFields).length > 1 || !("statut" in updatedFields)) {
+      return res.status(403).json({ error: "Seul un officier peut modifier cette fiche." });
+    }
+  }
+
   try {
-    const updated = await Agent.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    const updated = await Agent.findByIdAndUpdate(req.params.id, updatedFields, { new: true });
     res.json(updated);
   } catch (e) {
     res.status(400).json({ error: e.message });
   }
 });
 
-// DELETE agent
-router.delete("/:id", async (req, res) => {
+// DELETE agent (officier uniquement)
+router.delete("/:id", authenticateToken, authorizeRoles("officier"), async (req, res) => {
   try {
     await Agent.findByIdAndDelete(req.params.id);
     res.status(204).end();
