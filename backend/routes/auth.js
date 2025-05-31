@@ -1,6 +1,6 @@
 import express from "express";
 import jwt from "jsonwebtoken";
-import user from "../models/user.js";
+import User from "../models/user.js";
 
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || "dev-secret"; // À remplacer en production
