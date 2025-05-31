@@ -33,7 +33,7 @@ export default function Dashboard() {
           },
         });
         const agents = await res.json();
-        const linked = agents.find(a => a.userId === storedUser.id);
+        const linked = agents.find(a => a.userId?.toString() === storedUser.id);
         setAgent(linked);
       } catch (e) {
         console.error("Erreur chargement agent:", e);
@@ -46,16 +46,14 @@ export default function Dashboard() {
   return (
     <div className="text-blue-900 p-6">
       <h1 className="text-3xl font-bold mb-2">
-        Bienvenue {agent?.nom || "Gendarme"}
+        Bienvenue {agent?.nom || user?.nom || "utilisateur"}
       </h1>
 
       {agent && (
-        <div className="mt-2 text-lg">
+        <div className="mt-2 text-lg space-y-1">
           <p>
             <strong>Grade :</strong>{" "}
-            <span className="font-semibold">
-              {gradeLabels[agent.grade] || agent.grade}
-            </span>
+            {gradeLabels[agent.grade] || agent.grade}
           </p>
           <p>
             <strong>Qualité :</strong>{" "}
