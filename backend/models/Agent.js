@@ -1,4 +1,3 @@
-// backend/models/Agent.js
 import mongoose from "mongoose";
 
 const agentSchema = new mongoose.Schema({
