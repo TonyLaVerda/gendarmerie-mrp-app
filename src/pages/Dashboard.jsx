@@ -46,7 +46,7 @@ export default function Dashboard() {
   return (
     <div className="text-blue-900 p-6">
       <h1 className="text-3xl font-bold mb-2">
-        Bienvenue {user?.nom || "invité"}
+        Bienvenue {agent?.nom || "Gendarme"}
       </h1>
 
       {agent && (
