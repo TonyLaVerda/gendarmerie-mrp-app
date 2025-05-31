@@ -62,18 +62,7 @@ export default function Dashboard() {
       ) : (
         <p className="text-gray-600 mt-4 italic">Aucune fiche agent liée à ce compte.</p>
       )}
-
-      <p className="mt-8 text-sm text-gray-600">
-        Ce site est fictif, réalisé pour un serveur de jeu RP. En savoir plus sur{" "}
-        <a
-          href="https://martinique-roleplay.fr"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-blue-700 underline"
-        >
-          martinique-roleplay.fr
-        </a>
-      </p>
+     
     </div>
   );
 }
