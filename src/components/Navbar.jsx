@@ -1,3 +1,4 @@
+// src/components/Navbar.jsx
 import { NavLink } from "react-router-dom";
 import "./Navbar.css";
 import UserMenu from "./UserMenu";
@@ -24,20 +25,22 @@ export default function Navbar() {
 
       <p className="navbar-tagline">“Notre Engagement, votre sécurité”</p>
 
-      <nav className="navbar-menu">
-        <ul>
-          {links.map(({ to, label }) => (
-            <li key={to}>
-              <NavLink
-                to={to}
-                className={({ isActive }) => (isActive ? "active" : "")}
-              >
-                {label}
-              </NavLink>
-            </li>
-          ))}
-        </ul>
-      </nav>
+      <div className="navbar-menu-container">
+        <nav className="navbar-menu">
+          <ul>
+            {links.map(({ to, label }) => (
+              <li key={to}>
+                <NavLink
+                  to={to}
+                  className={({ isActive }) => (isActive ? "active" : "")}
+                >
+                  {label}
+                </NavLink>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      </div>
     </header>
   );
 }
