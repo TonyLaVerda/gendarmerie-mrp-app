@@ -1,18 +1,26 @@
+// src/AppWrapper.jsx
 import './index.css';
 import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
-import MainLayout from './MainLayout'; // ✅ Nouveau layout importé
+import MainLayout from './MainLayout'; // ✅ Layout principal
 
-// 🔐 Page de connexion
+// 🔐 Composant de connexion
 function Login() {
   const [input, setInput] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleLogin = () => {
+    // ⚠️ Version simplifiée (à remplacer plus tard par un appel API réel)
     if (input === "gendarmerie2025") {
-      localStorage.setItem("auth", "true");
-      navigate("/", { replace: true });  // remplace historique pour éviter retour page login
+      const fakeUser = {
+        nom: "Tony La Verda",
+        role: "officier",
+        id: "FAKE-ID-001"
+      };
+      localStorage.setItem("token", "fake-token"); // ✅ future API: token réel
+      localStorage.setItem("user", JSON.stringify(fakeUser));
+      navigate("/", { replace: true });
     } else {
       setError("Mot de passe incorrect.");
     }
@@ -28,11 +36,11 @@ function Login() {
           value={input}
           onChange={(e) => {
             setInput(e.target.value);
-            if (error) setError("");  // reset erreur à la saisie
+            if (error) setError("");
           }}
           className="border p-2 rounded w-full mb-4"
           autoFocus
-          onKeyDown={e => { if (e.key === 'Enter') handleLogin(); }} // login au Enter
+          onKeyDown={e => { if (e.key === 'Enter') handleLogin(); }}
         />
         <button
           onClick={handleLogin}
@@ -46,14 +54,14 @@ function Login() {
   );
 }
 
-// 🔒 Composant de protection des routes
+// 🔒 Middleware de protection de route
 function RequireAuth({ children }) {
-  const isAuth = localStorage.getItem("auth") === "true";
-  return isAuth ? children : <Navigate to="/login" replace />;
+  const token = localStorage.getItem("token");
+  return token ? children : <Navigate to="/login" replace />;
 }
 
-// 🌐 Application principale avec redirection sécurisée
-function AppWrapper() {
+// 🧠 Application principale avec redirection sécurisée
+export default function AppWrapper() {
   return (
     <BrowserRouter>
       <Routes>
@@ -70,5 +78,3 @@ function AppWrapper() {
     </BrowserRouter>
   );
 }
-
-export default AppWrapper;
