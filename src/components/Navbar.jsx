@@ -1,6 +1,7 @@
+// src/components/Navbar.jsx
 import { NavLink } from "react-router-dom";
-import './Navbar.css';
-import UserMenu from './UserMenu'; // ✅ Import du menu utilisateur
+import "./Navbar.css";
+import UserMenu from "./UserMenu";
 
 const links = [
   { to: "/", label: "🏠 Accueil" },
@@ -14,12 +15,15 @@ const links = [
 export default function Navbar() {
   return (
     <header className="navbar">
-      <div className="navbar-left">
+      <div className="navbar-header">
         <div className="navbar-logo-title">
           <img src="/logo-gn.png" alt="Logo GN" className="navbar-logo" />
           <h1 className="navbar-title">Gendarmerie MRP</h1>
         </div>
         <p className="navbar-tagline">“Notre Engagement, votre sécurité”</p>
+      </div>
+
+      <div className="navbar-menu-container">
         <nav className="navbar-menu">
           <ul>
             {links.map(({ to, label }) => (
@@ -34,10 +38,9 @@ export default function Navbar() {
             ))}
           </ul>
         </nav>
-      </div>
-
-      <div className="navbar-right">
-        <UserMenu /> {/* ✅ Menu utilisateur intégré */}
+        <div className="navbar-user">
+          <UserMenu />
+        </div>
       </div>
     </header>
   );
