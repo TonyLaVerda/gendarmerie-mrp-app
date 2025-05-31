@@ -1,20 +1,23 @@
 #!/bin/bash
+echo "🔄 Début du déploiement..."
 
-echo "🔄 Déploiement en cours..."
+# Aller à la racine du projet
+cd "$(dirname "$0")/.."
 
-# Naviguer dans le dossier backend
-cd "$(dirname "$0")"
+echo "📦 Ajout des fichiers modifiés..."
+git add .
 
-# 1. Pull les dernières modifications
-echo "📦 Pull depuis GitHub..."
-git pull origin main
+echo "📝 Commit des modifications..."
+git commit -m "Déploiement automatique du $(date '+%Y-%m-%d %H:%M:%S')"
 
-# 2. Installer les dépendances si besoin
-echo "📦 Installation des dépendances..."
-npm install
+echo "🔃 Synchronisation avec GitHub (pull)..."
+git pull --rebase
 
-# 3. Redémarrage de l'API avec PM2 et variables d'env
-echo "🚀 Redémarrage de l'API..."
+echo "🚀 Envoi sur GitHub (push)..."
+git push
+
+echo "♻️ Redémarrage du serveur backend (PM2)..."
+cd backend
 pm2 restart gendarmerie-api --update-env
 
-echo "✅ Déploiement terminé."
+echo "✅ Déploiement terminé avec succès."
