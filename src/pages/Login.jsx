@@ -1,4 +1,3 @@
-// src/pages/Login.jsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -32,30 +31,41 @@ export default function Login() {
   };
 
   return (
-    <div style={{ padding: 32, maxWidth: 400, margin: "0 auto", fontFamily: "'Rubik', sans-serif" }}>
-      <h1>🔐 Accès Gendarmerie</h1>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="email"
-          placeholder="Adresse email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          style={{ width: "100%", padding: 10, marginBottom: 12 }}
-        />
-        <input
-          type="password"
-          placeholder="Mot de passe"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          style={{ width: "100%", padding: 10, marginBottom: 12 }}
-        />
-        <button type="submit" style={{ padding: 10, width: "100%", background: "#002654", color: "#fff" }}>
-          Se connecter
-        </button>
-        {error && <p style={{ color: "red", marginTop: 10 }}>{error}</p>}
-      </form>
+    <div className="h-screen flex items-center justify-center bg-[#e8effa] px-4">
+      <div className="bg-white p-8 rounded shadow max-w-md w-full border border-blue-200">
+        <h1 className="text-2xl font-bold text-blue-900 mb-6 flex items-center">
+          🔐 Accès Gendarmerie
+        </h1>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <input
+            type="email"
+            placeholder="Adresse email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            className="w-full border border-gray-300 rounded p-2"
+          />
+
+          <input
+            type="password"
+            placeholder="Mot de passe"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            className="w-full border border-gray-300 rounded p-2"
+          />
+
+          <button
+            type="submit"
+            className="w-full bg-blue-800 hover:bg-blue-900 text-white font-semibold py-2 rounded"
+          >
+            Se connecter
+          </button>
+
+          {error && <p className="text-red-600 text-sm mt-2">{error}</p>}
+        </form>
+      </div>
     </div>
   );
 }
