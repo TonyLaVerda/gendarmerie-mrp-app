@@ -1,4 +1,3 @@
-// ✅ Nouvelle version complète de la page Effectifs.jsx
 import { useState, useEffect } from "react";
 import './Effectifs.css';
 import { getResource, postResource, updateResource } from "../api/api";
@@ -149,7 +148,7 @@ export default function Effectifs({ agents, setAgents }) {
                   <select
                     value={agent.statut || "Indispo"}
                     onChange={(e) => handleAgentUpdate(agent.id, "statut", e.target.value)}
-                    className={`effectifs-select effectifs-status-${(agent.statut || "indispo").toLowerCase()}`}
+                    className={`effectifs-select effectifs-status-${(agent.statut || "Indispo").toLowerCase()}`}
                   >
                     {statuts.map((s) => (
                       <option key={s} value={s}>{s}</option>
