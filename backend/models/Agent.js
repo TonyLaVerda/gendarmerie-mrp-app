@@ -7,7 +7,7 @@ const agentSchema = new mongoose.Schema({
   unite: { type: String, required: true },
   specialites: { type: [String], default: [] },
   statut: { type: String, default: "Indispo" },
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }, // ✅ Lien avec User
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" } // ✅ Lien utilisateur
 }, { timestamps: true });
 
 export default mongoose.model("Agent", agentSchema);
