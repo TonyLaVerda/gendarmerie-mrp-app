@@ -2,6 +2,7 @@ import { Routes, Route } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 
 import Navbar from './components/Navbar';
+import UserMenu from './components/UserMenu';
 import Dashboard from './Dashboard';
 import Effectifs from './pages/Effectifs';
 import Bdsp from './pages/Bdsp';
@@ -45,7 +46,10 @@ export default function MainLayout() {
   }, []);
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen relative">
+      {/* Menu utilisateur en haut à droite */}
+      <UserMenu />
+
       {/* Barre de navigation */}
       <header className="bg-blue-900 text-white shadow">
         <Navbar />
