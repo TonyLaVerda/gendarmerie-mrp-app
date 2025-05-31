@@ -1,27 +1,30 @@
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 
-const userSchema = new mongoose.Schema({
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-    lowercase: true,
-    trim: true
+const userSchema = new mongoose.Schema(
+  {
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      lowercase: true,
+      trim: true
+    },
+    password: {
+      type: String,
+      required: true,
+      minlength: 6
+    },
+    role: {
+      type: String,
+      enum: ["gendarme", "officier"],
+      default: "gendarme"
+    }
   },
-  password: {
-    type: String,
-    required: true,
-    minlength: 6
-  },
-  role: {
-    type: String,
-    enum: ["gendarme", "officier"],
-    default: "gendarme"
-  }
-});
+  { timestamps: true }
+);
 
-// Hash du mot de passe avant sauvegarde
+// 🔐 Hash du mot de passe avant enregistrement
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
   try {
@@ -33,9 +36,9 @@ userSchema.pre("save", async function (next) {
   }
 });
 
-// Méthode pour comparer un mot de passe brut avec le hashé
-userSchema.methods.comparePassword = function (candidatePassword) {
-  return bcrypt.compare(candidatePassword, this.password);
+// 🔍 Méthode de comparaison de mot de passe
+userSchema.methods.comparePassword = async function (candidatePassword) {
+  return await bcrypt.compare(candidatePassword, this.password);
 };
 
 export default mongoose.model("User", userSchema);
