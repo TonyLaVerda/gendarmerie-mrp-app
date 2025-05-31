@@ -1,8 +1,8 @@
+// src/pages/Effectifs.jsx
 import { useState, useEffect } from "react";
 import './Effectifs.css';
 import { getResource, postResource, updateResource, deleteResource } from "../api/api";
 
-// Définition des données
 const grades = [
   { abbr: "ELG", full: "Élève Gendarme" },
   { abbr: "Gnd", full: "Gendarme" },
@@ -31,13 +31,16 @@ export default function Effectifs({ agents, setAgents }) {
   });
   const [errorMessage, setErrorMessage] = useState("");
 
+  const storedUser = JSON.parse(localStorage.getItem("user"));
+  const userId = storedUser?.id;
+  const isUserOfficer = storedUser?.role === "officier";
+
   useEffect(() => {
     async function fetchAgents() {
       try {
         const data = await getResource("agents");
         setAgents(data);
       } catch (e) {
-        console.error("Erreur réseau :", e);
         setErrorMessage("Erreur réseau lors du chargement.");
       }
     }
@@ -54,30 +57,26 @@ export default function Effectifs({ agents, setAgents }) {
     });
   };
 
- const handleAddAgent = async () => {
-  setErrorMessage("");
-  const storedUser = JSON.parse(localStorage.getItem("user"));
+  const handleAddAgent = async () => {
+    setErrorMessage("");
+    if (!storedUser || !newAgent.nom || !newAgent.grade || !newAgent.unite) {
+      setErrorMessage("Remplissez tous les champs et connectez-vous.");
+      return;
+    }
 
-  if (!storedUser || !newAgent.nom || !newAgent.grade || !newAgent.unite) {
-    setErrorMessage("Remplissez le nom, grade, unité. Et soyez connecté.");
-    return;
-  }
-
-  try {
-    const agentToCreate = {
-      ...newAgent,
-      statut: "Indispo",
-      userId: storedUser.id, // ✅ Lien avec l'utilisateur
-    };
-
-    const createdAgent = await postResource("agents", agentToCreate);
-    setAgents((prev) => [...prev, createdAgent]);
-    setNewAgent({ nom: "", grade: "", unite: "", specialites: [] });
-  } catch (e) {
-    console.error("Erreur création agent :", e);
-    setErrorMessage(e.message || "Erreur lors de la création de l'agent");
-  }
-};
+    try {
+      const agentToCreate = {
+        ...newAgent,
+        statut: "Indispo",
+        userId: storedUser.id,
+      };
+      const createdAgent = await postResource("agents", agentToCreate);
+      setAgents((prev) => [...prev, createdAgent]);
+      setNewAgent({ nom: "", grade: "", unite: "", specialites: [] });
+    } catch (e) {
+      setErrorMessage(e.message || "Erreur création agent.");
+    }
+  };
 
   const handleAgentUpdate = async (id, field, value) => {
     try {
@@ -98,13 +97,10 @@ export default function Effectifs({ agents, setAgents }) {
     }
   };
 
-  // Fonction utilitaire : obtenir le libellé complet d’un grade
   const getGradeLabel = (abbr) => {
     const found = grades.find((g) => g.abbr === abbr);
     return found ? found.full : abbr;
   };
-
-  const isOfficier = (grade) => ["Slt", "Lt", "Cpt", "Cen", "Lt Col", "Col"].includes(grade);
 
   return (
     <div className="effectifs-container">
@@ -118,12 +114,10 @@ export default function Effectifs({ agents, setAgents }) {
             placeholder="Nom"
             value={newAgent.nom}
             onChange={(e) => setNewAgent({ ...newAgent, nom: e.target.value })}
-            className="effectifs-input"
           />
           <select
             value={newAgent.grade}
             onChange={(e) => setNewAgent({ ...newAgent, grade: e.target.value })}
-            className="effectifs-select"
           >
             <option value="">Grade</option>
             {grades.map((g) => (
@@ -133,7 +127,6 @@ export default function Effectifs({ agents, setAgents }) {
           <select
             value={newAgent.unite}
             onChange={(e) => setNewAgent({ ...newAgent, unite: e.target.value })}
-            className="effectifs-select"
           >
             <option value="">Unité</option>
             {unites.map((u) => (
@@ -152,89 +145,85 @@ export default function Effectifs({ agents, setAgents }) {
               </label>
             ))}
           </div>
-          <button onClick={handleAddAgent} className="effectifs-button">
-            💾 Enregistrer
-          </button>
+          <button onClick={handleAddAgent}>💾 Enregistrer</button>
         </div>
         {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
       </section>
 
       <section className="effectifs-list">
-        {!agents || agents.length === 0 ? (
+        {agents.length === 0 ? (
           <p>Aucun agent enregistré.</p>
         ) : (
           <div className="effectifs-cards">
-            {agents.map((agent) => (
-              <div key={agent.id} className="effectifs-card">
-                <div className="effectifs-card-header">
+            {agents.map((agent) => {
+              const isSelf = agent.userId === userId;
+              const canEdit = isUserOfficer || isSelf;
+
+              return (
+                <div key={agent.id} className="effectifs-card">
                   <h3>{agent.nom}</h3>
-                  <span className="effectifs-grade">{getGradeLabel(agent.grade)}</span>
-                </div>
-                <p><strong>Unité :</strong> {agent.unite}</p>
+                  <p><strong>Grade :</strong></p>
+                  <select
+                    value={agent.grade}
+                    onChange={(e) => handleAgentUpdate(agent.id, "grade", e.target.value)}
+                    disabled={!canEdit}
+                  >
+                    {grades.map((g) => (
+                      <option key={g.abbr} value={g.abbr}>{g.full}</option>
+                    ))}
+                  </select>
 
-                <p><strong>Grade :</strong></p>
-                <select
-                  value={agent.grade}
-                  onChange={(e) => handleAgentUpdate(agent.id, "grade", e.target.value)}
-                  disabled={!isOfficier(agent.grade)}
-                  className="effectifs-select"
-                >
-                  {grades.map((g) => (
-                    <option key={g.abbr} value={g.abbr}>{g.full}</option>
-                  ))}
-                </select>
+                  <p><strong>Unité :</strong></p>
+                  <select
+                    value={agent.unite}
+                    onChange={(e) => handleAgentUpdate(agent.id, "unite", e.target.value)}
+                    disabled={!canEdit}
+                  >
+                    {unites.map((u) => (
+                      <option key={u} value={u}>{u}</option>
+                    ))}
+                  </select>
 
-                <p><strong>Unité :</strong></p>
-                <select
-                  value={agent.unite}
-                  onChange={(e) => handleAgentUpdate(agent.id, "unite", e.target.value)}
-                  disabled={!isOfficier(agent.grade)}
-                  className="effectifs-select"
-                >
-                  {unites.map((u) => (
-                    <option key={u} value={u}>{u}</option>
-                  ))}
-                </select>
+                  <p><strong>Spécialités :</strong></p>
+                  <div className="effectifs-checkbox-group">
+                    {specialites.map((s) => (
+                      <label key={s}>
+                        <input
+                          type="checkbox"
+                          value={s}
+                          checked={agent.specialites?.includes(s)}
+                          onChange={(e) => {
+                            if (!canEdit) return;
+                            const updatedSpecialites = e.target.checked
+                              ? [...(agent.specialites || []), s]
+                              : agent.specialites.filter((sp) => sp !== s);
+                            handleAgentUpdate(agent.id, "specialites", updatedSpecialites);
+                          }}
+                          disabled={!canEdit}
+                        /> {s}
+                      </label>
+                    ))}
+                  </div>
 
-                <p><strong>Spécialités :</strong></p>
-                <div className="effectifs-checkbox-group">
-                  {specialites.map((s) => (
-                    <label key={s}>
-                      <input
-                        type="checkbox"
-                        value={s}
-                        checked={agent.specialites?.includes(s)}
-                        onChange={(e) => {
-                          if (!isOfficier(agent.grade)) return;
-                          const updatedSpecialites = e.target.checked
-                            ? [...(agent.specialites || []), s]
-                            : agent.specialites.filter((sp) => sp !== s);
-                          handleAgentUpdate(agent.id, "specialites", updatedSpecialites);
-                        }}
-                        disabled={!isOfficier(agent.grade)}
-                      /> {s}
-                    </label>
-                  ))}
-                </div>
-
-                <p>
-                  <strong>Statut :</strong>
+                  <p><strong>Statut :</strong></p>
                   <select
                     value={agent.statut || "Indispo"}
                     onChange={(e) => handleAgentUpdate(agent.id, "statut", e.target.value)}
-                    className={`effectifs-select effectifs-status-${(agent.statut || "Indispo").toLowerCase()}`}
+                    disabled={!canEdit && !isSelf}
                   >
                     {statuts.map((s) => (
                       <option key={s} value={s}>{s}</option>
                     ))}
                   </select>
-                </p>
 
-                <button onClick={() => handleDeleteAgent(agent.id)} className="effectifs-button" style={{ backgroundColor: "darkred", marginTop: "0.5rem" }}>
-                  🗑️ Supprimer
-                </button>
-              </div>
-            ))}
+                  {isUserOfficer && (
+                    <button onClick={() => handleDeleteAgent(agent.id)} style={{ background: "darkred", color: "white", marginTop: "0.5rem" }}>
+                      🗑️ Supprimer
+                    </button>
+                  )}
+                </div>
+              );
+            })}
           </div>
         )}
       </section>
