@@ -1,30 +1,26 @@
+// ✅ Nouvelle version complète de la page Effectifs.jsx
 import { useState, useEffect } from "react";
 import './Effectifs.css';
-import { getResource, postResource } from "../api/api";
+import { getResource, postResource, updateResource } from "../api/api";
 
 const grades = ["ELG", "Gnd", "Mdl/C", "ADJ", "Adj/C", "Maj", "Slt", "Lt", "Cpt", "Cen", "Lt Col", "Col"];
 const unites = ["GD", "PMO", "PSIG"];
 const specialites = ["FAGN", "GIC", "TICP", "ERI"];
+const statuts = ["Indispo", "Disponible", "Congés"];
 
 export default function Effectifs({ agents, setAgents }) {
-  console.log("Effectifs render - agents:", agents);
-
   const [newAgent, setNewAgent] = useState({
     nom: "",
     grade: "",
     unite: "",
-    specialite: "",
-    statut: "Indispo",
+    specialites: [],
   });
-
   const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     async function fetchAgents() {
-      console.log("Début fetch agents...");
       try {
         const data = await getResource("agents");
-        console.log("Agents reçus :", data);
         setAgents(data);
       } catch (e) {
         console.error("Erreur réseau lors du chargement des agents :", e);
@@ -34,29 +30,42 @@ export default function Effectifs({ agents, setAgents }) {
     fetchAgents();
   }, [setAgents]);
 
+  const handleSpecialiteChange = (e) => {
+    const { value, checked } = e.target;
+    setNewAgent((prev) => {
+      const newSpecialites = checked
+        ? [...prev.specialites, value]
+        : prev.specialites.filter((s) => s !== value);
+      return { ...prev, specialites: newSpecialites };
+    });
+  };
+
   const handleAddAgent = async () => {
-    setErrorMessage(""); // reset message erreur
+    setErrorMessage("");
     if (!newAgent.nom || !newAgent.grade || !newAgent.unite) {
       setErrorMessage("Veuillez remplir au minimum le nom, le grade et l'unité.");
-      console.warn("Validation échouée : nom, grade ou unité manquant");
       return;
     }
     try {
-      console.log("Création de l'agent :", newAgent);
-      const createdAgent = await postResource("agents", newAgent);
-      console.log("Agent créé avec succès :", createdAgent);
-      setAgents(prev => [...prev, createdAgent]);
-      setNewAgent({
-        nom: "",
-        grade: "",
-        unite: "",
-        specialite: "",
+      const agentToCreate = {
+        ...newAgent,
         statut: "Indispo",
-      });
+      };
+      const createdAgent = await postResource("agents", agentToCreate);
+      setAgents((prev) => [...prev, createdAgent]);
+      setNewAgent({ nom: "", grade: "", unite: "", specialites: [] });
     } catch (e) {
       console.error("Erreur création agent :", e);
-      const msg = e.message || "Erreur lors de la création de l'agent";
-      setErrorMessage(msg);
+      setErrorMessage(e.message || "Erreur lors de la création de l'agent");
+    }
+  };
+
+  const handleAgentUpdate = async (id, field, value) => {
+    try {
+      const updated = await updateResource("agents", id, { [field]: value });
+      setAgents((prev) => prev.map((a) => (a.id === id ? updated : a)));
+    } catch (e) {
+      console.error("Erreur mise à jour de l'agent :", e);
     }
   };
 
@@ -94,34 +103,23 @@ export default function Effectifs({ agents, setAgents }) {
               <option key={u} value={u}>{u}</option>
             ))}
           </select>
-          <select
-            value={newAgent.specialite}
-            onChange={(e) => setNewAgent({ ...newAgent, specialite: e.target.value })}
-            className="effectifs-select"
-          >
-            <option value="">Spécialité (optionnel)</option>
+          <div className="effectifs-checkbox-group">
             {specialites.map((s) => (
-              <option key={s} value={s}>{s}</option>
+              <label key={s}>
+                <input
+                  type="checkbox"
+                  value={s}
+                  checked={newAgent.specialites.includes(s)}
+                  onChange={handleSpecialiteChange}
+                /> {s}
+              </label>
             ))}
-          </select>
-          <select
-            value={newAgent.statut}
-            onChange={(e) => setNewAgent({ ...newAgent, statut: e.target.value })}
-            className="effectifs-select"
-          >
-            <option value="Indispo">Indispo</option>
-            <option value="Disponible">Disponible</option>
-            <option value="Pause">Pause</option>
-          </select>
+          </div>
           <button onClick={handleAddAgent} className="effectifs-button">
             💾 Enregistrer
           </button>
         </div>
-        {errorMessage && (
-          <p style={{ color: "red", marginTop: 10, fontWeight: "bold" }}>
-            {errorMessage}
-          </p>
-        )}
+        {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
       </section>
 
       <section className="effectifs-list">
@@ -130,23 +128,24 @@ export default function Effectifs({ agents, setAgents }) {
         ) : (
           <div className="effectifs-cards">
             {agents.map((agent) => (
-              <div key={agent.id ?? agent.nom} className="effectifs-card">
+              <div key={agent.id} className="effectifs-card">
                 <div className="effectifs-card-header">
                   <h3>{agent.nom}</h3>
                   <span className="effectifs-grade">{agent.grade}</span>
                 </div>
+                <p><strong>Unité :</strong> {agent.unite}</p>
+                <p><strong>Spécialités :</strong> {agent.specialites?.join(", ") || "Aucune"}</p>
                 <p>
-                  <strong>Unité :</strong>{" "}
-                  <span className="effectifs-unit">{agent.unite}</span>
-                </p>
-                <p>
-                  <strong>Spécialité :</strong> {agent.specialite || "Aucune"}
-                </p>
-                <p>
-                  <strong>Statut :</strong>{" "}
-                  <span className={`effectifs-status effectifs-status-${agent.statut?.toLowerCase() || "indispo"}`}>
-                    {agent.statut}
-                  </span>
+                  <strong>Statut :</strong>
+                  <select
+                    value={agent.statut || "Indispo"}
+                    onChange={(e) => handleAgentUpdate(agent.id, "statut", e.target.value)}
+                    className={`effectifs-select effectifs-status-${(agent.statut || "indispo").toLowerCase()}`}
+                  >
+                    {statuts.map((s) => (
+                      <option key={s} value={s}>{s}</option>
+                    ))}
+                  </select>
                 </p>
               </div>
             ))}
