@@ -54,25 +54,30 @@ export default function Effectifs({ agents, setAgents }) {
     });
   };
 
-  const handleAddAgent = async () => {
-    setErrorMessage("");
-    if (!newAgent.nom || !newAgent.grade || !newAgent.unite) {
-      setErrorMessage("Remplir nom, grade, unité.");
-      return;
-    }
-    try {
-      const agentToCreate = {
-        ...newAgent,
-        statut: "Indispo",
-      };
-      const createdAgent = await postResource("agents", agentToCreate);
-      setAgents((prev) => [...prev, createdAgent]);
-      setNewAgent({ nom: "", grade: "", unite: "", specialites: [] });
-    } catch (e) {
-      console.error("Erreur création agent :", e);
-      setErrorMessage(e.message || "Erreur création");
-    }
-  };
+ const handleAddAgent = async () => {
+  setErrorMessage("");
+  const storedUser = JSON.parse(localStorage.getItem("user"));
+
+  if (!storedUser || !newAgent.nom || !newAgent.grade || !newAgent.unite) {
+    setErrorMessage("Remplissez le nom, grade, unité. Et soyez connecté.");
+    return;
+  }
+
+  try {
+    const agentToCreate = {
+      ...newAgent,
+      statut: "Indispo",
+      userId: storedUser.id, // ✅ Lien avec l'utilisateur
+    };
+
+    const createdAgent = await postResource("agents", agentToCreate);
+    setAgents((prev) => [...prev, createdAgent]);
+    setNewAgent({ nom: "", grade: "", unite: "", specialites: [] });
+  } catch (e) {
+    console.error("Erreur création agent :", e);
+    setErrorMessage(e.message || "Erreur lors de la création de l'agent");
+  }
+};
 
   const handleAgentUpdate = async (id, field, value) => {
     try {
