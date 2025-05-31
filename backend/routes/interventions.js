@@ -5,17 +5,40 @@ import authMiddleware from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-// Obtenir toutes les interventions
+// ✅ Obtenir toutes les interventions (authentifié)
 router.get("/", authMiddleware, async (req, res) => {
-  const interventions = await Intervention.find();
-  res.json(interventions);
+  try {
+    const interventions = await Intervention.find().sort({ createdAt: -1 });
+    res.json(interventions);
+  } catch (err) {
+    res.status(500).json({ error: "Erreur lors du chargement des interventions." });
+  }
 });
 
-// Créer une nouvelle intervention
+// ✅ Créer une nouvelle intervention (authentifié)
 router.post("/", authMiddleware, async (req, res) => {
-  const intervention = new Intervention(req.body);
-  await intervention.save();
-  res.status(201).json(intervention);
+  try {
+    const { titre, type, unite, date, heure, agents, description } = req.body;
+
+    if (!titre || !type || !unite || !date || !heure) {
+      return res.status(400).json({ error: "Champs requis manquants." });
+    }
+
+    const intervention = new Intervention({
+      titre,
+      type,
+      unite,
+      date,
+      heure,
+      agents,
+      description
+    });
+
+    await intervention.save();
+    res.status(201).json(intervention);
+  } catch (err) {
+    res.status(400).json({ error: "Erreur lors de la création : " + err.message });
+  }
 });
 
 export default router;
