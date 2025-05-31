@@ -18,6 +18,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
+  align-items: center;
 }
 
 .effectifs-input,
@@ -26,13 +27,20 @@
   font-size: 1rem;
   border-radius: 5px;
   border: 1px solid #ccc;
+  min-width: 160px;
+}
+
+.effectifs-checkbox-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 0.5rem;
 }
 
 .effectifs-checkbox-group label {
-  margin-right: 1rem;
   display: flex;
   align-items: center;
-  gap: 0.3rem;
+  font-size: 0.95rem;
 }
 
 .effectifs-button {
@@ -42,6 +50,7 @@
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  font-weight: bold;
 }
 
 .effectifs-cards {
@@ -78,7 +87,7 @@
 .badge-specialite {
   background-color: #007bff;
   color: white;
-  padding: 0.25rem 0.5rem;
+  padding: 0.25rem 0.6rem;
   border-radius: 15px;
   font-size: 0.8rem;
 }
