@@ -6,7 +6,7 @@
   font-family: 'Rubik', sans-serif;
 }
 
-.navbar-header {
+.navbar-top {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -29,7 +29,7 @@
 .navbar-title {
   font-weight: 700;
   font-size: 1.5rem;
-  color: white; /* Texte en blanc */
+  color: white;
   margin: 0;
 }
 
@@ -37,6 +37,8 @@
   font-style: italic;
   color: #b0b9d9;
   font-size: 0.875rem;
+  text-align: center;
+  margin-top: -0.5rem;
 }
 
 .navbar-menu {
@@ -71,32 +73,6 @@
 .navbar-menu li a.active {
   color: white;
   border-bottom: 4px solid white;
-}
-
-.navbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 1rem;
-}
-
-.navbar-left {
-  flex-grow: 1;
-}
-
-.navbar-right {
-  margin-left: auto;
-  display: flex;
-  align-items: center;
-}
-
-.navbar-menu-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: #0a184b;
-  border-top: 2px solid #072746;
-  padding: 0 1rem;
 }
 
 .navbar-user {
