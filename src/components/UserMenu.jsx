@@ -27,3 +27,7 @@ export default function UserMenu() {
     </div>
   );
 }
+
+.user-menu {
+  margin-top: 0.5rem;
+}
