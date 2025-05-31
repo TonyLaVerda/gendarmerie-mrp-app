@@ -1,8 +1,23 @@
 import { useState, useEffect } from "react";
 import './Effectifs.css';
-import { getResource, postResource, updateResource } from "../api/api";
+import { getResource, postResource, updateResource, deleteResource } from "../api/api";
 
-const grades = ["ELG", "Gnd", "Mdl/C", "ADJ", "Adj/C", "Maj", "Slt", "Lt", "Cpt", "Cen", "Lt Col", "Col"];
+// Définition des données
+const grades = [
+  { abbr: "ELG", full: "Élève Gendarme" },
+  { abbr: "Gnd", full: "Gendarme" },
+  { abbr: "Mdl/C", full: "Maréchal des Logis Chef" },
+  { abbr: "ADJ", full: "Adjudant" },
+  { abbr: "Adj/C", full: "Adjudant-Chef" },
+  { abbr: "Maj", full: "Major" },
+  { abbr: "Slt", full: "🛡️ Sous-Lieutenant" },
+  { abbr: "Lt", full: "🛡️ Lieutenant" },
+  { abbr: "Cpt", full: "🛡️ Capitaine" },
+  { abbr: "Cen", full: "🛡️ Commandant" },
+  { abbr: "Lt Col", full: "🛡️ Lieutenant-Colonel" },
+  { abbr: "Col", full: "🛡️ Colonel" },
+];
+
 const unites = ["GD", "PMO", "PSIG"];
 const specialites = ["FAGN", "GIC", "TICP", "ERI"];
 const statuts = ["Indispo", "Disponible", "Congés"];
@@ -22,8 +37,8 @@ export default function Effectifs({ agents, setAgents }) {
         const data = await getResource("agents");
         setAgents(data);
       } catch (e) {
-        console.error("Erreur réseau lors du chargement des agents :", e);
-        setErrorMessage("Erreur réseau lors du chargement des agents.");
+        console.error("Erreur réseau :", e);
+        setErrorMessage("Erreur réseau lors du chargement.");
       }
     }
     fetchAgents();
@@ -42,7 +57,7 @@ export default function Effectifs({ agents, setAgents }) {
   const handleAddAgent = async () => {
     setErrorMessage("");
     if (!newAgent.nom || !newAgent.grade || !newAgent.unite) {
-      setErrorMessage("Veuillez remplir au minimum le nom, le grade et l'unité.");
+      setErrorMessage("Remplir nom, grade, unité.");
       return;
     }
     try {
@@ -55,7 +70,7 @@ export default function Effectifs({ agents, setAgents }) {
       setNewAgent({ nom: "", grade: "", unite: "", specialites: [] });
     } catch (e) {
       console.error("Erreur création agent :", e);
-      setErrorMessage(e.message || "Erreur lors de la création de l'agent");
+      setErrorMessage(e.message || "Erreur création");
     }
   };
 
@@ -64,17 +79,27 @@ export default function Effectifs({ agents, setAgents }) {
       const updated = await updateResource("agents", id, { [field]: value });
       setAgents((prev) => prev.map((a) => (a.id === id ? updated : a)));
     } catch (e) {
-      console.error("Erreur mise à jour de l'agent :", e);
+      console.error("Erreur mise à jour :", e);
     }
   };
 
-  const handleSpecialiteToggle = async (agent, spec) => {
-    const current = agent.specialites || [];
-    const updatedSpecs = current.includes(spec)
-      ? current.filter((s) => s !== spec)
-      : [...current, spec];
-    handleAgentUpdate(agent.id, "specialites", updatedSpecs);
+  const handleDeleteAgent = async (id) => {
+    if (!confirm("Supprimer cet agent ?")) return;
+    try {
+      await deleteResource("agents", id);
+      setAgents((prev) => prev.filter((a) => a.id !== id));
+    } catch (e) {
+      console.error("Erreur suppression :", e);
+    }
   };
+
+  // Fonction utilitaire : obtenir le libellé complet d’un grade
+  const getGradeLabel = (abbr) => {
+    const found = grades.find((g) => g.abbr === abbr);
+    return found ? found.full : abbr;
+  };
+
+  const isOfficier = (grade) => ["Slt", "Lt", "Cpt", "Cen", "Lt Col", "Col"].includes(grade);
 
   return (
     <div className="effectifs-container">
@@ -97,7 +122,7 @@ export default function Effectifs({ agents, setAgents }) {
           >
             <option value="">Grade</option>
             {grades.map((g) => (
-              <option key={g} value={g}>{g}</option>
+              <option key={g.abbr} value={g.abbr}>{g.full}</option>
             ))}
           </select>
           <select
@@ -138,29 +163,33 @@ export default function Effectifs({ agents, setAgents }) {
               <div key={agent.id} className="effectifs-card">
                 <div className="effectifs-card-header">
                   <h3>{agent.nom}</h3>
-                  <select
-                    value={agent.grade}
-                    onChange={(e) => handleAgentUpdate(agent.id, "grade", e.target.value)}
-                    className="effectifs-select"
-                  >
-                    {grades.map((g) => (
-                      <option key={g} value={g}>{g}</option>
-                    ))}
-                  </select>
+                  <span className="effectifs-grade">{getGradeLabel(agent.grade)}</span>
                 </div>
+                <p><strong>Unité :</strong> {agent.unite}</p>
 
-                <p>
-                  <strong>Unité :</strong>{" "}
-                  <select
-                    value={agent.unite}
-                    onChange={(e) => handleAgentUpdate(agent.id, "unite", e.target.value)}
-                    className="effectifs-select"
-                  >
-                    {unites.map((u) => (
-                      <option key={u} value={u}>{u}</option>
-                    ))}
-                  </select>
-                </p>
+                <p><strong>Grade :</strong></p>
+                <select
+                  value={agent.grade}
+                  onChange={(e) => handleAgentUpdate(agent.id, "grade", e.target.value)}
+                  disabled={!isOfficier(agent.grade)}
+                  className="effectifs-select"
+                >
+                  {grades.map((g) => (
+                    <option key={g.abbr} value={g.abbr}>{g.full}</option>
+                  ))}
+                </select>
+
+                <p><strong>Unité :</strong></p>
+                <select
+                  value={agent.unite}
+                  onChange={(e) => handleAgentUpdate(agent.id, "unite", e.target.value)}
+                  disabled={!isOfficier(agent.grade)}
+                  className="effectifs-select"
+                >
+                  {unites.map((u) => (
+                    <option key={u} value={u}>{u}</option>
+                  ))}
+                </select>
 
                 <p><strong>Spécialités :</strong></p>
                 <div className="effectifs-checkbox-group">
@@ -168,15 +197,23 @@ export default function Effectifs({ agents, setAgents }) {
                     <label key={s}>
                       <input
                         type="checkbox"
+                        value={s}
                         checked={agent.specialites?.includes(s)}
-                        onChange={() => handleSpecialiteToggle(agent, s)}
+                        onChange={(e) => {
+                          if (!isOfficier(agent.grade)) return;
+                          const updatedSpecialites = e.target.checked
+                            ? [...(agent.specialites || []), s]
+                            : agent.specialites.filter((sp) => sp !== s);
+                          handleAgentUpdate(agent.id, "specialites", updatedSpecialites);
+                        }}
+                        disabled={!isOfficier(agent.grade)}
                       /> {s}
                     </label>
                   ))}
                 </div>
 
                 <p>
-                  <strong>Statut :</strong>{" "}
+                  <strong>Statut :</strong>
                   <select
                     value={agent.statut || "Indispo"}
                     onChange={(e) => handleAgentUpdate(agent.id, "statut", e.target.value)}
@@ -187,6 +224,10 @@ export default function Effectifs({ agents, setAgents }) {
                     ))}
                   </select>
                 </p>
+
+                <button onClick={() => handleDeleteAgent(agent.id)} className="effectifs-button" style={{ backgroundColor: "darkred", marginTop: "0.5rem" }}>
+                  🗑️ Supprimer
+                </button>
               </div>
             ))}
           </div>
