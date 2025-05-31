@@ -68,6 +68,14 @@ export default function Effectifs({ agents, setAgents }) {
     }
   };
 
+  const handleSpecialiteToggle = async (agent, spec) => {
+    const current = agent.specialites || [];
+    const updatedSpecs = current.includes(spec)
+      ? current.filter((s) => s !== spec)
+      : [...current, spec];
+    handleAgentUpdate(agent.id, "specialites", updatedSpecs);
+  };
+
   return (
     <div className="effectifs-container">
       <h1 className="effectifs-title">👮 Gestion des Effectifs</h1>
@@ -130,21 +138,45 @@ export default function Effectifs({ agents, setAgents }) {
               <div key={agent.id} className="effectifs-card">
                 <div className="effectifs-card-header">
                   <h3>{agent.nom}</h3>
-                  <span className="effectifs-grade">{agent.grade}</span>
+                  <select
+                    value={agent.grade}
+                    onChange={(e) => handleAgentUpdate(agent.id, "grade", e.target.value)}
+                    className="effectifs-select"
+                  >
+                    {grades.map((g) => (
+                      <option key={g} value={g}>{g}</option>
+                    ))}
+                  </select>
                 </div>
-                <p><strong>Unité :</strong> {agent.unite}</p>
-                <p><strong>Spécialités :</strong></p>
-                <div className="effectifs-badges">
-                  {agent.specialites?.length > 0 ? (
-                    agent.specialites.map((s, index) => (
-                      <span key={index} className="badge-specialite">{s}</span>
-                    ))
-                  ) : (
-                    <em>Aucune</em>
-                  )}
-                </div>
+
                 <p>
-                  <strong>Statut :</strong>
+                  <strong>Unité :</strong>{" "}
+                  <select
+                    value={agent.unite}
+                    onChange={(e) => handleAgentUpdate(agent.id, "unite", e.target.value)}
+                    className="effectifs-select"
+                  >
+                    {unites.map((u) => (
+                      <option key={u} value={u}>{u}</option>
+                    ))}
+                  </select>
+                </p>
+
+                <p><strong>Spécialités :</strong></p>
+                <div className="effectifs-checkbox-group">
+                  {specialites.map((s) => (
+                    <label key={s}>
+                      <input
+                        type="checkbox"
+                        checked={agent.specialites?.includes(s)}
+                        onChange={() => handleSpecialiteToggle(agent, s)}
+                      /> {s}
+                    </label>
+                  ))}
+                </div>
+
+                <p>
+                  <strong>Statut :</strong>{" "}
                   <select
                     value={agent.statut || "Indispo"}
                     onChange={(e) => handleAgentUpdate(agent.id, "statut", e.target.value)}
