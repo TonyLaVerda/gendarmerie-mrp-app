@@ -16,8 +16,8 @@ const gradeLabels = {
 };
 
 export default function Dashboard() {
-  const [agent, setAgent] = useState(null);
   const [user, setUser] = useState(null);
+  const [agent, setAgent] = useState(null);
 
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem("user"));
@@ -25,6 +25,7 @@ export default function Dashboard() {
 
     async function fetchAgent() {
       if (!storedUser) return;
+
       try {
         const token = localStorage.getItem("token");
         const res = await fetch("/api/agents", {
@@ -33,10 +34,10 @@ export default function Dashboard() {
           },
         });
         const agents = await res.json();
-        const linked = agents.find(a => a.userId?.toString() === storedUser.id);
-        setAgent(linked);
+        const linkedAgent = agents.find(a => a.userId === storedUser.id);
+        setAgent(linkedAgent);
       } catch (e) {
-        console.error("Erreur chargement agent:", e);
+        console.error("Erreur chargement agent :", e);
       }
     }
 
@@ -49,17 +50,17 @@ export default function Dashboard() {
         Bienvenue {agent?.nom || user?.nom || "utilisateur"}
       </h1>
 
-      {agent && (
-        <div className="mt-2 text-lg space-y-1">
+      {agent ? (
+        <div className="text-lg space-y-1 mt-2">
           <p>
-            <strong>Grade :</strong>{" "}
-            {gradeLabels[agent.grade] || agent.grade}
+            <strong>Grade :</strong> {gradeLabels[agent.grade] || agent.grade}
           </p>
           <p>
-            <strong>Qualité :</strong>{" "}
-            {user?.role === "officier" ? "🛡️ Officier" : "👮 Gendarme"}
+            <strong>Qualité :</strong> {user?.role === "officier" ? "🛡️ Officier" : "👮 Gendarme"}
           </p>
         </div>
+      ) : (
+        <p className="text-gray-600 mt-4 italic">Aucune fiche agent liée à ce compte.</p>
       )}
 
       <p className="mt-8 text-sm text-gray-600">
