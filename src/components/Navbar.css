@@ -89,3 +89,16 @@
   display: flex;
   align-items: center;
 }
+
+.navbar-menu-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #0a184b;
+  border-top: 2px solid #072746;
+  padding: 0 1rem;
+}
+
+.navbar-user {
+  padding-right: 1rem;
+}
