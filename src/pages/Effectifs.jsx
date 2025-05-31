@@ -134,7 +134,16 @@ export default function Effectifs({ agents, setAgents }) {
                   <span className="effectifs-grade">{agent.grade}</span>
                 </div>
                 <p><strong>Unité :</strong> {agent.unite}</p>
-                <p><strong>Spécialités :</strong> {agent.specialites?.join(", ") || "Aucune"}</p>
+                <p><strong>Spécialités :</strong></p>
+                <div className="effectifs-badges">
+                  {agent.specialites?.length > 0 ? (
+                    agent.specialites.map((s, index) => (
+                      <span key={index} className="badge-specialite">{s}</span>
+                    ))
+                  ) : (
+                    <em>Aucune</em>
+                  )}
+                </div>
                 <p>
                   <strong>Statut :</strong>
                   <select
