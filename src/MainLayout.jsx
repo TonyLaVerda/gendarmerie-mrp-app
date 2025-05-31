@@ -2,8 +2,7 @@ import { Routes, Route } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 
 import Navbar from './components/Navbar';
-import UserMenu from './components/UserMenu';
-import Dashboard from './Dashboard';
+import Dashboard from './pages/Dashboard';
 import Effectifs from './pages/Effectifs';
 import Bdsp from './pages/Bdsp';
 import Pulsar from './pages/Pulsar';
@@ -15,7 +14,6 @@ export default function MainLayout() {
   const [patrols, setPatrols] = useState([]);
   const [interventions, setInterventions] = useState([]);
 
-  // Charger toutes les données dès le montage
   useEffect(() => {
     async function fetchData() {
       try {
@@ -47,9 +45,6 @@ export default function MainLayout() {
 
   return (
     <div className="flex flex-col min-h-screen relative">
-      {/* Menu utilisateur en haut à droite */}
-      <UserMenu />
-
       {/* Barre de navigation */}
       <header className="bg-blue-900 text-white shadow">
         <Navbar />
@@ -59,36 +54,24 @@ export default function MainLayout() {
       <main className="flex-1 bg-gray-50 px-4 py-6 max-w-5xl w-full mx-auto">
         <Routes>
           <Route path="/" element={<Dashboard />} />
-          <Route
-            path="/effectifs"
-            element={<Effectifs agents={agents} setAgents={setAgents} />}
-          />
-          <Route
-            path="/bdsp"
-            element={
-              <Bdsp
-                patrols={patrols}
-                interventions={interventions}
-                setInterventions={setInterventions}
-              />
-            }
-          />
-          <Route
-            path="/pulsar"
-            element={<Pulsar patrols={patrols} setPatrols={setPatrols} />}
-          />
-          <Route
-            path="/commandement"
-            element={
-              <Commandement
-                agents={agents}
-                setAgents={setAgents}
-                patrols={patrols}
-                setPatrols={setPatrols}
-                interventions={interventions}
-              />
-            }
-          />
+          <Route path="/effectifs" element={<Effectifs agents={agents} setAgents={setAgents} />} />
+          <Route path="/bdsp" element={
+            <Bdsp
+              patrols={patrols}
+              interventions={interventions}
+              setInterventions={setInterventions}
+            />
+          } />
+          <Route path="/pulsar" element={<Pulsar patrols={patrols} setPatrols={setPatrols} />} />
+          <Route path="/commandement" element={
+            <Commandement
+              agents={agents}
+              setAgents={setAgents}
+              patrols={patrols}
+              setPatrols={setPatrols}
+              interventions={interventions}
+            />
+          } />
           <Route path="/stats" element={<Stats />} />
         </Routes>
       </main>
