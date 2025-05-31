@@ -5,10 +5,10 @@ import isOfficierOnly from "../middleware/isOfficierOnly.js";
 
 const router = express.Router();
 
-// Toutes les routes nécessitent une authentification
+// 🔐 Toutes les routes protégées
 router.use(authMiddleware);
 
-// 📄 GET tous les agents
+// 📄 Récupérer tous les agents (officiers seulement ? → sinon à restreindre)
 router.get("/", async (req, res) => {
   try {
     const agents = await Agent.find();
@@ -18,18 +18,20 @@ router.get("/", async (req, res) => {
   }
 });
 
-// 🧍 GET agent lié au user connecté
+// 🙋 Récupérer l'agent lié à l'utilisateur connecté
 router.get("/me", async (req, res) => {
   try {
     const agent = await Agent.findOne({ userId: req.user.id });
-    if (!agent) return res.status(404).json({ error: "Aucun agent lié à ce compte." });
+    if (!agent) {
+      return res.status(404).json({ error: "Aucun agent lié à ce compte." });
+    }
     res.json(agent);
   } catch (err) {
     res.status(500).json({ error: "Erreur serveur : " + err.message });
   }
 });
 
-// ➕ POST (officier uniquement)
+// ➕ Créer un agent (officier uniquement)
 router.post("/", isOfficierOnly, async (req, res) => {
   try {
     const agent = new Agent(req.body);
@@ -40,23 +42,28 @@ router.post("/", isOfficierOnly, async (req, res) => {
   }
 });
 
-// ✏️ PUT (officier uniquement)
+// ✏️ Modifier complètement un agent (officier uniquement)
 router.put("/:id", isOfficierOnly, async (req, res) => {
   try {
-    const updated = await Agent.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    const updated = await Agent.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
+    if (!updated) {
+      return res.status(404).json({ error: "Agent non trouvé" });
+    }
     res.json(updated);
   } catch (err) {
     res.status(400).json({ error: "Mise à jour échouée : " + err.message });
   }
 });
 
-// 🔄 PATCH (modification partielle, autorisé au gendarme uniquement sur lui-même)
+// 🔄 Modifier partiellement un agent
 router.patch("/:id", async (req, res) => {
   try {
     const agent = await Agent.findById(req.params.id);
     if (!agent) return res.status(404).json({ error: "Agent non trouvé" });
 
-    // Seul l'agent lié peut modifier son statut (hors officier)
     const isOwner = agent.userId?.toString() === req.user.id;
     const isOfficier = req.user.role === "officier";
 
@@ -64,10 +71,15 @@ router.patch("/:id", async (req, res) => {
       return res.status(403).json({ error: "Accès refusé" });
     }
 
-    // Officiers peuvent tout modifier, gendarmes uniquement leur statut
     if (!isOfficier) {
-      agent.statut = req.body.statut;
+      // Le gendarme ne peut modifier que son statut
+      if (typeof req.body.statut === "string") {
+        agent.statut = req.body.statut;
+      } else {
+        return res.status(400).json({ error: "Seul le champ 'statut' est modifiable." });
+      }
     } else {
+      // L’officier peut tout modifier
       Object.assign(agent, req.body);
     }
 
@@ -78,10 +90,11 @@ router.patch("/:id", async (req, res) => {
   }
 });
 
-// ❌ DELETE (officier uniquement)
+// 🗑️ Supprimer un agent (officier uniquement)
 router.delete("/:id", isOfficierOnly, async (req, res) => {
   try {
-    await Agent.findByIdAndDelete(req.params.id);
+    const deleted = await Agent.findByIdAndDelete(req.params.id);
+    if (!deleted) return res.status(404).json({ error: "Agent non trouvé" });
     res.status(204).end();
   } catch (err) {
     res.status(400).json({ error: "Suppression échouée : " + err.message });
