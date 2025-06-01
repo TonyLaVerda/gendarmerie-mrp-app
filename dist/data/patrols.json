@@ -1,4 +1,0 @@
-[
-  { "id": 1, "start": "2025-06-01T08:00", "end": "2025-06-01T12:00", "service": "PAM Fort de France", "type": "Police route véhicule sérigraphié", "effectifs": [1], "statutPatrouille": "Disponible" },
-  { "id": 2, "start": "2025-06-01T14:00", "end": "2025-06-01T18:00", "service": "PSIG 2", "type": "Patrouille pédestre", "effectifs": [2], "statutPatrouille": "Occupée" }
-]

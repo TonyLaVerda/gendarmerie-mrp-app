@@ -1,4 +1,0 @@
-[
-  { "id": 1, "nom": "Dupont", "grade": "Col", "unite": "GD", "specialite": "GIC", "statut": "Disponible" },
-  { "id": 2, "nom": "Martin", "grade": "Lt", "unite": "PSIG", "specialite": "", "statut": "Indispo" }
-]
