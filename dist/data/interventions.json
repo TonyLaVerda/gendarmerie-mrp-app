@@ -1,0 +1,13 @@
+[
+  {
+    "id": 1,
+    "type": "Braquage",
+    "lieu": "RD 25 commune de Fort de France",
+    "date": "2025-08-15T15:30",
+    "patrouilles": [
+      { "patrolId": 1, "statut": "Engagé", "timestamp": "15:32" },
+      { "patrolId": 2, "statut": "Engagé", "timestamp": "15:32" }
+    ],
+    "compteRendu": "Arrivé sur les lieux, aucun individu sur place..."
+  }
+]
