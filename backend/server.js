@@ -3,6 +3,8 @@ import dotenv from "dotenv";
 import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
+import path from "path";
+import { fileURLToPath } from "url";
 import authMiddleware from "./middleware/authMiddleware.js";
 
 // Routes principales
@@ -21,9 +23,16 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+// Chemins nécessaires pour servir les fichiers statiques avec ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 // Middleware généraux
 app.use(cors());
 app.use(express.json());
+
+// 👉 Sert le frontend Vite (buildé dans /dist)
+app.use(express.static(path.join(__dirname, "../dist")));
 
 // Routes publiques (auth uniquement)
 app.use("/api/auth", authRoutes);
@@ -39,12 +48,12 @@ app.use("/api/assignments", assignmentRoutes);
 app.use("/api/patrol-statuses", patrolStatusRoutes);
 app.use("/api/patrol-interventions", patrolInterventionRoutes);
 
-// Route de test
-app.get("/", (req, res) => {
-  res.send("✅ API Gendarmerie opérationnelle");
+// Fallback pour React Router (à placer *après* les routes API)
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../dist", "index.html"));
 });
 
-// Connexion MongoDB
+// Connexion MongoDB + lancement serveur
 mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true
